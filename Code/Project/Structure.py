@@ -10,6 +10,7 @@ class Structure:
     nodes = None
     cross_section = None
     element_types = None
+    n_sections = 6
 
     def __init__(self, js):
         # Load the jason file and construct the virtual structure
@@ -51,11 +52,19 @@ class Structure:
         for element in js_elements:
             id = element["id"]
             start_node_id = element["start_node_id"]
+            start_node = self.nodes[start_node_id]
             end_node_id = element["end_node_id"]
+            end_node = self.nodes[end_node_id]
             element_type = self.element_types[element["element_type"]]
-            local_x_dir = element["local_x_dir"]
-            
 
+            #####################################################
+            # When updating to 3D take local_x_dir, local_y_dir, local_z_dir form jason
+            #####################################################
+
+            new_element = Element(id, start_node, end_node, element_type, self.n_sections)
+            self.elements.put(id, new_element)
+
+        no_of_loads = js["no_of_loads"]
 
         return None
 
