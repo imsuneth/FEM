@@ -1,4 +1,4 @@
-class Direction:
+class Vector:
     x = None
     y = None
     z = None
