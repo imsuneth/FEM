@@ -1,5 +1,5 @@
 import numpy as np
-import ElementTypes
+from ElementTypes import *
 
 
 class Element:
@@ -18,4 +18,4 @@ class Element:
         self.id = end_node
         self.n_sections = n_sections
 
-        self.sections = np.array(n_sections, dtype=ElementTypes)
+        self.sections = np.array(n_sections, dtype=ElementType)

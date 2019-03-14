@@ -52,7 +52,10 @@ class Structure:
             id = element["id"]
             start_node_id = element["start_node_id"]
             end_node_id = element["end_node_id"]
-            cross_section =
+            element_type = self.element_types[element["element_type"]]
+            local_x_dir = element["local_x_dir"]
+            
+
 
         return None
 
