@@ -1,13 +1,13 @@
 from enum import Enum
 
-class MaterialModel(Enum):
 
+class MaterialModel(Enum):
     CONCRETE = 0
     STEEL = 1
 
     young_modulus = {
-        CONCRETE:100,
-        STEEL:200
+        CONCRETE: 100,
+        STEEL: 200
     }
 
     def getYoungModulus(self, material_type):
@@ -15,8 +15,6 @@ class MaterialModel(Enum):
 
     def getStrainFromStress(self, stress, material_type):
         if material_type == self.CONCRETE:
-            return stress*2.3
+            return stress * 2.3
         elif material_type == self.STEEL:
-            return stress*3.4
-
-
+            return stress * 3.4
