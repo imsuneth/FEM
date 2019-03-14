@@ -1,8 +1,8 @@
 import numpy as np
 import Element
 
-class Structure:
 
+class Structure:
     n_elements = None
     elements = None
 
