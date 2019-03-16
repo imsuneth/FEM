@@ -1,6 +1,7 @@
 {
     "no_of_crosssection_types":2,
     "no_of_nodes":4,
+	"no_of_materials":2,
     "no_of_elements": 3,
     "no_of_loads" : 1,
     "no_of_fixed_points" : 3,
@@ -11,26 +12,31 @@
         {   "id":2,"x":5,"y":4,"z":0    },
         {   "id":3,"x":5,"y":0,"z":0    }
     ],
-
-    "element_type":[
-        {
-            "id":0,
-            "shape":"rectangle",
-            "youngs_mod":150,
-            "density":0,
-            "dimensions":
-                {"y":0.10,"z":0.20}
-        },
-        {
-            "id":1,
-            "shape":"circle",
-            "youngs_mod":150,
-            "density":0,
-            "dimensions":
-                {"radius":0.07}
-        }
-
-    ],
+	
+	"materials":[
+		{	"id":0, "name": "concrete", "youngs_mod":150	},
+		{	"id":1, "name": "steel"   , "youngs_mod":100	}
+	],
+	
+	"cross_sections":[
+		{	"id":0,
+			"shape":"rectangle",
+			"dimensions":
+                {"y":0.10,"z":0.20},
+			"no_of_fibers":4,
+			"fiber_material_ids":
+				[0, 1, 0, 1]
+		},
+		
+		{	"id":1,
+			"shape":"circle",
+			"dimensions":
+                {"radius":0.07},
+			"no_of_fibers":4,
+			"fiber_material_ids":
+				[0, 0, 1, 0]
+		}
+	],
     
     "elements": [
         {

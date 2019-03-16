@@ -1,23 +1,18 @@
 import numpy as np
 from Element import Element
 from Node import *
-from ElementTypes import *
-from DataStructures import *
+from CrossSection import *
+from Material import *
 
 
 class Structure:
-    n_elements = None
-    elements = None
-    nodes = None
-    cross_section = None
-    element_types = None
     n_sections = 6
 
     def __init__(self, js):
         # Load the jason file and construct the virtual structure
         # Create Node objects and put them in nparray "nodes"
-        n_nodes = js["no_of_nodes"]
-        self.nodes = np.empty(n_nodes, dtype=Node)
+        self.n_nodes = js["no_of_nodes"]
+        self.nodes = np.empty(self.n_nodes, dtype=Node)
         js_nodes = js["nodes"]
         for node in js_nodes:
             id = node["id"]
@@ -27,29 +22,40 @@ class Structure:
             new_node = Node(id, p_x, p_y, p_z)
             self.nodes.put(id, new_node)
 
-        # Create ElementType objects and put them in nparray "element_types"
-        no_of_crosssection_types = js["no_of_crosssection_types"]
-        self.element_types = np.empty(no_of_crosssection_types, dtype=ElementType)
-        js_element_types = js["element_type"]
-        for element_type in js_element_types:
-            id = element_type["id"]
-            shape = element_type["id"]
-            youngs_mod = element_type["youngs_mod"]
-            density = element_type["density"]
-            dimensions = element_type["dimensions"]
-            new_element_type = None
+        # Create Material objects and put them in nparray "materials"
+        self.no_of_materials = js["no_of_materials"]
+        self.materials = np.empty(self.no_of_materials, dtype=Material)
+        js_materials = js["materials"]
+        for material in js_materials:
+            id = material["id"]
+            name = material["name"]
+            youngs_mod = material["youngs_mod"]
+            new_material = Material(id, name, youngs_mod)
+            self.materials.put(id, new_material)
+
+        # Create CrossSection objects and put them in nparray "cross_sections"
+        self.no_of_crosssection_types = js["no_of_crosssection_types"]
+        self.cross_sections = np.empty(self.no_of_crosssection_types, dtype=CrossSection)
+        js_cross_sections = js["cross_sections"]
+        for cross_section in js_cross_sections:
+            id = cross_section["id"]
+            shape = cross_section["shape"]
+            dimensions = cross_section["dimensions"]
+            no_of_fibers = cross_section["no_of_fibers"]
+            fiber_material_ids = cross_section["fiber_material_ids"]
+            new_cross_section = None
             if shape == "rectangle":
                 width = dimensions["y"]
                 height = dimensions["z"]
-                new_element_type = SquareElementType(width, height, youngs_mod, density)
+                new_cross_section = SquareCrossSection(self, width, height, no_of_fibers, fiber_material_ids)
             elif shape == "circle":
                 radius = dimensions["radius"]
-                new_element_type = CircularElementType(radius, youngs_mod, density)
-            self.element_types.put(id, new_element_type)
+                new_cross_section = CircularCrossSection(self, radius, no_of_fibers, fiber_material_ids)
+            self.cross_sections.put(id, new_cross_section)
 
         # Create Element objects and put them in nparray "elements"
-        n_elements = js["no_of_elements"]
-        self.elements = np.empty(n_elements, dtype=Element)
+        self.n_elements = js["no_of_elements"]
+        self.elements = np.empty(self.n_elements, dtype=Element)
         js_elements = js["elements"]
         for element in js_elements:
             id = element["id"]
@@ -57,19 +63,20 @@ class Structure:
             start_node = self.nodes[start_node_id]
             end_node_id = element["end_node_id"]
             end_node = self.nodes[end_node_id]
-            element_type = self.element_types[element["element_type"]]
+            cross_section = self.cross_sections[element["element_type"]]
 
             #####################################################
             # When updating to 3D take local_x_dir, local_y_dir, local_z_dir form jason
             #####################################################
 
-            new_element = Element(id, start_node, end_node, element_type, self.n_sections)
+            new_element = Element(id, start_node, end_node, cross_section, self.n_sections)
             self.elements.put(id, new_element)
 
-        no_of_loads = js["no_of_loads"]
+        # Take loads applied and assign them to Nodes
+        self.no_of_loads = js["no_of_loads"]
         js_loads = js["loads"]
         for load in js_loads:
-            id = load["id"]
+            # id = load["id"]
             node_id = load["point_id"]
             force = load["force"]
             f_x = force["x"]
@@ -80,11 +87,34 @@ class Structure:
             m_y = torque["y"]
             m_z = torque["z"]
 
+            node = self.nodes[node_id]
+            [node.f_x, node.f_y, node.f_z, node.m_x, node.m_y, node.m_z] = [f_x, f_y, f_z, m_x, m_y, m_z]
 
+        # Take fixed points and assign nodes as fixed
+        self.no_of_fixed_points = js["no_of_fixed_points"]
+        js_fixed_points = js["fixed_points"]
+        for fixed_point in js_fixed_points:
+            # id = fixed_point["id"]
+            node_id = fixed_point["point_id"]
+            translation = fixed_point["translation"]
+            t_x = translation["x"]
+            t_y = translation["y"]
+            t_z = translation["z"]
+            rotation = fixed_point["rotation"]
+            r_x = rotation["x"]
+            r_y = rotation["y"]
+            r_z = rotation["z"]
+
+            node = self.nodes[node_id]
+            [node.t_x, node.t_y, node.t_z, node.r_x, node.r_y, node.r_z] = [t_x, t_y, t_z, r_x, r_y, r_z]
 
         return None
 
     def analyzeStructure(self):
         # initiate analyze and save results to structureXX-out.json
+
+        # Imesh, your code goes here
+        # Get inputs from pubudu using element.analyze()
+        # passing necessary parameters to him.
 
         return None
