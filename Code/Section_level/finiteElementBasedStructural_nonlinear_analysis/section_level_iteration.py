@@ -70,11 +70,20 @@ def iteration(elementObj, updatedStrain, numOfItrPoint, maxNumOfItr):
 
     for _ in numOfItrPoint:
         delta_f_section = np.dot(shapeFunction() * elementForceIncrement)
-        #delta_e_section=
+
 
         for itr in maxNumOfItr:
-            updatedSection_k = calSection_k()  # calculate section stiffness
-            res_f=calculateResForce()#calculate_resisting force
-            #newForce=calNewForce()
-            #check the tolerance
+              # calculate section stiffness
+            # res_f=calculateResForce()#calculate_resisting force
+            # #newForce=calNewForce()
+            # #check the tolerance
+            if(checkCovergence()==True):
+                break
+            else:
+                #delta_e_section=section_kInverse(e)*delta_f_section
+                # updatedSection_k = calSection_k(delta_e_section)
+                # resistingForce= calResistingF()
+                # updated_force=
+                # delta_e_section=section_kInverse(e_update)*updated_force
+
             
