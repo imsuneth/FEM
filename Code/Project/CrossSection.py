@@ -4,7 +4,7 @@ import numpy as np
 class CrossSection:
     area = 0
 
-    def analyze(self):
+    def analyze(self, eps, k):
 
         return None
 
