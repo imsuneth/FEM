@@ -4,6 +4,10 @@ import numpy as np
 class CrossSection:
     area = 0
 
+    def analyze(self, eps, k):
+
+        return None
+
 
 class SquareCrossSection(CrossSection):
 
