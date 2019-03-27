@@ -1,5 +1,5 @@
 import numpy as np
-from Material import Material
+from Material import *
 from Fiber import Fiber
 
 

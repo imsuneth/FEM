@@ -3,7 +3,7 @@ from Element import Element
 from Node import *
 from CrossSection import *
 from Material import *
-from CalculationData import *
+#from CalculationData import *
 
 
 class Structure:
@@ -106,5 +106,7 @@ class Structure:
         # Imesh, your code goes here
         # Get inputs from pubudu using element.analyze()
         # passing necessary parameters to him.
+
+
 
         return None

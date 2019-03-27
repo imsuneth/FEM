@@ -64,7 +64,7 @@
             "id": 2,
             "start_node_id": 1, 
             "end_node_id": 2, 
-            "element_type": 1,
+            "element_type": 0,
             "local_x_dir":
                 {"x":2.0,"y":1.0,"z":0.0},
             "local_y_dir":
