@@ -1,4 +1,3 @@
-import numpy as np
 from CrossSection import *
 from Section import Section
 

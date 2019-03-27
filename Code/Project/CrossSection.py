@@ -1,6 +1,4 @@
 import numpy as np
-from Material import *
-from Fiber import Fiber
 
 
 class CrossSection:
