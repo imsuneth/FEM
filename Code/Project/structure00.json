@@ -12,11 +12,7 @@
         {   "id":2,"x":5,"y":4,"z":0    },
         {   "id":3,"x":5,"y":0,"z":0    }
     ],
-	
-	"materials":[
-		{	"id":0, "name": "concrete", "youngs_mod":150	},
-		{	"id":1, "name": "steel"   , "youngs_mod":100	}
-	],
+
 	
 	"cross_sections":[
 		{	"id":0,

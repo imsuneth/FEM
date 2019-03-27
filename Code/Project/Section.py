@@ -27,7 +27,7 @@ class Section:
         for fiber_id in range(self.no_of_fibers):
             fiber = self.fibers[fiber_id]
             eps = eps_0 - fiber.y * k
-            sigma = Material.getStrainFromStress(fiber.material_id, eps)
+            sigma = Material.get_strain_from_stress(fiber.material_id, eps)
             a_fib = fiber.height * fiber.width
             a_i = sigma * a_fib
             A += a_i

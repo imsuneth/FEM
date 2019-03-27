@@ -2,7 +2,6 @@ import numpy as np
 from Element import Element
 from Node import *
 from CrossSection import *
-from Material import *
 
 
 class Structure:
@@ -21,17 +20,6 @@ class Structure:
             p_z = node["z"]
             new_node = Node(id, p_x, p_y, p_z)
             self.nodes.put(id, new_node)
-
-        # Create Material objects and put them in nparray "materials"
-        self.no_of_materials = js["no_of_materials"]
-        self.materials = np.empty(self.no_of_materials, dtype=Material)
-        js_materials = js["materials"]
-        for material in js_materials:
-            id = material["id"]
-            name = material["name"]
-            youngs_mod = material["youngs_mod"]
-            new_material = Material(id, name, youngs_mod)
-            self.materials.put(id, new_material)
 
         # Create CrossSection objects and put them in nparray "cross_sections"
         self.no_of_crosssection_types = js["no_of_crosssection_types"]

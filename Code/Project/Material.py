@@ -1,18 +1,23 @@
+from sympy import *
+
+
 class Material:
+    x = Symbol('x')
+    y_concrete = x ** 2 + 1
+    y_concrete_prime = y_concrete.diff(x)
+    y_steel = x ** 3 + 1
+    y_steel_prime = y_steel.diff(x)
 
-    def __init__(self, id, name, youngs_mod):
-        self.id = id
-        self.name = name
-        self.youngs_mod = youngs_mod
+    def get_strain_from_stress(self, material_id, stress):
 
-    def getStrainFromStress(self, material_id, stress):
-        E = 0;
-        if material_id==0:
-            fc_dash = -42800;
-            ec_dash = -0.002;
-            npop = 0.8 + (-fc_dash * 0.001 / 17);
-            E = fc_dash * ((npop - 1 + (0 / ec_dash) ^ (npop * 1)) * (npop / ec_dash) - npop * (0 / ec_dash) * (
-                    npop * 1 * (0 / ec_dash) ^ (npop * 1 - 1) * (1 / ec_dash))) / (
-                        npop - 1 + (0 / ec_dash) ^ (npop * 1)) ^ 2;
+        if material_id == 0:  # concrete
+            return self.y_concrete.evalf(subs={self.x: stress})
+        elif material_id == 1:  # steel
+            return self.y_steel.evalf(subs={self.x: stress})
 
-        return E
+    def get_e(self, material_id, stress):
+
+        if material_id == 0:  # concrete
+            return self.y_concrete_prime.evalf(subs={self.x: stress})
+        elif material_id == 1:  # steel
+            return self.y_steel_prime.evalf(subs={self.x: stress})
