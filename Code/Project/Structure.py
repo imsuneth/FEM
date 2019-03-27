@@ -2,6 +2,8 @@ import numpy as np
 from Element import Element
 from Node import *
 from CrossSection import *
+from Material import *
+from CalculationData import *
 
 
 class Structure:
