@@ -5,11 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1a46e8fd-3089-4af7-bbcb-f01e3cf42ff6" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Material.py" beforeDir="false" afterPath="$PROJECT_DIR$/Material.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Section.py" beforeDir="false" afterPath="$PROJECT_DIR$/Section.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Structure.py" beforeDir="false" afterPath="$PROJECT_DIR$/Structure.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/structure00.json" beforeDir="false" afterPath="$PROJECT_DIR$/structure00.json" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -100,8 +96,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Material.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="57">
-              <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
+            <state relative-caret-position="190">
+              <caret line="13" column="35" lean-forward="true" selection-start-line="13" selection-start-column="35" selection-end-line="13" selection-end-column="35" />
             </state>
           </provider>
         </entry>
@@ -341,7 +337,14 @@
       <option name="project" value="LOCAL" />
       <updated>1552552526881</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="new updates">
+      <created>1553660731826</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1553660731826</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -352,7 +355,7 @@
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info active="true" anchor="bottom" id="Find" order="1" visible="true" weight="0.32843137" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32843137" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.19967794" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39869282" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
@@ -498,8 +501,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Material.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="57">
-          <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
+        <state relative-caret-position="190">
+          <caret line="13" column="35" lean-forward="true" selection-start-line="13" selection-start-column="35" selection-end-line="13" selection-end-column="35" />
         </state>
       </provider>
     </entry>
