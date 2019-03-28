@@ -57,6 +57,7 @@ class Element:
         basicSystem= np.matmul(self.rigidBodyTransMatrix(self.length),rotate)
         #########################################################################
         if initial_call==True:
+            ###### self.K_element=
             elementForceINCR= np.matmul(self.K_element,basicSystem)
         else:
             elementForceINCR=self.elementUnbalanceForce-np.matmul(self.K_element,elementDefINCR)
