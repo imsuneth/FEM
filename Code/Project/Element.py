@@ -7,6 +7,7 @@ from Section import *
 class Element:
     K_element=None
     elementResistingForce=None
+    elementUnbalanceForce=None
     def __init__(self, id, start_node, end_node, cross_section, n_sections,angle,length):
         self.id = id
         self.start_node = start_node
@@ -32,7 +33,7 @@ class Element:
         L=self.length
         return np.array([[0, 1 / L, 1, 0, -1 / L, 0], [0, 1 / L, 0, 0, -1 / L, 1], [-1, 0, 0, 1, 0, 0]], dtype=float)
 
-    def analyze(self,tolerance):  # elementDefIncrement--> 6x1 matrix
+    def analyze(self,tolerance,initial_call=True):  # for the first iteration set the initial call to True
         # Pubudu, you code goes here.
         # Get inputs from Imesh as parameters of this function.
         # Get inputs from Me using section.analyze().
@@ -54,8 +55,12 @@ class Element:
 
         rotate=np.matmul(self.rotMatrix(self.angle),elementDefINCR )
         basicSystem= np.matmul(self.rigidBodyTransMatrix(self.length),rotate)
-        elementForceINCR= np.matmul(self.K_element,basicSystem)
-
+        #########################################################################
+        if initial_call==True:
+            elementForceINCR= np.matmul(self.K_element,basicSystem)
+        else:
+            elementForceINCR=self.elementUnbalanceForce-np.matmul(self.K_element,elementDefINCR)
+        #########################################################################
         for section_ in range(self.n_sections):
             NP=[[0,0,1],[(x[section_]+1)/2 -1,(x[section_]+1)/2 +1,0]]
             sectionForceINCR= np.matmul(NP,elementForceINCR)
@@ -96,4 +101,6 @@ class Element:
 
         self.elementResistingForce=np.matmul(self.K_element,elementDefINCR)
 
-        return elementFlexibMat
+        self.elementUnbalanceForce=elementForceINCR-self.elementResistingForce
+
+        return self.K_element

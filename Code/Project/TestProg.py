@@ -21,23 +21,11 @@ import numpy as np
 # print(a)
 # #np.reshape(a, 6)
 # #print(a[4])
-class Car:
-    wheels = 4
 
-    def __init__(self, make):
-        self.make = make
+def test(InitialCall=True):
+    if Status==True:
+        print("sfsf")
+    else:
+        print("ddddd")
 
-
-
-
-newCar = Car("Honda")
-
-newCar.wheels=5
-print (newCar.wheels)
-
-car2=Car("jaguar")
-print(car2.make)
-print(car2.wheels)
-
-car3=Car("sfaf")
-print(car3.wheels)
+test(False)
