@@ -6,6 +6,7 @@ from Section import *
 
 class Element:
     K_element=None
+    elementResistingForce=None
     def __init__(self, id, start_node, end_node, cross_section, n_sections,angle,length):
         self.id = id
         self.start_node = start_node
@@ -60,7 +61,7 @@ class Element:
             sectionForceINCR= np.matmul(NP,elementForceINCR)
 
             Section_K=self.sections[section_].analyze([0,0])
-            #Section_K=self.cross_section.analyze([0,0]) # send to suneth and get inital section stiffness
+
 
             unbalanceForce=tolerance+1000
 
@@ -92,25 +93,7 @@ class Element:
             elementFlexibMat+=np.matmul(mat1,NP)
 
         self.K_element=np.linalg.inv(elementFlexibMat)
+
+        self.elementResistingForce=np.matmul(self.K_element,elementDefINCR)
+
         return elementFlexibMat
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
