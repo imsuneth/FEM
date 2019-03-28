@@ -130,6 +130,52 @@ class Structure:
 
     def analyzeStructure(self):
         # initiate analyze and save results to structureXX-out.json
+        force=[]
+        deformation=[]
+        for node_id in range (self.n_nodes):
+            node = self.nodes[node_id]
+            force+=[node.f_x,node.f_y,node.m_z]
+            deformation+=[node.d_x,node.d_y,node.dm_z]
+        force= np.asarray(force).reshape(self.n_nodes*3,1)
+        deformation=np.asarray(deformation).reshape(self.n_nodes*3,1)
+        element=Element
+        DOF = 3
+
+        Rmatrix= element.analyze(force,deformation)
+
+        kGlobal=[[0 for a0 in range (DOF*3)] for a1 in range (DOF*3)]
+
+        for e in range (self.n_elements):
+            ele=self.elements[e]
+            startNode=ele.start_node
+            endNode=ele.end_node
+            elementType=ele.element_type
+            Matrix=Rmatrix[e]
+
+
+            y1=DOF*startNode
+            y2=y1+DOF
+            x1=DOF*startNode
+            x2=x1+DOF
+            kGlobal[y1:y2, x1:x2] += k[:DOF_PER_NODE, :DOF_PER_NODE]
+
+            y1 = DOF * startNode
+            y2 = y1 + DOF
+            x1 = DOF * endNode
+            x2 = x1 + DOF
+            kGlobal[y1:y2, x1:x2] += k[:DOF_PER_NODE, DOF_PER_NODE:]
+
+            y1=DOF*endNode
+            y2=y1+DOF
+            x1=DOF*startNode
+            x2=x1+DOF
+            lobal[y1:y2, x1:x2] += k[DOF_PER_NODE:, :DOF_PER_NODE]
+
+            y1 = DOF * endNode
+            y2 = y1 + DOF
+            x1 = DOF * endNode
+            x2 = x1 + DOF
+            kGlobal[y1:y2, x1:x2] += k[DOF_PER_NODE:, DOF_PER_NODE:]
 
         # Imesh, your code goes here
         # Get inputs from pubudu using element.analyze()
