@@ -23,4 +23,4 @@ section_deformation = [0, 0]  # eps_0, k
 
 print("Reaction force: ", R)
 print("Sectional stiffness \n", K)
-# ----------------------------------------------
+

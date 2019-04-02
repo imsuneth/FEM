@@ -1,4 +1,6 @@
 import numpy as np
+from Material import Material
+from Fiber import Fiber
 
 
 class CrossSection:
@@ -8,6 +10,7 @@ class CrossSection:
 class SquareCrossSection(CrossSection):
 
     def __init__(self, id, width, height, no_of_fibers, fiber_material_ids):
+        self.resisting_force = np.empty(2, dtype=np.float_)
         self.id = id
         self.width = width
         self.height = height

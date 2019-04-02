@@ -1,7 +1,9 @@
-from Element import Element
+import numpy as np
+from Element import *
 from Node import *
 from CrossSection import *
-
+from Material import *
+from CalculationData import *
 
 class Structure:
     n_sections = 6
@@ -9,6 +11,9 @@ class Structure:
     def __init__(self, js):
         # Load the jason file and construct the virtual structure
         # Create Node objects and put them in nparray "nodes"
+
+        #self.n_totalFreeDof = 0 #added by pubudu to extractDOF from deformation increment vector
+
         self.n_nodes = js["no_of_nodes"]
         self.nodes = np.empty(self.n_nodes, dtype=Node)
         js_nodes = js["nodes"]
@@ -52,11 +57,24 @@ class Structure:
             end_node = self.nodes[end_node_id]
             cross_section = self.cross_sections[element["element_type"]]
 
+
             #####################################################
             # When updating to 3D take local_x_dir, local_y_dir, local_z_dir form jason
             #####################################################
 
-            new_element = Element(id, start_node, end_node, cross_section, self.n_sections)
+            angleRatio=element["local_x_dir"]["y"]/element["local_x_dir"]["x"]
+            angle=None
+            if angleRatio>0:
+                angle=math.atan(angleRatio)
+            else:
+                angleRatio=-1*angleRatio
+                angle=math.pi-math.atan(angleRatio)
+
+            yDiff=math.abs(self.nodes[start_node_id].p_y-self.nodes[end_node_id].p_y)
+            xDiff = math.abs(self.nodes[start_node_id].p_x - self.nodes[end_node_id].p_x)
+            length=math.sqrt(math.pow(yDiff,2)+math.pow(xDiff,2))
+
+            new_element = Element(id, start_node, end_node, cross_section, self.n_sections,angle,length)
             self.elements.put(id, new_element)
 
         # Take loads applied and assign them to Nodes
@@ -87,6 +105,8 @@ class Structure:
             t_x = translation["x"]
             t_y = translation["y"]
             t_z = translation["z"]
+
+
             rotation = fixed_point["rotation"]
             r_x = rotation["x"]
             r_y = rotation["y"]
@@ -95,6 +115,7 @@ class Structure:
             node = self.nodes[node_id]
             [node.t_x, node.t_y, node.t_z, node.r_x, node.r_y, node.r_z] = [t_x, t_y, t_z, r_x, r_y, r_z]
 
+            #self.n_totalFreeDof+=t_x+t_y+r_x+r_y
         return None
 
     def analyzeStructure(self):
