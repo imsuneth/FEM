@@ -4,6 +4,7 @@ from Node import *
 from CrossSection import *
 from Material import *
 from CalculationData import *
+
 class Structure:
     n_sections = 6
 
@@ -23,17 +24,6 @@ class Structure:
             p_z = node["z"]
             new_node = Node(id, p_x, p_y, p_z)
             self.nodes.put(id, new_node)
-
-        # Create Material objects and put them in nparray "materials"
-        self.no_of_materials = js["no_of_materials"]
-        self.materials = np.empty(self.no_of_materials, dtype=Material)
-        js_materials = js["materials"]
-        for material in js_materials:
-            id = material["id"]
-            name = material["name"]
-            youngs_mod = material["youngs_mod"]
-            new_material = Material(id, name, youngs_mod)
-            self.materials.put(id, new_material)
 
         # Create CrossSection objects and put them in nparray "cross_sections"
         self.no_of_crosssection_types = js["no_of_crosssection_types"]
@@ -183,21 +173,4 @@ class Structure:
 
 
 
-        ###########################################################################################
-
-        DOFcount = 0
-
-        for elementNO in Structure.n_elements:
-            numberOfFreeDOF = self.extractDOF(elementNO)
-            if numberOfFreeDOF != 0:  # not a complete fixed point %%%%%%%%%% can optimize
-
-                elementDOFdeformation = np.zeros(numberOfFreeDOF, dtype=int)
-
-                count = 1
-                while (count == numberOfFreeDOF):
-                    elementDOFdeformation.put(count - 1, Struct_def_increment[0][DOFcount])
-                    DOFcount += 1
-                    count += 1
-
-        ############################################################################################
         return None
