@@ -25,3 +25,4 @@ def get_e(material_id, stress):
         return f_concrete_prime(stress)
     elif material_id == 1:  # steel
         return f_steel_prime(stress)
+

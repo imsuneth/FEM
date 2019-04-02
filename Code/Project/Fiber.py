@@ -7,3 +7,4 @@ class Fiber:
         self.height = height
         self.area = self.height * self.width
         self.material_id = material_id
+
