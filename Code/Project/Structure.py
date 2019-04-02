@@ -135,23 +135,4 @@ class Structure:
         # Get inputs from pubudu using element.analyze()
         # passing necessary parameters to him.
 
-
-
-        ###########################################################################################
-
-        DOFcount = 0
-
-        for elementNO in Structure.n_elements:
-            numberOfFreeDOF = self.extractDOF(elementNO)
-            if numberOfFreeDOF != 0:  # not a complete fixed point %%%%%%%%%% can optimize
-
-                elementDOFdeformation = np.zeros(numberOfFreeDOF, dtype=int)
-
-                count = 1
-                while (count == numberOfFreeDOF):
-                    elementDOFdeformation.put(count - 1, Struct_def_increment[0][DOFcount])
-                    DOFcount += 1
-                    count += 1
-
-        ############################################################################################
         return None
