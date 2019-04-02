@@ -7,7 +7,7 @@ f_concrete = lambdify(x, y_concrete)
 y_concrete_prime = y_concrete.diff(x)
 f_concrete_prime = lambdify(x, y_concrete_prime)
 
-y_steel = x ** 3 + 1
+y_steel = x ** 3 + x +2
 f_steel = lambdify(x, y_steel)
 y_steel_prime = y_steel.diff(x)
 f_steel_prime = lambdify(x, y_steel_prime)

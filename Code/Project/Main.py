@@ -18,9 +18,8 @@ sectional_fiber_material_ids = [0, 1, 0, 0]
 cross_section = SquareCrossSection(0, section_width, section_height, no_of_fibers, sectional_fiber_material_ids)
 section = Section(0, cross_section)
 
-eps_0 = 0.01
-k = 0.02
-[R, K] = section.analyze([eps_0, k])
+section_deformation = [0, 0]  # eps_0, k
+[R, K] = section.analyze(section_deformation)
 
 print("Reaction force: ", R)
 print("Sectional stiffness \n", K)
