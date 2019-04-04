@@ -123,7 +123,7 @@ class Element:
 
             self.sections[section_].section_k=Section_K
 
-        elementFlexibMat=None # calculate element stiffness 
+        elementFlexibMat=None # calculate element stiffness
         for section_ in range(self.n_sections):
             NP = [[0, 0, 1], [(x[section_] + 1) / 2 - 1, (x[section_] + 1) / 2 + 1, 0]]
             fh= np.linalg.inv(self.sections[section_].section_k)
