@@ -2,7 +2,6 @@ import numpy as np
 from Element import *
 from Node import *
 from CrossSection import *
-from Material import *
 from CalculationData import *
 from numpy.linalg import inv
 
@@ -26,17 +25,6 @@ class Structure:
             p_z = node["z"]
             new_node = Node(id, p_x, p_y, p_z)
             self.nodes.put(id, new_node)
-
-        # Create Material objects and put them in nparray "materials"
-        self.no_of_materials = js["no_of_materials"]
-        self.materials = np.empty(self.no_of_materials, dtype=Material)
-        js_materials = js["materials"]
-        for material in js_materials:
-            id = material["id"]
-            name = material["name"]
-            youngs_mod = material["youngs_mod"]
-            new_material = Material(id, name, youngs_mod)
-            self.materials.put(id, new_material)
 
         # Create CrossSection objects and put them in nparray "cross_sections"
         self.no_of_crosssection_types = js["no_of_crosssection_types"]
@@ -146,40 +134,42 @@ class Structure:
         DOF = 3
 
         kGlobal=[[0 for a0 in range (DOF*3)] for a1 in range (DOF*3)]
+        kGlobal=np.array(kGlobal,dtype=float)
 
         for e in range (self.n_elements):
             ele=self.elements[e]
             startNode=ele.start_node
             endNode=ele.end_node
-            elementType=ele.element_type
-            EMatrix=Rmatrix[e]
+            #elementType=ele.element_type
+            EMatrix=ele.calInitialElement_K()
+            #print(EMatrix)
 
-            y1=DOF*startNode
+            y1=DOF*startNode.id
             y2=y1+DOF
-            x1=DOF*startNode
+            x1=DOF*startNode.id
             x2=x1+DOF
             kGlobal[y1:y2, x1:x2] += EMatrix[:DOF, :DOF]
 
-            y1 = DOF * startNode
+            y1 = DOF * startNode.id
             y2 = y1 + DOF
-            x1 = DOF * endNode
+            x1 = DOF * endNode.id
             x2 = x1 + DOF
             kGlobal[y1:y2, x1:x2] += EMatrix[:DOF, DOF:]
 
-            y1=DOF*endNode
+            y1=DOF*endNode.id
             y2=y1+DOF
-            x1=DOF*startNode
+            x1=DOF*startNode.id
             x2=x1+DOF
-            lobal[y1:y2, x1:x2] += EMatrix[DOF:, :DOF]
+            kGlobal[y1:y2, x1:x2] += EMatrix[DOF:, :DOF]
 
-            y1 = DOF * endNode
+            y1 = DOF * endNode.id
             y2 = y1 + DOF
-            x1 = DOF * endNode
+            x1 = DOF * endNode.id
             x2 = x1 + DOF
             kGlobal[y1:y2, x1:x2] += EMatrix[DOF:, DOF:]
 
 
-        full_matrix=KGlobal
+        full_matrix=kGlobal
         full_force=force
         full_deformation=deformation
         def_for_reuse=[]
@@ -217,7 +207,8 @@ class Structure:
 
             force= full_matrix*deformation
 
-            Rmatrix = element.analyze(force, deformation)
+            print(force)
+            print(deformation)
 
 
 
@@ -234,21 +225,3 @@ class Structure:
 
 
 
-        ###########################################################################################
-
-        DOFcount = 0
-
-        for elementNO in Structure.n_elements:
-            numberOfFreeDOF = self.extractDOF(elementNO)
-            if numberOfFreeDOF != 0:  # not a complete fixed point %%%%%%%%%% can optimize
-
-                elementDOFdeformation = np.zeros(numberOfFreeDOF, dtype=int)
-
-                count = 1
-                while (count == numberOfFreeDOF):
-                    elementDOFdeformation.put(count - 1, Struct_def_increment[0][DOFcount])
-                    DOFcount += 1
-                    count += 1
-
-        ############################################################################################
-        return None
