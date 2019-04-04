@@ -104,3 +104,4 @@ venv.bak/
 .mypy_cache/
 
 Code/Project/.idea
+Code/Project/.idea/workspace.xml
