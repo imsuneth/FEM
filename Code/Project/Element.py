@@ -51,17 +51,25 @@ class Element:
             wh = [0.066667, 0.378475, 0.554858, 0.554858, 0.378475, 0.066667]
             x = [-1, - 0.765055, - 0.285232, 0.285232, 0.765055, 1]
 
-        initialElementFlexibMat=None
+        initialElementFlexibMat=0
 
         for section_ in range(self.n_sections):
             Section_K = self.sections[section_].analyze([0, 0])
+            #print(Section_K[1])
             NP = [[0, 0, 1], [(x[section_] + 1) / 2 - 1, (x[section_] + 1) / 2 + 1, 0]]
-            fh = np.linalg.inv(Section_K)
+            NP=np.array(NP,dtype=float)
+            #print(NP)
+            fh = np.linalg.inv(Section_K[1])
+            #print(fh)
             mat1 = np.matmul(np.transpose(NP), fh)
-            initialElementFlexibMat += np.matmul(mat1, NP)
+            #print(mat1)
+
+            initialElementFlexibMat += np.matmul(mat1,NP)
+
 
         self.K_element_initial=np.linalg.inv(initialElementFlexibMat)
-
+        print(self.K_element_initial)
+        return self.K_element_initial
 
     def analyze(self,tolerance,initial_call=True):  # for the first iteration set the initial call to True
         # Pubudu, you code goes here.

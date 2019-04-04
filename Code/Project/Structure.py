@@ -134,40 +134,42 @@ class Structure:
         DOF = 3
 
         kGlobal=[[0 for a0 in range (DOF*3)] for a1 in range (DOF*3)]
+        kGlobal=np.array(kGlobal,dtype=float)
 
         for e in range (self.n_elements):
             ele=self.elements[e]
             startNode=ele.start_node
             endNode=ele.end_node
-            elementType=ele.element_type
-            EMatrix=Rmatrix[e]
+            #elementType=ele.element_type
+            EMatrix=ele.calInitialElement_K()
+            #print(EMatrix)
 
-            y1=DOF*startNode
+            y1=DOF*startNode.id
             y2=y1+DOF
-            x1=DOF*startNode
+            x1=DOF*startNode.id
             x2=x1+DOF
             kGlobal[y1:y2, x1:x2] += EMatrix[:DOF, :DOF]
 
-            y1 = DOF * startNode
+            y1 = DOF * startNode.id
             y2 = y1 + DOF
-            x1 = DOF * endNode
+            x1 = DOF * endNode.id
             x2 = x1 + DOF
             kGlobal[y1:y2, x1:x2] += EMatrix[:DOF, DOF:]
 
-            y1=DOF*endNode
+            y1=DOF*endNode.id
             y2=y1+DOF
-            x1=DOF*startNode
+            x1=DOF*startNode.id
             x2=x1+DOF
-            lobal[y1:y2, x1:x2] += EMatrix[DOF:, :DOF]
+            kGlobal[y1:y2, x1:x2] += EMatrix[DOF:, :DOF]
 
-            y1 = DOF * endNode
+            y1 = DOF * endNode.id
             y2 = y1 + DOF
-            x1 = DOF * endNode
+            x1 = DOF * endNode.id
             x2 = x1 + DOF
             kGlobal[y1:y2, x1:x2] += EMatrix[DOF:, DOF:]
 
 
-        full_matrix=KGlobal
+        full_matrix=kGlobal
         full_force=force
         full_deformation=deformation
         def_for_reuse=[]
@@ -205,7 +207,8 @@ class Structure:
 
             force= full_matrix*deformation
 
-            Rmatrix = element.analyze(force, deformation)
+            print(force)
+            print(deformation)
 
 
 
