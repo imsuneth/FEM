@@ -1,11 +1,11 @@
 import math
 
 import numpy as np
-
+from numpy.linalg import inv
 from Section import *
 
 class Element:
-    K_element_initial=None
+    K_element_initial=None # refereing gloabal co-ordiante system
     K_element=None
     elementResistingForce=None
     elementUnbalanceForce=None
@@ -59,17 +59,21 @@ class Element:
             NP = [[0, 0, 1], [(x[section_] + 1) / 2 - 1, (x[section_] + 1) / 2 + 1, 0]]
             NP=np.array(NP,dtype=float)
             #print(NP)
-            fh = np.linalg.inv(Section_K[1])
+            fh = inv(Section_K[1])
             #print(fh)
-            mat1 = np.matmul(np.transpose(NP), fh)
+            mat1 = np.transpose(NP)@fh
             #print(mat1)
 
-            initialElementFlexibMat += np.matmul(mat1,NP)
+            initialElementFlexibMat += mat1@NP
 
 
-        self.K_element_initial=np.linalg.inv(initialElementFlexibMat)
-        print(self.K_element_initial)
-        return self.K_element_initial
+        k_element_initial=inv(initialElementFlexibMat)
+        #print(self.K_element_initial)
+        # print(inv(self.rigidBodyTransMatrix()))
+        # #print(self.rotMatrix())
+        self.K_element_initial=np.transpose(self.rotMatrix())@np.transpose(self.rigidBodyTransMatrix())@k_element_initial@self.rigidBodyTransMatrix()@self.rotMatrix()
+        #print(self.K_element_initial)
+        return self.K_element_initial # 6x6 matrix refering global co-ordinate system
 
     def analyze(self,tolerance,initial_call=True):  # for the first iteration set the initial call to True
         # Pubudu, you code goes here.
