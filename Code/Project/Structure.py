@@ -252,3 +252,4 @@ class Structure:
                 print("Iteration ",count," done", "error=",error)
 
 
+
