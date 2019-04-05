@@ -21,15 +21,6 @@ def load_material_models(js):
         material_models.put(id, material_model)
 
 
-'''
-def get_e(material_id, stress):
-    if material_id == 0:  # concrete
-        return f_concrete_prime(stress)
-    elif material_id == 1:  # steel
-        return f_steel_prime(stress)
-'''
-
-
 class MaterialModel:
     def __init__(self, id, no_of_ranges, range_upper_limits, formulas_list):
         self.no_of_ranges = no_of_ranges

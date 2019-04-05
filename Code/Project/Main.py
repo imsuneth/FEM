@@ -7,9 +7,8 @@ from Material import *
 structure_js = readFile('structure00.json')
 material_models_js = readFile('material_models.json')
 load_material_models(material_models_js)
-
 structure = Structure(structure_js)
-#structure.analyzeStructure()
+# structure.analyzeStructure()
 
 
 # Section level test bench----------------------
@@ -27,4 +26,3 @@ section_deformation = [0, 0]  # eps_0, k
 
 print("Reaction force: ", R)
 print("Sectional stiffness \n", K)
-
