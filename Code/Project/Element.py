@@ -8,6 +8,7 @@ class Element:
     K_element=None
     elementResistingForce=None
     elementUnbalanceForce=None
+
     def __init__(self, id, start_node, end_node, cross_section, n_sections,angle,length):
         self.id = id
         self.start_node = start_node

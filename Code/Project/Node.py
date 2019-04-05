@@ -9,9 +9,9 @@ class Node:
     d_x = 0
     d_y = 0
     d_z = 0
-    md_x = 0
-    md_y = 0
-    md_z = 0
+    dm_x = 0
+    dm_y = 0
+    dm_z = 0
 
     t_x = None  # t for translations
     t_y = None
