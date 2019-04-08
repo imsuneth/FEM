@@ -1,4 +1,3 @@
-
 # from numpy.linalg import inv
 # x=[[1,2],[2,2]]
 # x=np.array(x)
@@ -19,19 +18,9 @@
 # if not isinstance(numeric_level, int):
 #     raise ValueError('Invalid log level: %s' % loglevel)
 # logging.basicConfig(level=numeric_level, ...)
-print("before import")
-import math
 
-print("before functionA")
-def functionA():
-    print("Function A")
+import logging
 
-print("before functionB")
-def functionB():
-    print("Function B {}".format(math.sqrt(100)))
-
-print("before __name__ guard")
-if __name__ == '__main__':
-    functionA()
-    functionB()
-print("after __name__ guard")
+x=True
+y=3
+print("tt=%s,ytt=%d"%(x,y))
