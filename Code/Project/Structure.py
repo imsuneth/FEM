@@ -162,7 +162,7 @@ class Structure:
                     if initial==True:EMatrix=ele.calInitialElement_K()
                     else:EMatrix=ele.analyze(self.tolerance)
 
-                    print(EMatrix)
+                    #print(EMatrix)
 
                     y1=DOF*startNode.id
                     y2=y1+DOF
@@ -197,7 +197,7 @@ class Structure:
                     print("sub4 done")
 
                 full_matrix=kGlobal
-
+                print(full_matrix)
                 Initial_Unbalance_force=force
                 Initial_deformation=deformation
 
@@ -250,6 +250,6 @@ class Structure:
 
                     error= min(Calculated_Unbalance_forece[In_force_ID])
                 print("Iteration ",count," done", "error=",error)
-
+        print(deformation)
 
 

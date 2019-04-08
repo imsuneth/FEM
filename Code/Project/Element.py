@@ -76,9 +76,7 @@ class Element:
         return self.K_element_initial # 6x6 matrix refering global co-ordinate system
 
     def analyze(self,tolerance,initial_call=True):  # for the first iteration set the initial call to True
-        # Pubudu, you code goes here.
-        # Get inputs from Imesh as parameters of this function.
-        # Get inputs from Me using section.analyze().
+
         elementDefINCR=np.array([[self.start_node.d_y],[self.start_node.d_x],[self.start_node.md_z],[self.end_node.d_y],[self.end_node.d_x],[self.end_node.md_z]])
 
         if self.n_sections==3:
