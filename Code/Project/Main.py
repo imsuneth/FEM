@@ -2,13 +2,16 @@ from Structure import *
 from JsonRead import *
 from CrossSection import *
 from Section import *
+from Material import *
 
-dictionary_js = readFile('structure00.json')
-
-structure = Structure(dictionary_js)
+structure_js = readFile('structure00.json')
+material_models_js = readFile('material_models.json')
+load_material_models(material_models_js)
+structure = Structure(structure_js)
 structure.analyzeStructure()
 
-#Section level test bench----------------------
+
+# # Section level test bench----------------------
 # section_id = 0
 # section_width = 0.2
 # section_height = 0.4
