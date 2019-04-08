@@ -6,7 +6,7 @@ from Section import *
 from log_ import *
 
 class Element:
-    K_element_initial=None # refereing gloabal co-ordiante system
+
     K_element=None
     elementResistingForce=None
     elementUnbalanceForce=None
@@ -39,7 +39,7 @@ class Element:
         L=self.length
         return np.array([[0, 1 / L, 1, 0, -1 / L, 0], [0, 1 / L, 0, 0, -1 / L, 1], [-1, 0, 0, 1, 0, 0]], dtype=float)
 
-    def calInitialElement_K(self):
+    def calInitialElement_K(self,Condition): #Condition="LOCAL" for refering local co-ordinate system & Condition="GLOBAL" for refering global co-ordinate system
         self.initial_call=False
         logging.info("Call element %d inital stiffness matrix"%self.id)
         if self.n_sections==3:
@@ -72,16 +72,22 @@ class Element:
 
 
         k_element_initial=inv(initialElementFlexibMat)
-        #print(self.K_element_initial)
-        # print(inv(self.rigidBodyTransMatrix()))
-        # #print(self.rotMatrix())
-        self.K_element_initial=np.transpose(self.rotMatrix())@np.transpose(self.rigidBodyTransMatrix())@k_element_initial@self.rigidBodyTransMatrix()@self.rotMatrix()
-        #print(self.K_element_initial)
-        logging.info("return Element %d inital stiffness matrix"%self.id)
-        logging.debug("Element %d inital stiffness matrix is: "%self.id)
-        logging.debug(self.K_element_initial)
+        #self.K_element_initial=np.transpose(self.rotMatrix())@np.transpose(self.rigidBodyTransMatrix())@k_element_initial@self.rigidBodyTransMatrix()@self.rotMatrix()
 
-        return self.K_element_initial # 6x6 matrix refering global co-ordinate system
+
+
+        if Condition=="GLOBAL":
+            returnMatrix=np.transpose(self.rotMatrix())@np.transpose(self.rigidBodyTransMatrix())@k_element_initial@self.rigidBodyTransMatrix()@self.rotMatrix()# 6x6 matrix refering global co-ordinate system
+            logging.info("return Element %d inital stiffness matrix GLOBAL" % self.id)
+            logging.debug("Element %d inital stiffness matrix GLOBAL is: " % self.id)
+            logging.debug(returnMatrix)
+            return returnMatrix
+
+        elif Condition=="LOCAL":
+            logging.info("return Element %d inital stiffness matrix LOCAL" % self.id)
+            logging.debug("Element %d inital stiffness matrix LOCAL is: " % self.id)
+            logging.debug(k_element_initial)
+            return k_element_initial
 
 
     def analyze(self,tolerance):  # for the first iteration set the initial call to True
@@ -109,29 +115,36 @@ class Element:
 
 
 
-        rotate=np.matmul(self.rotMatrix(self.angle),elementDefINCR )
-        basicSystem= np.matmul(self.rigidBodyTransMatrix(self.length),rotate)
+        rotate=np.matmul(self.rotMatrix(self.angle),elementDefINCR ) # convert defINCR to local co-ordinate systme
+        basicSystem= np.matmul(self.rigidBodyTransMatrix(self.length),rotate) # remove rigid body modes (basicSystem 3x1 matrix)
 
 
         #########################################################################
-        if self.initial_call==True:
-            self.calInitialElement_K()  # calculate initialElement Stiffness matrix and update K_element_initial
-            self.K_element=self.K_element_initial
+        if self.initial_call==True: # initial structure stiffness
+
+            self.K_element=self.calInitialElement_K("LOCAL") # calculate initialElement Stiffness matrix and update K_element_initial
             elementForceINCR= np.matmul(self.K_element,basicSystem)
-            logging.info("Element %d initial stiffness matrix calculated"%self.id)
+
+            logging.info("Element  %d initial stiffness matrix calculated"%self.id)
             logging.debug("Element %d inital stiffness matrix is"%self.id)
-            logging.debug(self.K_element_initial)
+            logging.debug(self.K_element)
+            logging.info("Element %d inital element force increment is" % self.id)
+            logging.debug(elementForceINCR)
         else:
             elementForceINCR=self.elementUnbalanceForce-np.matmul(self.K_element,elementDefINCR)
+            logging.info("Element %d intermediate element force increment is" % self.id)
+            logging.debug("Element %d intermediate element force increment is" % self.id)
+            logging.debug(elementForceINCR)
         #########################################################################
 
+            #elementForceINCR ---> 3x1 matrix
 
 
         for section_ in range(self.n_sections): # newton raphson iteration
             logging.info("Element %d sectional iteration running"%self.id)
 
             NP=[[0,0,1],[(x[section_]+1)/2 -1,(x[section_]+1)/2 +1,0]]
-            sectionForceINCR= np.matmul(NP,elementForceINCR)
+            sectionForceINCR= np.matmul(NP,elementForceINCR) #sectionForceINCR ---> 2X1 matrix
 
             Section_K=self.sections[section_].analyze([0,0])
 

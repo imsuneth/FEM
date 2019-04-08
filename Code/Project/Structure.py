@@ -179,7 +179,7 @@ class Structure:
                     ele=self.elements[e]
                     startNode=ele.start_node
                     endNode=ele.end_node
-                    if initial==True:EMatrix=ele.calInitialElement_K()
+                    if initial==True:EMatrix=ele.calInitialElement_K("GLOBAL")
                     else:EMatrix=ele.analyze(self.tolerance)
 
                     #print(EMatrix)

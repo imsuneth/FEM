@@ -18,9 +18,12 @@
 # if not isinstance(numeric_level, int):
 #     raise ValueError('Invalid log level: %s' % loglevel)
 # logging.basicConfig(level=numeric_level, ...)
-
+import numpy as np
 import logging
+kLocal = np.ndarray((3, 12,12), dtype=np.float32)
+#print(kLocal)
+nodes = np.ndarray((4, 3), dtype=np.float32)
+#print(nodes)
 
-x=True
-y=3
-print("tt=%s,ytt=%d"%(x,y))
+kGlobal = np.ndarray((4 * 6, 4 * 6))
+print(kGlobal)
