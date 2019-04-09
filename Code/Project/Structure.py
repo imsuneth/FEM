@@ -5,6 +5,7 @@ from CrossSection import *
 from CalculationData import *
 from numpy.linalg import inv
 from log_ import *
+import plotTheStruct
 
 class Structure:
     n_sections = 6
@@ -298,6 +299,7 @@ class Structure:
         print(deformation)
         print("Final Force matrix")
         print(Calculated_Unbalance_forece)
+        plotTheStruct.plotTheStruct(self.elements,self.nodes)
 
 
 
