@@ -13,6 +13,13 @@ class Node:
     dm_y = 0
     dm_z = 0
 
+    td_x = 0
+    td_y = 0
+    td_z = 0
+    tdm_x = 0
+    tdm_y = 0
+    tdm_z = 0
+    
     t_x = None  # t for translations
     t_y = None
     t_z = None

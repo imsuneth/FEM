@@ -283,6 +283,14 @@ class Structure:
                         node.f_y = Resisten_force[n * 3 + 1]
                         node.m_z = Resisten_force[n * 3 + 2]
 
+                       
+                    node.td_x += node.d_x
+                    node.td_y += node.d_y
+                    node.tdm_z += node.dm_z
+
+                    initial = False
+
+
                     error= min(Calculated_Unbalance_forece[In_force_ID])
                 print("Iteration ",count," done", "error=",error)
         logging.info("Structural Analysis-->Done")
