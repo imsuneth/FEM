@@ -37,4 +37,8 @@ class Section:
             sectional_stiffness[0][1] += -1 * sectional_stiffness_01
             sectional_stiffness[1][1] = sectional_stiffness_11
         sectional_stiffness[1][0] = sectional_stiffness[0][1]
+        print("Resistance force")
+        print(resistance_force)
+        print("sectional_stiffness")
+        print(sectional_stiffness)
         return [resistance_force, sectional_stiffness]
