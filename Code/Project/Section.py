@@ -42,6 +42,3 @@ class Section:
         print("sectional_stiffness")
         print(sectional_stiffness)
         return [resistance_force, sectional_stiffness]
-
-
-

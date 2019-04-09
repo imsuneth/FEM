@@ -283,6 +283,3 @@ class Structure:
         print(deformation)
         print("Final Force matrix")
         print(Calculated_Unbalance_forece)
-
-
-
