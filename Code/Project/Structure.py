@@ -77,6 +77,7 @@ class Structure:
             #####################################################
             # When updating to 3D take local_x_dir, local_y_dir, local_z_dir form jason
             #####################################################
+            #ratio=
 
 
 
@@ -290,6 +291,3 @@ class Structure:
         print(deformation)
         print("Final Force matrix")
         print(Calculated_Unbalance_forece)
-
-
-
