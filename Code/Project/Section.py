@@ -1,4 +1,4 @@
-from Material import *
+import Material
 import numpy as np
 from Fiber import Fiber
 
@@ -25,11 +25,11 @@ class Section:
         for fiber_id in range(self.cross_section.no_of_fibers):
             fiber = self.fibers[fiber_id]
             eps = eps_0 - fiber.y * k
-            sigma = get_strain_from_stress(fiber.material_id, eps)
+            sigma = Material.material_models[fiber.material_id].get_strain(eps)
             A_i = sigma * fiber.area
             resistance_force[0] += A_i
             resistance_force[1] += -1 * A_i * fiber.y
-            E_t = get_e(fiber.material_id, eps)
+            E_t = Material.material_models[fiber.material_id].get_e(eps)
             sectional_stiffness_00 = E_t * fiber.area
             sectional_stiffness_01 = sectional_stiffness_00 * fiber.y
             sectional_stiffness_11 = sectional_stiffness_01 * fiber.y

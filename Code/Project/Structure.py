@@ -90,7 +90,7 @@ class Structure:
             xDiff =abs(self.nodes[start_node_id].p_x - self.nodes[end_node_id].p_x)
             length=math.sqrt(math.pow(yDiff,2)+math.pow(xDiff,2))
 
-            logging.debug("Element:%d\tLength:%d\tAngle:%d\tno of Sections:%d\tCross section type:%d\tStard node:%d\tEnd node:%d" %(id,length,angle,self.n_sections,cross_section,start_node_id,end_node_id))
+            #logging.debug("Element:%d\tLength:%d\tAngle:%d\tno of Sections:%d\tCross section type:%d\tStard node:%d\tEnd node:%d" %(id,length,angle,self.n_sections,cross_section,start_node_id,end_node_id))
 
             new_element = Element(id, start_node, end_node, cross_section, self.n_sections,angle,length)
             self.elements.put(id, new_element)
@@ -144,6 +144,7 @@ class Structure:
     def analyzeStructure(self):
         # initiate analyze and save results to structureXX-out.jsoniti
         logging.info("Started Structural Analysis")
+
         initial=True
         Calculated_Unbalance_forece=[]
         deformation=[]
@@ -217,6 +218,7 @@ class Structure:
                     print("sub4 done")
 
                 full_matrix=kGlobal
+                print("KGlobal" )
                 print(full_matrix)
                 Initial_Unbalance_force=force
                 Initial_deformation=deformation
@@ -271,7 +273,10 @@ class Structure:
                     error= min(Calculated_Unbalance_forece[In_force_ID])
                 print("Iteration ",count," done", "error=",error)
         logging.info("Structural Analysis-->Done")
+        print("Fianl deformation Matrix")
         print(deformation)
+        print("Final Force matrix")
+        print(Calculated_Unbalance_forece)
 
 
 
