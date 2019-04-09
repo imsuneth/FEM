@@ -181,7 +181,6 @@ class Element:
                 Section_K = cross_section_result[1]
 
                 unbalanceForce = sectionForceINCR - sectionResistingForce
-
                 sectionForceINCR = unbalanceForce
 
                 logging.debug("Element %d section %d section stiffness:" % (self.id, section_))
