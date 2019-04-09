@@ -77,20 +77,27 @@ class Structure:
             #####################################################
             # When updating to 3D take local_x_dir, local_y_dir, local_z_dir form jason
             #####################################################
-            ratio=
 
 
 
-            angleRatio=element["local_x_dir"]["y"]/element["local_x_dir"]["x"]
+            x_cord=element["local_x_dir"]["x"]
+            y_cord=element["local_x_dir"]["y"]
+            angleRatio=y_cord/x_cord
             angle=None
             if angleRatio>0:
-                angle=math.atan(angleRatio)
+                #angle=math.atan(angleRatio)
+                if(x_cord>0 and y_cord>0):
+                    angle=math.atan(angleRatio)
+                else:
+                    angle=math.pi+math.atan(angleRatio)
             else:
-                angleRatio=-1*angleRatio
-                angle=math.pi-math.atan(angleRatio)
+                if(x_cord<0):
+                    angle=math.pi+math.atan(angleRatio)
+                else:
+                    angle=2*math.pi+math.atan(angleRatio)
 
             print("angle",id)
-            print(angle)
+            print("angle in degrees=",(180/math.pi)*angle)
 
             yDiff=abs(self.nodes[start_node_id].p_y-self.nodes[end_node_id].p_y)
             xDiff =abs(self.nodes[start_node_id].p_x - self.nodes[end_node_id].p_x)
