@@ -47,13 +47,13 @@ class Structure:
             if shape == "rectangle":
                 width = dimensions["y"]
                 height = dimensions["z"]
-                new_cross_section = SquareCrossSection(self, width, height, no_of_fibers, fiber_material_ids)
+                new_cross_section = SquareCrossSection(id,width, height, no_of_fibers, fiber_material_ids)
 
                 logging.debug("Cross Section id:%d\tType:%s\tno of Fibers:%d\twidth=%d\theight:%d"%(id,shape,no_of_fibers,width,height))
 
             elif shape == "circle":
                 radius = dimensions["radius"]
-                new_cross_section = CircularCrossSection(self, radius, no_of_fibers, fiber_material_ids)
+                new_cross_section = CircularCrossSection(id, radius, no_of_fibers, fiber_material_ids)
 
                 logging.debug("Cross Section id:%d\tType:%s\tno of Fibers:%d\tRadius:%d" % (id, shape, no_of_fibers, radius))
 
@@ -77,6 +77,9 @@ class Structure:
             #####################################################
             # When updating to 3D take local_x_dir, local_y_dir, local_z_dir form jason
             #####################################################
+            ratio=
+
+
 
             angleRatio=element["local_x_dir"]["y"]/element["local_x_dir"]["x"]
             angle=None
@@ -86,11 +89,14 @@ class Structure:
                 angleRatio=-1*angleRatio
                 angle=math.pi-math.atan(angleRatio)
 
+            print("angle",id)
+            print(angle)
+
             yDiff=abs(self.nodes[start_node_id].p_y-self.nodes[end_node_id].p_y)
             xDiff =abs(self.nodes[start_node_id].p_x - self.nodes[end_node_id].p_x)
             length=math.sqrt(math.pow(yDiff,2)+math.pow(xDiff,2))
 
-            logging.debug("Element:%d\tLength:%d\tAngle:%d\tno of Sections:%d\tCross section type:%d\tStard node:%d\tEnd node:%d" %(id,length,angle,self.n_sections,cross_section,start_node_id,end_node_id))
+            #logging.debug("Element:%d\tLength:%d\tAngle:%d\tno of Sections:%d\tCross section type:%d\tStard node:%d\tEnd node:%d" %(id,length,angle,self.n_sections,cross_section,start_node_id,end_node_id))
 
             new_element = Element(id, start_node, end_node, cross_section, self.n_sections,angle,length)
             self.elements.put(id, new_element)
@@ -144,6 +150,7 @@ class Structure:
     def analyzeStructure(self):
         # initiate analyze and save results to structureXX-out.jsoniti
         logging.info("Started Structural Analysis")
+
         initial=True
         Calculated_Unbalance_forece=[]
         deformation=[]
@@ -217,6 +224,7 @@ class Structure:
                     print("sub4 done")
 
                 full_matrix=kGlobal
+                print("KGlobal" )
                 print(full_matrix)
                 Initial_Unbalance_force=force
                 Initial_deformation=deformation
@@ -275,7 +283,10 @@ class Structure:
                     error= min(Calculated_Unbalance_forece[In_force_ID])
                 print("Iteration ",count," done", "error=",error)
         logging.info("Structural Analysis-->Done")
+        print("Fianl deformation Matrix")
         print(deformation)
+        print("Final Force matrix")
+        print(Calculated_Unbalance_forece)
 
 
 
