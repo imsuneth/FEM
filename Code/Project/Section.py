@@ -19,7 +19,7 @@ class Section:
         eps_0 = section_deformation[0]  # centroid strain
         k = section_deformation[1]
 
-        resistance_force = np.empty(2, dtype=np.float_)
+        resistance_force = np.empty((2,1), dtype=np.float_)
         sectional_stiffness = np.empty(shape=(2, 2), dtype=np.float_)
 
         for fiber_id in range(self.cross_section.no_of_fibers):
@@ -37,10 +37,12 @@ class Section:
             sectional_stiffness[0][1] += -1 * sectional_stiffness_01
             sectional_stiffness[1][1] = sectional_stiffness_11
         sectional_stiffness[1][0] = sectional_stiffness[0][1]
-        print("Resistance force")
-        print(resistance_force)
-        print("sectional_stiffness")
-        print(sectional_stiffness)
+        #print("Resistance force")
+        # print(resistance_force)
+        # print("sectional_stiffness")
+        # print(sectional_stiffness)
+
+
         return [resistance_force, sectional_stiffness]
 
 

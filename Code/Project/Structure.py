@@ -8,7 +8,7 @@ from log_ import *
 
 class Structure:
     n_sections = 6
-    tolerence=0.000000000001
+    tolerence=0.00001
     max_Iterations=10
     def __init__(self, js):
         # Load the jason file and construct the virtual structure
@@ -194,7 +194,7 @@ class Structure:
                     startNode=ele.start_node
                     endNode=ele.end_node
                     if initial==True:EMatrix=ele.calInitialElement_K("GLOBAL")
-                    else:EMatrix=ele.analyze(self.tolerance)
+                    else:EMatrix=ele.analyze(self.tolerence)
 
                     #print(EMatrix)
 
@@ -282,7 +282,7 @@ class Structure:
                         node.f_x = Resisten_force[n * 3]
                         node.f_y = Resisten_force[n * 3 + 1]
                         node.m_z = Resisten_force[n * 3 + 2]
-
+                    initial=False
                     error= min(Calculated_Unbalance_forece[In_force_ID])
                 print("Iteration ",count," done", "error=",error)
         logging.info("Structural Analysis-->Done")
