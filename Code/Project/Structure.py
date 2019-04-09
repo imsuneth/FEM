@@ -47,13 +47,13 @@ class Structure:
             if shape == "rectangle":
                 width = dimensions["y"]
                 height = dimensions["z"]
-                new_cross_section = SquareCrossSection(self, width, height, no_of_fibers, fiber_material_ids)
+                new_cross_section = SquareCrossSection(id,width, height, no_of_fibers, fiber_material_ids)
 
                 logging.debug("Cross Section id:%d\tType:%s\tno of Fibers:%d\twidth=%d\theight:%d"%(id,shape,no_of_fibers,width,height))
 
             elif shape == "circle":
                 radius = dimensions["radius"]
-                new_cross_section = CircularCrossSection(self, radius, no_of_fibers, fiber_material_ids)
+                new_cross_section = CircularCrossSection(id, radius, no_of_fibers, fiber_material_ids)
 
                 logging.debug("Cross Section id:%d\tType:%s\tno of Fibers:%d\tRadius:%d" % (id, shape, no_of_fibers, radius))
 
@@ -77,6 +77,9 @@ class Structure:
             #####################################################
             # When updating to 3D take local_x_dir, local_y_dir, local_z_dir form jason
             #####################################################
+            ratio=
+
+
 
             angleRatio=element["local_x_dir"]["y"]/element["local_x_dir"]["x"]
             angle=None
@@ -85,6 +88,9 @@ class Structure:
             else:
                 angleRatio=-1*angleRatio
                 angle=math.pi-math.atan(angleRatio)
+
+            print("angle",id)
+            print(angle)
 
             yDiff=abs(self.nodes[start_node_id].p_y-self.nodes[end_node_id].p_y)
             xDiff =abs(self.nodes[start_node_id].p_x - self.nodes[end_node_id].p_x)

@@ -59,7 +59,8 @@ class Element:
 
         for section_ in range(self.n_sections):
             Section_K = self.sections[section_].analyze([0, 0])
-            #print(Section_K[1])
+            print("*********************************")
+            print(Section_K[1])
             NP = [[0, 0, 1], [(x[section_] + 1) / 2 - 1, (x[section_] + 1) / 2 + 1, 0]]
             NP=np.array(NP,dtype=float)
             #print(NP)
