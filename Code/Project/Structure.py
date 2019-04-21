@@ -14,9 +14,9 @@ class Structure:
     def __init__(self, js):
         # Load the jason file and construct the virtual structure
         # Create Node objects and put them in nparray "nodes"
-        logging.info("################################\n")
-        logging.info("Creating the Virtual Structure\n")
-        logging.info("################################\n")
+        logger.info("################################\n")
+        logger.info("Creating the Virtual Structure\n")
+        logger.info("################################\n")
         #self.n_totalFreeDof = 0 #added by pubudu to extractDOF from deformation increment vector
         self.fix_Point_array=[]
 
@@ -28,12 +28,12 @@ class Structure:
             p_x = node["x"]
             p_y = node["y"]
             p_z = node["z"]
-            logging.debug("Node id= %d, Coordinates [%d %d %d]"%(id,p_x,p_y,p_z))
+            logger.debug("Node id= %d, Coordinates [%d %d %d]"%(id,p_x,p_y,p_z))
             new_node = Node(id, p_x, p_y, p_z)
             self.nodes.put(id, new_node)
 
-        logging.info("Node reading --> Done")
-
+        #logger.info("Node reading --> Done")
+        logger.info("Node reading --> Done")
         # Create CrossSection objects and put them in nparray "cross_sections"
         self.no_of_crosssection_types = js["no_of_crosssection_types"]
         self.cross_sections = np.empty(self.no_of_crosssection_types, dtype=CrossSection)
@@ -50,17 +50,17 @@ class Structure:
                 height = dimensions["z"]
                 new_cross_section = SquareCrossSection(id,width, height, no_of_fibers, fiber_material_ids)
 
-                logging.debug("Cross Section id:%d\tType:%s\tno of Fibers:%d\twidth=%d\theight:%d"%(id,shape,no_of_fibers,width,height))
+                logger.debug("Cross Section id:%d\tType:%s\tno of Fibers:%d\twidth=%d\theight:%d"%(id,shape,no_of_fibers,width,height))
 
             elif shape == "circle":
                 radius = dimensions["radius"]
                 new_cross_section = CircularCrossSection(id, radius, no_of_fibers, fiber_material_ids)
 
-                logging.debug("Cross Section id:%d\tType:%s\tno of Fibers:%d\tRadius:%d" % (id, shape, no_of_fibers, radius))
+                logger.debug("Cross Section id:%d\tType:%s\tno of Fibers:%d\tRadius:%d" % (id, shape, no_of_fibers, radius))
 
             self.cross_sections.put(id, new_cross_section)
 
-        logging.info("Cross section reading--> Done")
+        logger.info("Cross section reading--> Done")
 
         # Create Element objects and put them in nparray "elements"
         self.n_elements = js["no_of_elements"]
@@ -104,11 +104,11 @@ class Structure:
             xDiff =abs(self.nodes[start_node_id].p_x - self.nodes[end_node_id].p_x)
             length=math.sqrt(math.pow(yDiff,2)+math.pow(xDiff,2))
 
-            #logging.debug("Element:%d\tLength:%d\tAngle:%d\tno of Sections:%d\tCross section type:%d\tStard node:%d\tEnd node:%d" %(id,length,angle,self.n_sections,cross_section,start_node_id,end_node_id))
+            #logge# .debug("Element:%d\tLength:%d\tAngle:%d\tno of Sections:%d\tCross section type:%d\tStard node:%d\tEnd node:%d" %(id,length,angle,self.n_sections,cross_section,start_node_id,end_node_id))
 
             new_element = Element(id, start_node, end_node, cross_section, self.n_sections,angle,length)
             self.elements.put(id, new_element)
-        logging.info("Elements Creation --> Done")
+        logger.info("Elements Creation --> Done")
         # Take loads applied and assign them to Nodes
         self.no_of_loads = js["no_of_loads"]
         js_loads = js["loads"]
@@ -126,8 +126,8 @@ class Structure:
 
             node = self.nodes[node_id]
             [node.f_x, node.f_y, node.f_z, node.m_x, node.m_y, node.m_z] = [f_x, f_y, f_z, m_x, m_y, m_z]
-            logging.debug("Load applied node:%d\tForce:[%d %d %d]\tTorque:[%d %d %d]"%(node_id,f_x,f_y,f_z,m_x,m_y,m_z))
-        logging.info("Loads Assigning--> Done")
+            logger.debug("Load applied node:%d\tForce:[%d %d %d]\tTorque:[%d %d %d]"%(node_id,f_x,f_y,f_z,m_x,m_y,m_z))
+        logger.info("Loads Assigning--> Done")
         # Take fixed points and assign nodes as fixed
         self.no_of_fixed_points = js["no_of_fixed_points"]
         js_fixed_points = js["fixed_points"]
@@ -149,15 +149,15 @@ class Structure:
             node = self.nodes[node_id]
             [node.t_x, node.t_y, node.t_z, node.r_x, node.r_y, node.r_z] = [t_x, t_y, t_z, r_x, r_y, r_z]
 
-            logging.debug("Node %d is Fixed. Translations [t_x=%s,t_y=%s,t_z=%s],Rotations [r_x=%s,r_y=%s,r_z=%s]"%(node_id,t_x,t_y,t_z,r_x,r_y,r_z))
+            logger.debug("Node %d is Fixed. Translations [t_x=%s,t_y=%s,t_z=%s],Rotations [r_x=%s,r_y=%s,r_z=%s]"%(node_id,t_x,t_y,t_z,r_x,r_y,r_z))
             #self.n_totalFreeDof+=t_x+t_y+r_x+r_y
-        logging.info("Fixed points Creation--> Done")
+        logger.info("Fixed points Creation--> Done")
 
         return None
 
     def analyzeStructure(self):
         # initiate analyze and save results to structureXX-out.jsoniti
-        logging.info("Started Structural Analysis")
+        logger.info("Started Structural Analysis")
 
         initial=True
         Calculated_Unbalance_forece=[]
@@ -195,7 +195,7 @@ class Structure:
                     startNode=ele.start_node
                     endNode=ele.end_node
                     if initial==True:EMatrix=ele.calInitialElement_K("GLOBAL")
-                    else:EMatrix=ele.analyze(self.tolerence)
+                    else:EMatrix=ele.analyze(10**(-10))
 
                     #print(EMatrix)
 
@@ -296,12 +296,12 @@ class Structure:
 
                     error= min(Calculated_Unbalance_forece[In_force_ID])
                 print("Iteration ",count," done", "error=",error)
-        logging.info("Structural Analysis-->Done")
+        logger.info("Structural Analysis-->Done")
         print("Fianl deformation Matrix")
         print(deformation)
         print("Final Force matrix")
         print(Calculated_Unbalance_forece)
-        plotTheStruct.plotTheStruct(self.elements,self.nodes)
+        #plotTheStruct.plotTheStruct(self.elements,self.nodes)
 
 
 
