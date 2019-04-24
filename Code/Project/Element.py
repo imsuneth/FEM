@@ -146,28 +146,30 @@ class Element:
             sectionForceINCR = np.matmul(NP, elementForceINCR)  # sectionForceINCR ---> 2X1 matrix
 
             [Section_R, Section_K] = self.sections[section_].analyze([0, 0])
-            unbalanceForce = 0.01 + np.zeros((2, 1))
+
+            unbalanceForce = self.sections[section_].S_h - Section_R
 
             while (self.conditionCheck(unbalanceForce, tolerance)):
-                logger.info("Element %d section level convergence running Section_ID %d" % (self.id,section_))
-                logger.info("sectionForceINCR")
-                logger.info(sectionForceINCR)
-                logger.info("Section_K")
-                logger.info(Section_K)
+                # logger.info("Element %d section level convergence running Section_ID %d" % (self.id,section_))
+                # logger.info("sectionForceINCR")
+                # logger.info(sectionForceINCR)
+                # logger.info("Section_K")
+                # logger.info(Section_K)
 
-                sectionDefINCR_ = np.matmul(inv(Section_K), sectionForceINCR)
-                logger.info("sectionDefINCR_")
-                logger.info(sectionDefINCR_)
+                sectionDefINCR_ = inv(Section_K)@sectionForceINCR
+                self.sections[section_].e_h += sectionDefINCR_
+                #logger.info("sectionDefINCR_")
+                #logger.info(sectionDefINCR_)
                 cross_section_result = self.sections[section_].analyze(sectionDefINCR_)
                 sectionResistingForce = cross_section_result[0]
 
                 Section_K = cross_section_result[1]
-                logger.info("###cheking######")
-                logger.info(inv(Section_K)@sectionResistingForce)
+                # logger.info("###cheking######")
+                # logger.info(inv(Section_K)@sectionResistingForce)
 
-                unbalanceForce = sectionForceINCR - sectionResistingForce
+                unbalanceForce = self.sections[section_].S_h - sectionResistingForce
 
-                sectionForceINCR = unbalanceForce
+                #//sectionForceINCR = unbalanceForce
 
                 logger.debug("Element %d section %d section stiffness:" % (self.id, section_))
                 logger.debug(Section_K)
@@ -212,7 +214,7 @@ class Element:
 
     def conditionCheck(self, mat, value):
         max_abs_val=abs(max(mat.min(),mat.max(),key=abs))
-        #logger.info("Checking convergence. max_abs_val = %f"%max_abs_val)
+        logger.info("Checking convergence. max_abs_val = %f"%max_abs_val)
         if max_abs_val > value:
             return True
         else:
