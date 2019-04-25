@@ -1,10 +1,15 @@
 import numpy as np
-from numpy.linalg import inv
-x=np.array([[1,21,3],[41,5,6],[3,4,2]])
-y=np.array([[1,2,3],[4,5,6],[3,2,11]])
-z=x@y
-print(z)
-t=np.matmul(inv(x),z)
-print(t)
-p=np.zeros((2,1))
-print(p)
+import math
+
+class test:
+    pp=None
+    def __init__(self,var1,var2):
+        self.a=var1
+        self.b=var2
+obj1=test(2,2)
+
+print(obj1.a)
+print(obj1.pp)
+obj1.pp="adsfa"
+
+print(obj1.pp)

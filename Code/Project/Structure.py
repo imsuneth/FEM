@@ -99,6 +99,7 @@ class Structure:
 
             print("angle",id)
             print("angle in degrees=",(180/math.pi)*angle)
+            print("angle in degrees=",angle)
 
             yDiff=abs(self.nodes[start_node_id].p_y-self.nodes[end_node_id].p_y)
             xDiff =abs(self.nodes[start_node_id].p_x - self.nodes[end_node_id].p_x)
