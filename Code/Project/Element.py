@@ -138,7 +138,7 @@ class Element:
             section_in_converge=False
 
             logger.info("Element %d section %d section force before converge"%(self.id,section_))
-            logger.info(self.sections[section_].s_h)
+            logger.info(sectionForceINCR)
             for itr in range(1,1000):
 
                 sectionDefINCR_=Section_K_Initial@sectionForceINCR
@@ -149,6 +149,8 @@ class Element:
                 sectionResistingForce = cross_section_result[0]
                 Section_K = cross_section_result[1]
                 unbalanceForce=self.sections[section_].s_h-sectionResistingForce
+                logger.info("Section_K")
+                logger.info(Section_K)
 
                 if self.conditionCheck(unbalanceForce,tolerance)==False:
                     logger.info("Element %d section %d convergence done" %(self.id,section_))

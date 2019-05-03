@@ -81,26 +81,27 @@ class Structure:
 
 
 
-            x_cord=element["local_x_dir"]["x"]
-            y_cord=element["local_x_dir"]["y"]
-            angleRatio=y_cord/x_cord
-            angle=None
-            if angleRatio>0:
-                #angle=math.atan(angleRatio)
-                if(x_cord>0 and y_cord>0):
-                    angle=math.atan(angleRatio)
-                else:
-                    angle=math.pi+math.atan(angleRatio)
-            else:
-                if(x_cord<0):
-                    angle=math.pi+math.atan(angleRatio)
-                else:
-                    angle=2*math.pi+math.atan(angleRatio)
-
-            print("angle",id)
-            print("angle in degrees=",(180/math.pi)*angle)
-            print("angle in degrees=",angle)
-
+            # x_cord=element["local_x_dir"]["x"]
+            # y_cord=element["local_x_dir"]["y"]
+            #
+            # angleRatio=y_cord/x_cord
+            # angle=None
+            # if angleRatio>0:
+            #     #angle=math.atan(angleRatio)
+            #     if(x_cord>0 and y_cord>0):
+            #         angle=math.atan(angleRatio)
+            #     else:
+            #         angle=math.pi+math.atan(angleRatio)
+            # else:
+            #     if(x_cord<0):
+            #         angle=math.pi+math.atan(angleRatio)
+            #     else:
+            #         angle=2*math.pi+math.atan(angleRatio)
+            #
+            # print("angle",id)
+            # print("angle in degrees=",(180/math.pi)*angle)
+            # print("angle in degrees=",angle)
+            angle = element["angle"]
             yDiff=abs(self.nodes[start_node_id].p_y-self.nodes[end_node_id].p_y)
             xDiff =abs(self.nodes[start_node_id].p_x - self.nodes[end_node_id].p_x)
             length=math.sqrt(math.pow(yDiff,2)+math.pow(xDiff,2))
