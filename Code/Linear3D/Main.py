@@ -1,14 +1,12 @@
 from Structure import *
 from JsonRead import *
 from CrossSection import *
-from Section import *
-from Material import *
+
+#from Material import *
 
 structure_js = readFile('testStructure.json')
-material_models_js = readFile('material_models.json')
-load_material_models(material_models_js)
 structure = Structure(structure_js)
-structure.analyzeStructure()
+#structure.analyzeStructure()
 
 
 # # Section level test bench----------------------
