@@ -15,6 +15,8 @@ class SquareCrossSection(CrossSection):
         self.height = height
         self.no_of_fibers = no_of_fibers
         self.fiber_material_ids = fiber_material_ids
+        fiber_height = height/no_of_fibers
+        self.fiber_areas = np.array([fiber_height]*no_of_fibers)
 
 
 class CircularCrossSection(CrossSection):
@@ -24,3 +26,4 @@ class CircularCrossSection(CrossSection):
         self.radius = radius
         self.no_of_fibers = no_of_fibers
         self.fiber_material_ids = fiber_material_ids
+        self.fiber_areas = np.empty(no_of_fibers, dtype=np.float_)
