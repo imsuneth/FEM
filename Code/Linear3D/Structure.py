@@ -6,9 +6,7 @@ from numpy.linalg import inv
 from log_ import *
 
 
-
 class Structure:
-
 
     def __init__(self, js):
         # Load the jason file and construct the virtual structure
@@ -48,8 +46,6 @@ class Structure:
                 height = dimensions["z"]
                 new_cross_section = SquareCrossSection(id, width, height)
 
-
-
             elif shape == "circle":
                 radius = dimensions["radius"]
                 new_cross_section = CircularCrossSection(id, radius)
@@ -69,18 +65,14 @@ class Structure:
             end_node_id = element["end_node_id"]
             end_node = self.nodes[end_node_id]
             cross_section = self.cross_sections[element["element_type"]]
+            material_id = element["material_id"]
+            local_x_dir = element["local_x_dir"]
+            local_y_dir = element["local_y_dir"]
+            local_z_dir = element["local_z_dir"]
 
+            local_dirs = [local_x_dir, local_y_dir, local_z_dir]
 
-            yDiff = abs(self.nodes[start_node_id].p_y - self.nodes[end_node_id].p_y)
-            xDiff = abs(self.nodes[start_node_id].p_x - self.nodes[end_node_id].p_x)
-            zDiff = abs(self.nodes[start_node_id].p_z - self.nodes[end_node_id].p_z)
-            length = math.sqrt(math.pow(yDiff, 2) + math.pow(xDiff, 2) + math.pow(zDiff,2))
-
-            theta_x_e=None
-            theta_y_e=None
-            theta_z_e=None
-
-            new_element = Element(id, start_node, end_node, cross_section, theta_x_e,theta_y_e,theta_z_e, length)
+            new_element = Element(id, start_node, end_node, cross_section, material_id, local_dirs)
             self.elements.put(id, new_element)
         logger.info("Elements Creation --> Done")
 
@@ -121,7 +113,6 @@ class Structure:
 
             node = self.nodes[node_id]
             [node.t_x, node.t_y, node.t_z, node.r_x, node.r_y, node.r_z] = [t_x, t_y, t_z, r_x, r_y, r_z]
-
 
         logger.info("Fixed points Creation--> Done")
 

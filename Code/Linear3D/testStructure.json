@@ -29,7 +29,7 @@
             "start_node_id":0,
             "end_node_id":1,
             "element_type": 0,
-			"angle":0,
+			"material_id":0,
             "local_x_dir":
                 {"x":1.0,"y":0.0,"z":0.0},
             "local_y_dir":

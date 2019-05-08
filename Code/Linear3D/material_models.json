@@ -1,0 +1,12 @@
+{
+    "no_of_material_models":2,
+
+    "material_models":[
+        {   "id":0,"name":"contrete_0", "youngs_mod":210
+		},
+
+		{   "id":1,"name":"contrete_1", "youngs_mod":350
+		}
+    ]
+
+}
