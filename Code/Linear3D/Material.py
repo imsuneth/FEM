@@ -12,6 +12,9 @@ class MaterialModel:
     def get_e(self):
         return self.youngs_m
 
+    def get_g(self):
+        return self.g
+
     def get_mu(self):
         return self.mu
 
