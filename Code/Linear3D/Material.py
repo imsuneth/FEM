@@ -1,38 +1,23 @@
-from sympy import *
 import numpy as np
-import sys
 
 
 class MaterialModel:
-    def __init__(self, id, no_of_ranges, range_upper_limits, formulas_list):
-        self.no_of_ranges = no_of_ranges
+    def __init__(self, id, name, youngs_mod):
         self.id = id
-        self.ranges = np.array(range_upper_limits)
-        self.formulas = np.empty(no_of_ranges, dtype=Function)
-        self.d_formulas = np.empty(no_of_ranges, dtype=Function)
-        index = 0
-        for formula in formulas_list:
-            sympy_formula = sympify(formula)
-            f_sympy_formula = lambdify(x, sympy_formula)
-            self.formulas.put(index, f_sympy_formula)
-            d_sympy_formula = sympy_formula.diff(Symbol('x'))
-            f_d_sympy_formula = lambdify(x, d_sympy_formula)
-            self.d_formulas.put(index, f_d_sympy_formula)
-            index += 1
+        self.name = name
+        self.youngs_m =youngs_mod
+        self.mu = 0.3
+        self.g = youngs_mod/2/(1+self.mu)
 
-    def get_strain(self, stress):
-        for index in range(self.no_of_ranges):
-            if stress < self.ranges[index]:
-                return self.formulas[index](stress)
+    def get_e(self):
+        return self.youngs_m
 
-    def get_e(self, stress):
-        for index in range(self.no_of_ranges):
-            if stress < self.ranges[index]:
-                #return self.d_formulas[index](stress)
-                return 20*(10**6)
+    def get_g(self):
+        return self.g
 
+    def get_mu(self):
+        return self.mu
 
-x = Symbol('x')
 
 
 def load_material_models(js):
@@ -43,9 +28,6 @@ def load_material_models(js):
     for material_model_js in material_models_js:
         id = material_model_js["id"]
         name = material_model_js["name"]
-        no_of_ranges = material_model_js["no_of_ranges"]
-        range_upper_limits = material_model_js["range_upper_limits"]
-        range_upper_limits.append(sys.float_info.max)
-        formulas = material_model_js["formulas"]
-        material_model = MaterialModel(id, no_of_ranges, range_upper_limits, formulas)
+        youngs_mod = material_models_js["youngs_mod"]
+        material_model = MaterialModel(id, name, youngs_mod)
         material_models.put(id, material_model)

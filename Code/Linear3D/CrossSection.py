@@ -9,6 +9,9 @@ class SquareCrossSection(CrossSection):
         self.width = width
         self.height = height
 
+    def get_area(self):
+        return self.width*self.height
+
     def calculate_inertia(self):
         i_x = self.width * self.height * (self.width ** 2 + self.height ** 2) / 12
         i_y = self.width * self.height ** 3 / 12
@@ -20,4 +23,5 @@ class CircularCrossSection(CrossSection):
 
     def __init__(self, id, radius):
         self.id = id
+
         self.radius = radius

@@ -1,20 +1,29 @@
 import math
-
+import Material
 import numpy as np
 from numpy.linalg import inv
 
 
 class Element:
 
-    def __init__(self, id, start_node, end_node, cross_section, theta_x_e, theta_y_e, theta_z_e, length):
+    def __init__(self, id, start_node, end_node, cross_section, material_id, local_dirs):
         self.id = id
         self.start_node = start_node
         self.end_node = end_node
         self.cross_section = cross_section
-        self.length = length
-        self.theta_x_e = theta_x_e  # radians
-        self.theta_y_e = theta_y_e
-        self.theta_z_e = theta_z_e
+        self.material_id = material_id
+        self.local_dirs = local_dirs
+
+
+        yDiff = abs(start_node.p_y - end_node.p_y)
+        xDiff = abs(start_node.p_x - end_node.p_x)
+        zDiff = abs(start_node.p_z - end_node.p_z)
+
+        self.length = math.sqrt(math.pow(yDiff, 2) + math.pow(xDiff, 2) + math.pow(zDiff, 2))
+
+        self.theta_x_e = 0
+        self.theta_y_e = 0
+        self.theta_z_e = 0
 
     def transform(self):
         l = np.cos(self.theta_x_e)
@@ -26,7 +35,7 @@ class Element:
                          [-m / D, l / D, 0],
                          [-l * n / D, -m * n / D, D]])
 
-    def K_element_local(self, E, A, L, G, J, Iy, Iz):
+    def K_element_local(self):
         # mat_1 = E * A / L * np.array([[1, -1],
         #                               [-1, 1]])
         # mat_2 = G * J / L * np.array([[1, -1],
@@ -48,6 +57,20 @@ class Element:
         #                   [-6 * b2, 4 * b1, 6 * b2, 2 * b1],
         #                   [-12 * b3, 6 * b2, 12 * b3, 6 * b2],
         #                   [-6 * b2, 2 * b1, 6 * b2, 4 * b1]])
+
+        material=Material.material_models[self.material_id]
+
+        E=material.get_e #young's modulus
+        G=material.get_g # shear modulus
+        A=self.cross_section.get_area() # area of the cross section
+        L=self.length # element length
+
+        intertia=self.cross_section.calculate_inertia()
+
+        J=intertia[0]
+        Iy=intertia[1]
+        Iz=intertia[2]
+
         a = E * A / L
         b = G * J / L
 
