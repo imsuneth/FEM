@@ -25,6 +25,9 @@ class Element:
         self.theta_y_e = 0
         self.theta_z_e = 0
 
+    def get_angle(self, v1, v2):
+        
+
     def transform(self):
         l = np.cos(self.theta_x_e)
         m = np.cos(self.theta_y_e)
@@ -60,8 +63,8 @@ class Element:
 
         material=Material.material_models[self.material_id]
 
-        E=material.get_e #young's modulus
-        G=material.get_g # shear modulus
+        E=material.get_e() #young's modulus
+        G=material.get_g() # shear modulus
         A=self.cross_section.get_area() # area of the cross section
         L=self.length # element length
 
