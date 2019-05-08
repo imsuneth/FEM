@@ -117,3 +117,39 @@ class Structure:
         logger.info("Fixed points Creation--> Done")
 
         return None
+
+    def analyzeStructure(self):
+        DOF_PER_NODE=6
+        mat_size=DOF_PER_NODE*(self.n_elements+1)
+        structure_k=np.zeros([mat_size,mat_size])
+
+        for element_id in range(self.n_elements):
+            startNode=self.elements[element_id].start_node
+            endNode=self.elements[element_id].end_node
+            k=self.elements[element_id].K_element_global()
+
+            y1 = DOF_PER_NODE * startNode
+            y2 = y1 + DOF_PER_NODE
+            x1 = DOF_PER_NODE * startNode
+            x2 = x1 + DOF_PER_NODE
+            structure_k[y1:y2, x1:x2] += k[:DOF_PER_NODE, :DOF_PER_NODE]
+
+            y1 = DOF_PER_NODE * startNode
+            y2 = y1 + DOF_PER_NODE
+            x1 = DOF_PER_NODE * endNode
+            x2 = x1 + DOF_PER_NODE
+            structure_k[y1:y2, x1:x2] += k[:DOF_PER_NODE, DOF_PER_NODE:]
+
+            y1 = DOF_PER_NODE * endNode
+            y2 = y1 + DOF_PER_NODE
+            x1 = DOF_PER_NODE * startNode
+            x2 = x1 + DOF_PER_NODE
+            structure_k[y1:y2, x1:x2] += k[DOF_PER_NODE:, :DOF_PER_NODE]
+
+            y1 = DOF_PER_NODE * endNode
+            y2 = y1 + DOF_PER_NODE
+            x1 = DOF_PER_NODE * endNode
+            x2 = x1 + DOF_PER_NODE
+            structure_k[y1:y2, x1:x2] += k[DOF_PER_NODE:, DOF_PER_NODE:]
+
+        return structure_k

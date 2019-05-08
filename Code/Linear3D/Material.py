@@ -19,6 +19,7 @@ class MaterialModel:
         return self.mu
 
 
+
 def load_material_models(js):
     global material_models
     no_of_material_models = js["no_of_material_models"]
