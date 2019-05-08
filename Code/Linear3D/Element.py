@@ -6,17 +6,23 @@ from numpy.linalg import inv
 
 class Element:
 
-    def __init__(self, id, start_node, end_node, cross_section, theta_x_e, theta_y_e, theta_z_e, length):
+    def __init__(self, id, start_node, end_node, cross_section, material_id, local_dirs):
         self.id = id
         self.start_node = start_node
         self.end_node = end_node
         self.cross_section = cross_section
-        self.length = length
-        self.theta_x_e = theta_x_e  # radians
-        self.theta_y_e = theta_y_e
-        self.theta_z_e = theta_z_e
+        self.material_id = material_id
+        self.local_dirs = local_dirs
 
+        yDiff = abs(start_node.p_y - end_node.p_y)
+        xDiff = abs(start_node.p_x - end_node.p_x)
+        zDiff = abs(start_node.p_z - end_node.p_z)
 
+        self.length = math.sqrt(math.pow(yDiff, 2) + math.pow(xDiff, 2) + math.pow(zDiff, 2))
+
+        self.theta_x_e = 0
+        self.theta_y_e = 0
+        self.theta_z_e = 0
 
     def transform(self):
         l = np.cos(self.theta_x_e)

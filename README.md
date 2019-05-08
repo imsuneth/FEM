@@ -1,1 +1,0 @@
-# finite-element-based-structural-non-linear-analysis

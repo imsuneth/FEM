@@ -26,4 +26,3 @@ structure.analyzeStructure()
 #
 # print("Reaction force: ", R)
 # print("Sectional stiffness \n", K)
-
