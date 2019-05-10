@@ -72,7 +72,6 @@ class Structure:
 
             local_dirs = [local_x_dir, local_y_dir, local_z_dir]
 
-
             new_element = Element(id, start_node, end_node, cross_section, material_id, local_dirs)
             self.elements.put(id, new_element)
         logger.info("Elements Creation --> Done")
@@ -123,11 +122,13 @@ class Structure:
         DOF_PER_NODE = 6
         mat_size = DOF_PER_NODE * (self.n_elements + 1)
         structure_k = np.zeros([mat_size, mat_size])
-
+        force_vector = np.zeros(mat_size, dtype=np.float_)
+        node_order = [-1] * (DOF_PER_NODE * self.n_nodes)
         for element_id in range(self.n_elements):
-            startNode = self.elements[element_id].start_node.id
-            endNode = self.elements[element_id].end_node.id
-            k = self.elements[element_id].K_element_global()
+            element = self.elements[element_id]
+            startNode = element.start_node.id
+            endNode = element.end_node.id
+            k = element.K_element_global()
 
             y1 = DOF_PER_NODE * startNode
             y2 = y1 + DOF_PER_NODE
@@ -141,6 +142,10 @@ class Structure:
             x2 = x1 + DOF_PER_NODE
             structure_k[y1:y2, x1:x2] += k[:DOF_PER_NODE, DOF_PER_NODE:]
 
+            start_node = element.start_node
+            force_vector[y1:y2] += start_node.get_dof()
+            node_order[y1]=startNode
+
             y1 = DOF_PER_NODE * endNode
             y2 = y1 + DOF_PER_NODE
             x1 = DOF_PER_NODE * startNode
@@ -152,5 +157,55 @@ class Structure:
             x1 = DOF_PER_NODE * endNode
             x2 = x1 + DOF_PER_NODE
             structure_k[y1:y2, x1:x2] += k[DOF_PER_NODE:, DOF_PER_NODE:]
-        print(structure_k)
+
+            end_node = element.end_node
+            force_vector[y1:y2] += end_node.get_dof()
+            node_order[y1]=endNode
+
+        print("structure_k:", structure_k)
+        print("structure_force:", force_vector)
+
+
+        force_vector_copy = force_vector
+
+        index = 0
+        for force in force_vector:
+            if math.isnan(force):
+                structure_k = np.delete(structure_k, index, 0)
+                structure_k = np.delete(structure_k, index, 1)
+                force_vector = np.delete(force_vector, index, 0)
+            else:
+                index += 1
+
+        print("structure_k:", structure_k)
+        print("structure_force:", force_vector)
+
+        deformation = np.dot(np.linalg.inv(structure_k), force_vector)
+
+        print("deformation:", deformation)
+
+        deformation_vector = np.zeros(mat_size, dtype=np.float_)
+        index_def = 0
+        index_force = 0
+        for index_force in range(mat_size):
+            if not math.isnan(force_vector_copy[index_force]):
+                deformation_vector[index_force] = deformation[index_def]
+                index_def += 1
+            index_force += 1
+
+        print("deformation_vector", deformation_vector)
+
+        node_order = list(filter(lambda a: a != -1, node_order))
+        print("Node order:", node_order)
+
+        for node_id in node_order:
+            from_i = node_id*DOF_PER_NODE
+            node = self.nodes[node_id]
+            node.d_x = deformation_vector[from_i]
+            node.d_y = deformation_vector[from_i+1]
+            node.d_z = deformation_vector[from_i+2]
+            node.dm_x = deformation_vector[from_i+3]
+            node.dm_y = deformation_vector[from_i+4]
+            node.dm_z = deformation_vector[from_i+5]
+
         return structure_k

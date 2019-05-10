@@ -1,17 +1,20 @@
-class Node:
-    f_x = 0
-    f_y = 0
-    f_z = 0
-    m_x = 0
-    m_y = 0
-    m_z = 0
+import numpy as np
 
-    d_x = 0
-    d_y = 0
-    d_z = 0
-    dm_x = 0
-    dm_y = 0
-    dm_z = 0
+
+class Node:
+    f_x = 0.0
+    f_y = 0.0
+    f_z = 0.0
+    m_x = 0.0
+    m_y = 0.0
+    m_z = 0.0
+
+    d_x = 0.0
+    d_y = 0.0
+    d_z = 0.0
+    dm_x = 0.0
+    dm_y = 0.0
+    dm_z = 0.0
 
     td_x = 0
     td_y = 0
@@ -19,7 +22,7 @@ class Node:
     tdm_x = 0
     tdm_y = 0
     tdm_z = 0
-    
+
     t_x = False  # t for translations
     t_y = False
     t_z = False
@@ -34,3 +37,13 @@ class Node:
         self.p_z = p_z
 
         return None
+
+    def get_dof(self):
+        dofs = np.array([self.f_x, self.f_y, self.f_z, self.m_x, self.m_y, self.m_z], dtype=np.float_)
+        restrains = [self.t_x, self.t_y, self.t_z, self.r_x, self.r_y, self.r_z]
+        for i in range(6):
+            if restrains[i] == True:
+                dofs[i] = None
+
+        return dofs
+
