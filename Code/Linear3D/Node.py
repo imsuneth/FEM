@@ -20,12 +20,12 @@ class Node:
     tdm_y = 0
     tdm_z = 0
     
-    t_x = None  # t for translations
-    t_y = None
-    t_z = None
-    r_x = None  # r for rotations
-    r_y = None
-    r_z = None
+    t_x = False  # t for translations
+    t_y = False
+    t_z = False
+    r_x = False  # r for rotations
+    r_y = False
+    r_z = False
 
     def __init__(self, id, p_x, p_y, p_z):
         self.id = id
