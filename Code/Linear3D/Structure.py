@@ -128,8 +128,7 @@ class Structure:
             startNode = self.elements[element_id].start_node.id
             endNode = self.elements[element_id].end_node.id
             k = self.elements[element_id].K_element_global()
-            print(startNode)
-            print(endNode)
+
             y1 = DOF_PER_NODE * startNode
             y2 = y1 + DOF_PER_NODE
             x1 = DOF_PER_NODE * startNode

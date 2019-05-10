@@ -21,19 +21,26 @@ class Element:
 
         self.length = math.sqrt(math.pow(yDiff, 2) + math.pow(xDiff, 2) + math.pow(zDiff, 2))
 
-        local_x = np.array([local_dirs[0]["x"], local_dirs[0]["y"], local_dirs[0]["z"]])
-        local_y = np.array([local_dirs[1]["x"], local_dirs[1]["y"], local_dirs[1]["z"]])
-        local_z = np.array([local_dirs[2]["x"], local_dirs[2]["y"], local_dirs[2]["z"]])
+        #local_x = np.array([local_dirs[0]["x"], local_dirs[0]["y"], local_dirs[0]["z"]])
+        #local_y = np.array([local_dirs[1]["x"], local_dirs[1]["y"], local_dirs[1]["z"]])
+        #local_z = np.array([local_dirs[2]["x"], local_dirs[2]["y"], local_dirs[2]["z"]])
 
         global_x = np.array([1, 0, 0])
         global_y = np.array([0, 1, 0])
         global_z = np.array([0, 0, 1])
+
+
+        local_x = np.array([local_dirs[0]["x"], local_dirs[0]["y"], local_dirs[0]["z"]])
+        local_y=np.cross(local_x,global_z)
+        local_z=np.cross(local_x,local_y)
+
 
         self.theta_x_e = math.acos(np.inner(local_x, global_x) / (norm(local_x) * norm(global_x)))
         self.theta_y_e = math.acos(np.inner(local_y, global_y) / (norm(local_y) * norm(global_y)))
         self.theta_z_e = math.acos(np.inner(local_z, global_z) / (norm(local_z) * norm(global_z)))
 
         logger.info("Element %d created" % (self.id))
+        
 
     def transform(self):
         l = np.cos(self.theta_x_e)
