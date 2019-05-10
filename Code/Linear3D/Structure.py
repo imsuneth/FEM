@@ -72,6 +72,7 @@ class Structure:
 
             local_dirs = [local_x_dir, local_y_dir, local_z_dir]
 
+
             new_element = Element(id, start_node, end_node, cross_section, material_id, local_dirs)
             self.elements.put(id, new_element)
         logger.info("Elements Creation --> Done")
@@ -119,15 +120,16 @@ class Structure:
         return None
 
     def analyzeStructure(self):
-        DOF_PER_NODE=6
-        mat_size=DOF_PER_NODE*(self.n_elements+1)
-        structure_k=np.zeros([mat_size,mat_size])
+        DOF_PER_NODE = 6
+        mat_size = DOF_PER_NODE * (self.n_elements + 1)
+        structure_k = np.zeros([mat_size, mat_size])
 
         for element_id in range(self.n_elements):
-            startNode=self.elements[element_id].start_node
-            endNode=self.elements[element_id].end_node
-            k=self.elements[element_id].K_element_global()
-
+            startNode = self.elements[element_id].start_node.id
+            endNode = self.elements[element_id].end_node.id
+            k = self.elements[element_id].K_element_global()
+            print(startNode)
+            print(endNode)
             y1 = DOF_PER_NODE * startNode
             y2 = y1 + DOF_PER_NODE
             x1 = DOF_PER_NODE * startNode
@@ -151,5 +153,5 @@ class Structure:
             x1 = DOF_PER_NODE * endNode
             x2 = x1 + DOF_PER_NODE
             structure_k[y1:y2, x1:x2] += k[DOF_PER_NODE:, DOF_PER_NODE:]
-
+        print(structure_k)
         return structure_k

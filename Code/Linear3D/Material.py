@@ -28,6 +28,6 @@ def load_material_models(js):
     for material_model_js in material_models_js:
         id = material_model_js["id"]
         name = material_model_js["name"]
-        youngs_mod = material_models_js["youngs_mod"]
+        youngs_mod = material_model_js["youngs_mod"]
         material_model = MaterialModel(id, name, youngs_mod)
         material_models.put(id, material_model)
