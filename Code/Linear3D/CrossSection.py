@@ -10,8 +10,8 @@ class SquareCrossSection(CrossSection):
         self.height = height
 
     def get_area(self):
-
         return self.width * self.height
+
 
 
     def calculate_inertia(self):
