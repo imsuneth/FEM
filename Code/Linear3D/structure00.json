@@ -40,7 +40,7 @@
             "start_node_id":0,
             "end_node_id":1,
             "element_type": 0,
-            "material_id": 0,
+            "material_id":0,
             "local_x_dir":
                 {"x":2.0,"y":3.0,"z":1.0},
             "local_y_dir":
@@ -53,6 +53,7 @@
             "start_node_id": 1, 
             "end_node_id": 3, 
             "element_type": 0,
+
             "material_id": 0,
             "local_x_dir":
                 {"x":2.0,"y":-3.0,"z":0.0},
