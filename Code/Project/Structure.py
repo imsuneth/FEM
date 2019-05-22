@@ -121,13 +121,13 @@ class Structure:
             # id = load["id"]
             node_id = load["point_id"]
             force = load["force"]
-            f_x = force["x"]
-            f_y = force["y"]
-            f_z = force["z"]
+            f_x = DOF(force["x"])
+            f_y = DOF(force["y"])
+            f_z = DOF(force["z"])
             torque = load["torque"]
-            m_x = torque["x"]
-            m_y = torque["y"]
-            m_z = torque["z"]
+            m_x = DOF(torque["x"])
+            m_y = DOF(torque["y"])
+            m_z = DOF(torque["z"])
 
             node = self.nodes[node_id]
             [node.f_x, node.f_y, node.f_z, node.m_x, node.m_y, node.m_z] = [f_x, f_y, f_z, m_x, m_y, m_z]
@@ -162,146 +162,79 @@ class Structure:
         return None
 
     def analyzeStructure(self):
-        # initiate analyze and save results to structureXX-out.jsoniti
-        logger.info("Started Structural Analysis")
+        # Initial Stiffness - k_0
+        DOF_PER_NODE = 3
+        mat_size = DOF_PER_NODE * (self.n_elements + 1)
+        k_0 = np.zeros([mat_size, mat_size])
+        force_vector = np.zeros(mat_size, dtype=np.float_)
 
-        initial = True
-        Calculated_Unbalance_forece = []
-        deformation = []
-        initial_force_dic = {}
-        for node_id in range(self.n_nodes):
-            node = self.nodes[node_id]
-            Calculated_Unbalance_forece += [node.f_x, node.f_y, node.m_z]
-            deformation += [node.d_x, node.d_y, node.dm_z]
-            if node.f_x > 0: initial_force_dic[node_id * 3] = node.f_x
-            if node.f_y > 0: initial_force_dic[node_id * 3 + 1] = node.f_y
-            if node.m_z > 0: initial_force_dic[node_id * 3 + 2] = node.m_z
-        Calculated_Unbalance_forece = np.asarray(Calculated_Unbalance_forece).reshape(self.n_nodes * 3, 1)
-        deformation = np.asarray(deformation).reshape(self.n_nodes * 3, 1)
-        element = Element
-        DOF = 3
+        node_order = [-1] * (DOF_PER_NODE * self.n_nodes)
+        for element_id in range(self.n_elements):
+            element = self.elements[element_id]
+            startNode = element.start_node.id
+            endNode = element.end_node.id
+            k = element.K_element_global()
 
-        kGlobal = [[0 for a0 in range(self.n_nodes * DOF)] for a1 in range(self.n_nodes * DOF)]
-        KGmatrix = np.array(kGlobal, dtype=float)
+            y1 = DOF_PER_NODE * startNode
+            y2 = y1 + DOF_PER_NODE
+            x1 = DOF_PER_NODE * startNode
+            x2 = x1 + DOF_PER_NODE
+            k_0[y1:y2, x1:x2] += k[:DOF_PER_NODE, :DOF_PER_NODE]
 
-        error = 999
-        count = 0
+            y1 = DOF_PER_NODE * startNode
+            y2 = y1 + DOF_PER_NODE
+            x1 = DOF_PER_NODE * endNode
+            x2 = x1 + DOF_PER_NODE
+            k_0[y1:y2, x1:x2] += k[:DOF_PER_NODE, DOF_PER_NODE:]
 
-        for In_force_ID in initial_force_dic:
+            start_node = element.start_node
+            force_vector[y1:y2] += start_node.get_dof()
+            node_order[y1] = startNode
 
-            while self.tolerence < abs(error) and count < self.max_Iterations:
-                count += 1
-                force = Calculated_Unbalance_forece
+            y1 = DOF_PER_NODE * endNode
+            y2 = y1 + DOF_PER_NODE
+            x1 = DOF_PER_NODE * startNode
+            x2 = x1 + DOF_PER_NODE
+            k_0[y1:y2, x1:x2] += k[DOF_PER_NODE:, :DOF_PER_NODE]
 
-                for e in range(self.n_elements):
-                    kGlobal = KGmatrix
-                    ele = self.elements[e]
-                    startNode = ele.start_node
-                    endNode = ele.end_node
-                    if initial == True:
-                        EMatrix = ele.calInitialElement_K("GLOBAL")
-                    else:
-                        EMatrix = ele.analyze(10 ** (-10))
+            y1 = DOF_PER_NODE * endNode
+            y2 = y1 + DOF_PER_NODE
+            x1 = DOF_PER_NODE * endNode
+            x2 = x1 + DOF_PER_NODE
+            k_0[y1:y2, x1:x2] += k[DOF_PER_NODE:, DOF_PER_NODE:]
 
-                    # print(EMatrix)
+            end_node = element.end_node
+            force_vector[y1:y2] += end_node.get_dof()
+            node_order[y1] = endNode
 
-                    y1 = DOF * startNode.id
-                    y2 = y1 + DOF
-                    x1 = DOF * startNode.id
-                    x2 = x1 + DOF
-                    M = EMatrix[:DOF, :DOF]
-                    kGlobal[y1:y2, x1:x2] += M
-                    print("sub1 done")
+        node_order = list(filter(lambda a: a != -1, node_order))
+        print("Node order:", node_order)
+        print("structure_k:", k_0)
 
-                    y1 = DOF * startNode.id
-                    y2 = y1 + DOF
-                    x1 = DOF * endNode.id
-                    x2 = x1 + DOF
-                    M = EMatrix[:DOF, DOF:]
-                    kGlobal[y1:y2, x1:x2] += M
-                    print("sub2 done")
+        force_vector = list(filter(lambda a: not math.isnan(a), force_vector))
 
-                    y1 = DOF * endNode.id
-                    y2 = y1 + DOF
-                    x1 = DOF * startNode.id
-                    x2 = x1 + DOF
-                    M = EMatrix[DOF:, :DOF]
-                    kGlobal[y1:y2, x1:x2] += M
-                    print("sub3 done")
 
-                    y1 = DOF * endNode.id
-                    y2 = y1 + DOF
-                    x1 = DOF * endNode.id
-                    x2 = x1 + DOF
-                    M = EMatrix[DOF:, DOF:]
-                    kGlobal[y1:y2, x1:x2] += M
-                    print("sub4 done")
+        # Stiffness after applying static loads - k
 
-                full_matrix = kGlobal
-                print("KGlobal")
-                print(full_matrix)
-                Initial_Unbalance_force = force
-                Initial_deformation = deformation
+        for force_id in range(mat_size):
+            node_id = node_order[force_id/DOF_PER_NODE]
+            if not math.isnan(force_vector[force_id]):
+                node = self.nodes[node_id]
+                if force_id%DOF_PER_NODE == 0:
+                    if not node.f_x.controlled:
+                        self.forceControlled(node.f_x.value, force_vector, force_id)
 
-                def_for_reuse = []
-                deleting_lines = []
-                print("=====line elimination====")
-                for node_id in sorted(self.fix_Point_array)[::-1]:
-                    node = self.nodes[node_id]
-                    Line = DOF * node_id
 
-                    if (node.r_z):
-                        kGlobal = np.delete(kGlobal, Line + 2, 0)
-                        kGlobal = np.delete(kGlobal, Line + 2, 1)
-                        force = np.delete(force, Line + 2, 0)
-                        def_for_reuse = [deformation[Line + 2]] + def_for_reuse
-                        deleting_lines = [Line + 2] + deleting_lines
 
-                    if (node.t_y):
-                        kGlobal = np.delete(kGlobal, Line + 1, 0)
-                        kGlobal = np.delete(kGlobal, Line + 1, 1)
-                        force = np.delete(force, Line + 1, 0)
-                        def_for_reuse = [deformation[Line + 1]] + def_for_reuse
-                        deleting_lines = [Line + 1] + deleting_lines
+        self.forceControlled()
+        self.displacementControlled()
 
-                    if (node.t_x):
-                        kGlobal = np.delete(kGlobal, Line, 0)
-                        kGlobal = np.delete(kGlobal, Line, 1)
-                        force = np.delete(force, Line, 0)
-                        def_for_reuse = [deformation[Line]] + def_for_reuse
-                        deleting_lines = [Line] + deleting_lines
+        return None
 
-                    deformation = np.dot(inv(kGlobal), force)
+    def forceControlled(self, force, lforce_vector, force_id):
 
-                    for line_index in range(len(deleting_lines)):
-                        deformation = np.insert(deformation, deleting_lines[line_index], def_for_reuse[line_index],
-                                                axis=0)
+        return None
 
-                    Resisten_force = np.dot(full_matrix, deformation)
-                    # print(Resisten_force)
-                    Calculated_Unbalance_forece = Calculated_Unbalance_forece - Resisten_force
+    def displacementControlled(self):
 
-                    for n in range(self.n_nodes):
-                        node = self.nodes[n]
-                        node.d_x = deformation[n * 3]
-                        node.d_y = deformation[n * 3 + 1]
-                        node.dm_z = deformation[n * 3 + 2]
-
-                        node.f_x = Resisten_force[n * 3]
-                        node.f_y = Resisten_force[n * 3 + 1]
-                        node.m_z = Resisten_force[n * 3 + 2]
-
-                    node.td_x += node.d_x
-                    node.td_y += node.d_y
-                    node.tdm_z += node.dm_z
-
-                    initial = False
-
-                    error = min(Calculated_Unbalance_forece[In_force_ID])
-                print("Iteration ", count, " done", "error=", error)
-        logger.info("Structural Analysis-->Done")
-        print("Fianl deformation Matrix")
-        print(deformation)
-        print("Final Force matrix")
-        print(Calculated_Unbalance_forece)
-        # plotTheStruct.plotTheStruct(self.elements,self.nodes)
+        return None
