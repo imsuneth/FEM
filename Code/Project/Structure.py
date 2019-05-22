@@ -164,6 +164,7 @@ class Structure:
         return None
 
     def analyzeStructure(self):
+
         # Initial Stiffness - k_0
         DOF_PER_NODE = 3
         mat_size = DOF_PER_NODE * (self.n_elements + 1)
@@ -242,3 +243,4 @@ class Structure:
     def displacementControlled(self):
 
         return None
+
