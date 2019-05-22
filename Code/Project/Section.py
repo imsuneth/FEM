@@ -30,7 +30,7 @@ class Section:
             fiber = self.fibers[fiber_id]
             eps = eps_0 - fiber.y * k
             sigma = Material.material_models[fiber.material_id].get_strain(eps)
-            area = fiber.fiber_areas[fiber_id]
+            area = fiber.area
             A_i = sigma * area
             resistance_force[0] += A_i
             resistance_force[1] += -1 * A_i * fiber.y

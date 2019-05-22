@@ -1,12 +1,14 @@
+import numpy as np
 from DOF import DOF
 
+
 class Node:
-    f_x = None
-    f_y = None
-    f_z = None
-    m_x = None
-    m_y = None
-    m_z = None
+    f_x = DOF([0, False, 0])
+    f_y = DOF([0, False, 0])
+    f_z = DOF([0, False, 0])
+    m_x = DOF([0, False, 0])
+    m_y = DOF([0, False, 0])
+    m_z = DOF([0, False, 0])
 
     d_x = 0
     d_y = 0
@@ -21,7 +23,7 @@ class Node:
     tdm_x = 0
     tdm_y = 0
     tdm_z = 0
-    
+
     t_x = None  # t for translations
     t_y = None
     t_z = None
@@ -36,3 +38,14 @@ class Node:
         self.p_z = p_z
 
         return None
+
+    def get_dof(self):
+        dofs = np.array(
+            [self.f_x.value, self.f_y.value, self.m_z.value],
+            dtype=np.float_)
+        restrains = [self.t_x, self.t_y, self.t_z, self.r_z]
+        for i in range(3):
+            if restrains[i]:
+                dofs[i] = None
+
+        return dofs

@@ -6,6 +6,7 @@ from CalculationData import *
 from numpy.linalg import inv
 from log_ import *
 import plotTheStruct
+from DOF import *
 
 
 class Structure:
@@ -132,7 +133,8 @@ class Structure:
             node = self.nodes[node_id]
             [node.f_x, node.f_y, node.f_z, node.m_x, node.m_y, node.m_z] = [f_x, f_y, f_z, m_x, m_y, m_z]
             logger.debug(
-                "Load applied node:%d\tForce:[%d %d %d]\tTorque:[%d %d %d]" % (node_id, f_x, f_y, f_z, m_x, m_y, m_z))
+                "Load applied node:%d\tForce:[%s %s %s]\tTorque:[%s %s %s]" % (
+                node_id, f_x.__str__(), f_y.__str__(), f_z.__str__(), m_x.__str__(), m_y.__str__(), m_z.__str__()))
         logger.info("Loads Assigning--> Done")
         # Take fixed points and assign nodes as fixed
         self.no_of_fixed_points = js["no_of_fixed_points"]
@@ -173,7 +175,7 @@ class Structure:
             element = self.elements[element_id]
             startNode = element.start_node.id
             endNode = element.end_node.id
-            k = element.K_element_global()
+            k = element.calInitialElement_K("GLOBAL")
 
             y1 = DOF_PER_NODE * startNode
             y2 = y1 + DOF_PER_NODE
@@ -210,24 +212,26 @@ class Structure:
         node_order = list(filter(lambda a: a != -1, node_order))
         print("Node order:", node_order)
         print("structure_k:", k_0)
+        print("force_vector:", force_vector)
 
-        force_vector = list(filter(lambda a: not math.isnan(a), force_vector))
-
+        np.where(force_vector is not None, 0, force_vector)
 
         # Stiffness after applying static loads - k
 
         for force_id in range(mat_size):
-            node_id = node_order[force_id/DOF_PER_NODE]
+            node_id = node_order[int(math.floor(force_id / DOF_PER_NODE))]
+            print("node_id:", node_id, "\n")
             if not math.isnan(force_vector[force_id]):
                 node = self.nodes[node_id]
-                if force_id%DOF_PER_NODE == 0:
+                if force_id % DOF_PER_NODE == 0:
                     if not node.f_x.controlled:
-                        self.forceControlled(node.f_x.value, force_vector, force_id)
-
-
-
-        self.forceControlled()
-        self.displacementControlled()
+                        self.forceControlled(node.f_x.value, force_vector, force_id, )
+                elif force_id % DOF_PER_NODE == 1:
+                    if not node.f_y.controlled:
+                        self.forceControlled(node.f_y.value, force_vector, force_id)
+                elif force_id % DOF_PER_NODE == 2:
+                    if not node.m_z.controlled:
+                        self.forceControlled(node.m_z.value, force_vector, force_id)
 
         return None
 
