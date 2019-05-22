@@ -134,7 +134,7 @@ class Structure:
             [node.f_x, node.f_y, node.f_z, node.m_x, node.m_y, node.m_z] = [f_x, f_y, f_z, m_x, m_y, m_z]
             logger.debug(
                 "Load applied node:%d\tForce:[%s %s %s]\tTorque:[%s %s %s]" % (
-                node_id, f_x.__str__(), f_y.__str__(), f_z.__str__(), m_x.__str__(), m_y.__str__(), m_z.__str__()))
+                    node_id, f_x.__str__(), f_y.__str__(), f_z.__str__(), m_x.__str__(), m_y.__str__(), m_z.__str__()))
         logger.info("Loads Assigning--> Done")
         # Take fixed points and assign nodes as fixed
         self.no_of_fixed_points = js["no_of_fixed_points"]
@@ -168,8 +168,8 @@ class Structure:
         # Initial Stiffness - k_0
         DOF_PER_NODE = 3
         mat_size = DOF_PER_NODE * (self.n_elements + 1)
-        k_0 = np.zeros([mat_size, mat_size])
-        force_vector = np.zeros(mat_size, dtype=np.float_)
+        self.k_0 = np.zeros([mat_size, mat_size])
+        self.force_vector = np.zeros(mat_size, dtype=np.float_)
 
         node_order = [-1] * (DOF_PER_NODE * self.n_nodes)
         for element_id in range(self.n_elements):
@@ -182,65 +182,106 @@ class Structure:
             y2 = y1 + DOF_PER_NODE
             x1 = DOF_PER_NODE * startNode
             x2 = x1 + DOF_PER_NODE
-            k_0[y1:y2, x1:x2] += k[:DOF_PER_NODE, :DOF_PER_NODE]
+            self.k_0[y1:y2, x1:x2] += k[:DOF_PER_NODE, :DOF_PER_NODE]
 
             y1 = DOF_PER_NODE * startNode
             y2 = y1 + DOF_PER_NODE
             x1 = DOF_PER_NODE * endNode
             x2 = x1 + DOF_PER_NODE
-            k_0[y1:y2, x1:x2] += k[:DOF_PER_NODE, DOF_PER_NODE:]
+            self.k_0[y1:y2, x1:x2] += k[:DOF_PER_NODE, DOF_PER_NODE:]
 
             start_node = element.start_node
-            force_vector[y1:y2] += start_node.get_dof()
+            self.force_vector[y1:y2] += start_node.get_dof()
             node_order[y1] = startNode
 
             y1 = DOF_PER_NODE * endNode
             y2 = y1 + DOF_PER_NODE
             x1 = DOF_PER_NODE * startNode
             x2 = x1 + DOF_PER_NODE
-            k_0[y1:y2, x1:x2] += k[DOF_PER_NODE:, :DOF_PER_NODE]
+            self.k_0[y1:y2, x1:x2] += k[DOF_PER_NODE:, :DOF_PER_NODE]
 
             y1 = DOF_PER_NODE * endNode
             y2 = y1 + DOF_PER_NODE
             x1 = DOF_PER_NODE * endNode
             x2 = x1 + DOF_PER_NODE
-            k_0[y1:y2, x1:x2] += k[DOF_PER_NODE:, DOF_PER_NODE:]
+            self.k_0[y1:y2, x1:x2] += k[DOF_PER_NODE:, DOF_PER_NODE:]
 
             end_node = element.end_node
-            force_vector[y1:y2] += end_node.get_dof()
+            self.force_vector[y1:y2] += end_node.get_dof()
             node_order[y1] = endNode
 
         node_order = list(filter(lambda a: a != -1, node_order))
-        print("Node order:", node_order)
-        print("structure_k:", k_0)
-        print("force_vector:", force_vector)
+        print("node_order:\n", node_order)
+        print("k_0:\n", self.k_0)
+        print("force_vector:\n", self.force_vector)
 
-        np.where(force_vector is not None, 0, force_vector)
+        np.where(self.force_vector is not None, 0, self.force_vector)
 
         # Stiffness after applying static loads - k
 
         for force_id in range(mat_size):
             node_id = node_order[int(math.floor(force_id / DOF_PER_NODE))]
-            print("node_id:", node_id, "\n")
-            if not math.isnan(force_vector[force_id]):
+            if not math.isnan(self.force_vector[force_id]):
                 node = self.nodes[node_id]
                 if force_id % DOF_PER_NODE == 0:
                     if not node.f_x.controlled:
-                        self.forceControlled(node.f_x.value, force_vector, force_id, )
+                        self.forceControlled(node.f_x.value, force_id)
                 elif force_id % DOF_PER_NODE == 1:
                     if not node.f_y.controlled:
-                        self.forceControlled(node.f_y.value, force_vector, force_id)
+                        self.forceControlled(node.f_y.value, force_id)
                 elif force_id % DOF_PER_NODE == 2:
                     if not node.m_z.controlled:
-                        self.forceControlled(node.m_z.value, force_vector, force_id)
+                        self.forceControlled(node.m_z.value, force_id)
 
         return None
 
-    def forceControlled(self, force, lforce_vector, force_id):
+    def forceControlled(self, force, force_id):
+        if force == 0:
+            return
+        print("force control started for static force", force)
+        self.static_force_step = 1 * force / abs(force)
+        applied_force = 0
+        self.force_vector[force_id] = self.static_force_step
 
+        print("force_vector:\n", self.force_vector)
+
+        while abs(applied_force) < abs(force):
+            applied_force += self.static_force_step
+
+            # Applying boundary conditions
+            print("Applying boundary conditions")
+            force_vector_copy = self.force_vector
+
+            index = 0
+            for force in force_vector_copy:
+                if math.isnan(force):
+                    self.k_0 = np.delete(self.k_0, index, 0)
+                    self.k_0 = np.delete(self.k_0, index, 1)
+                    force_vector_copy = np.delete(force_vector_copy, index, 0)
+                else:
+                    index += 1
+
+            print("structure_k:", self.k_0)
+            print("structure_force:", force_vector_copy)
+
+            deformation = np.dot(np.linalg.inv(self.k_0), force_vector_copy)
+
+            print("deformation:", deformation)
+
+            deformation_vector = np.zeros(self.force_vector.size, dtype=np.float_)
+            index_def = 0
+            index_force = 0
+            for index_force in range(self.force_vector.size):
+                if not math.isnan(self.force_vector[index_force]):
+                    deformation_vector[index_force] = deformation[index_def]
+                    index_def += 1
+                index_force += 1
+
+            print("deformation_vector", deformation_vector)
+
+            
         return None
 
     def displacementControlled(self):
 
         return None
-

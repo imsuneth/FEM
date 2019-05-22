@@ -45,7 +45,7 @@
             "id": 0, 
             "point_id":1,
             "force":
-            {   "x":[0, false], "y":[-1000, true, 1], "z":[0, false]},
+            {   "x":[0, false], "y":[-1000, false, 1], "z":[0, false]},
             "torque":
             {   "x":[0, false], "y":[0, false], "z":[0, false]}
         }
