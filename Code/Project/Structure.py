@@ -121,13 +121,13 @@ class Structure:
             # id = load["id"]
             node_id = load["point_id"]
             force = load["force"]
-            f_x = force["x"]
-            f_y = force["y"]
-            f_z = force["z"]
+            f_x = DOF(force["x"])
+            f_y = DOF(force["y"])
+            f_z = DOF(force["z"])
             torque = load["torque"]
-            m_x = torque["x"]
-            m_y = torque["y"]
-            m_z = torque["z"]
+            m_x = DOF(torque["x"])
+            m_y = DOF(torque["y"])
+            m_z = DOF(torque["z"])
 
             node = self.nodes[node_id]
             [node.f_x, node.f_y, node.f_z, node.m_x, node.m_y, node.m_z] = [f_x, f_y, f_z, m_x, m_y, m_z]
@@ -162,5 +162,81 @@ class Structure:
         return None
 
     def analyzeStructure(self):
-        # initiate analyze and save results to structureXX-out.jsoniti
-        logger.info("Started Structural Analysis")
+
+        # Initial Stiffness - k_0
+        DOF_PER_NODE = 3
+        mat_size = DOF_PER_NODE * (self.n_elements + 1)
+        k_0 = np.zeros([mat_size, mat_size])
+        force_vector = np.zeros(mat_size, dtype=np.float_)
+
+        node_order = [-1] * (DOF_PER_NODE * self.n_nodes)
+        for element_id in range(self.n_elements):
+            element = self.elements[element_id]
+            startNode = element.start_node.id
+            endNode = element.end_node.id
+            k = element.K_element_global()
+
+            y1 = DOF_PER_NODE * startNode
+            y2 = y1 + DOF_PER_NODE
+            x1 = DOF_PER_NODE * startNode
+            x2 = x1 + DOF_PER_NODE
+            k_0[y1:y2, x1:x2] += k[:DOF_PER_NODE, :DOF_PER_NODE]
+
+            y1 = DOF_PER_NODE * startNode
+            y2 = y1 + DOF_PER_NODE
+            x1 = DOF_PER_NODE * endNode
+            x2 = x1 + DOF_PER_NODE
+            k_0[y1:y2, x1:x2] += k[:DOF_PER_NODE, DOF_PER_NODE:]
+
+            start_node = element.start_node
+            force_vector[y1:y2] += start_node.get_dof()
+            node_order[y1] = startNode
+
+            y1 = DOF_PER_NODE * endNode
+            y2 = y1 + DOF_PER_NODE
+            x1 = DOF_PER_NODE * startNode
+            x2 = x1 + DOF_PER_NODE
+            k_0[y1:y2, x1:x2] += k[DOF_PER_NODE:, :DOF_PER_NODE]
+
+            y1 = DOF_PER_NODE * endNode
+            y2 = y1 + DOF_PER_NODE
+            x1 = DOF_PER_NODE * endNode
+            x2 = x1 + DOF_PER_NODE
+            k_0[y1:y2, x1:x2] += k[DOF_PER_NODE:, DOF_PER_NODE:]
+
+            end_node = element.end_node
+            force_vector[y1:y2] += end_node.get_dof()
+            node_order[y1] = endNode
+
+        node_order = list(filter(lambda a: a != -1, node_order))
+        print("Node order:", node_order)
+        print("structure_k:", k_0)
+
+        force_vector = list(filter(lambda a: not math.isnan(a), force_vector))
+
+
+        # Stiffness after applying static loads - k
+
+        for force_id in range(mat_size):
+            node_id = node_order[force_id/DOF_PER_NODE]
+            if not math.isnan(force_vector[force_id]):
+                node = self.nodes[node_id]
+                if force_id%DOF_PER_NODE == 0:
+                    if not node.f_x.controlled:
+                        self.forceControlled(node.f_x.value, force_vector, force_id)
+
+
+
+        self.forceControlled()
+        self.displacementControlled()
+
+        return None
+
+    def forceControlled(self, force, lforce_vector, force_id):
+
+        return None
+
+    def displacementControlled(self):
+
+        return None
+

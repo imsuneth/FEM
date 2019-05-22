@@ -1,10 +1,12 @@
+from DOF import DOF
+
 class Node:
-    f_x = 0
-    f_y = 0
-    f_z = 0
-    m_x = 0
-    m_y = 0
-    m_z = 0
+    f_x = None
+    f_y = None
+    f_z = None
+    m_x = None
+    m_y = None
+    m_z = None
 
     d_x = 0
     d_y = 0
