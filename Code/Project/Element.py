@@ -7,7 +7,7 @@ from log_ import *
 
 
 class Element:
-
+    k_element_initial=None # initial stiffness matrix refering local co-ordinate system
     def __init__(self, id, start_node, end_node, cross_section, n_sections, angle, length):
         self.id = id
         self.start_node = start_node
@@ -71,63 +71,41 @@ class Element:
 
         k_element_initial = inv(initialElementFlexibMat)
 
+        self.k_element_initial=k_element_initial
+
         if Condition == "GLOBAL":
             return np.transpose(self.rotMatrix()) @ np.transpose(self.rigidBodyTransMatrix()) @ k_element_initial @ self.rigidBodyTransMatrix() @ self.rotMatrix()  # 6x6 matrix refering global co-ordinate system
 
         elif Condition == "LOCAL":
             return k_element_initial
 
+    # def iterate(self,tol,e_1):
+    #     f1=np.matmul(self.k_element_initial,e_1)
+    #
+    #     while(True):
+
+
+
     def analyze(self, tolerance):  # for the first iteration set the initial call to True
 
         logger.info("Element:%d Sectional level iteration running" % self.id)
 
-        elementDefINCR = np.array([self.start_node.d_y, self.start_node.d_x, self.start_node.dm_z, self.end_node.d_y, self.end_node.d_x, self.end_node.dm_z])
-
-        logger.info("######Element %d elementDefINCR :" % self.id)
-        logger.info(elementDefINCR)
-
-        if self.n_sections == 3:
-            wh = [1 / 3, 4 / 3, 1 / 3]
-            x = [-1, 0, 1]
-        elif self.n_sections == 4:
-            wh = [5 / 6, 1 / 6, 1 / 6, 5 / 6]
-            x = [-1, - 0.447214, 0.447214, 1]
-        elif self.n_sections == 5:
-            wh = [1 / 10, 49 / 90, 32 / 45, 49 / 90, 1 / 10]
-            x = [-1, - 0.654654, 0, 0.654654, 1]
-        elif self.n_sections == 6:
-            wh = [0.066667, 0.378475, 0.554858, 0.554858, 0.378475, 0.066667]
-            x = [-1, - 0.765055, - 0.285232, 0.285232, 0.765055, 1]
-
-        logger.debug("Element %d roatational matrix is:" % self.id)
-        logger.debug(self.rotMatrix())
-        logger.debug("Element %d rigidBody matrix is:" % self.id)
-        logger.debug(self.rigidBodyTransMatrix())
+        elementDefINCR = np.array([self.start_node.d_x, self.start_node.d_y, self.start_node.dm_z, self.end_node.d_x, self.end_node.d_y, self.end_node.dm_z])
 
         rotate = np.matmul(self.rotMatrix(), elementDefINCR)  # convert defINCR to local co-ordinate systme
         basicSystem = np.matmul(self.rigidBodyTransMatrix(), rotate)  # remove rigid body modes (basicSystem 3x1 matrix)
 
-        #########################################################################
+        #K_element_intial = self.calInitialElement_K("LOCAL")  # calculate initialElement Stiffness matrix and update K_element_initial
+        elementForceINCR = np.matmul(self.k_element_initial, basicSystem)
 
-        K_element_intial = self.calInitialElement_K("LOCAL")  # calculate initialElement Stiffness matrix and update K_element_initial
-        elementForceINCR = np.matmul(K_element_intial, basicSystem)
-
-        logger.info("Element %d initial matrix" % self.id)
-        logger.info(K_element_intial)
-        logger.info("Basic system")
-        logger.info(basicSystem)
-        logger.info("Element %d Element force increment" % self.id)
-        logger.info(elementForceINCR)
-
-        ########################################
 
         # elementForceINCR ---> 3x1 matrix
         section_out_converge = True
 
         for section_ in range(self.n_sections):  # newton raphson iteration
             logger.info("Element %d sectional iteration running" % self.id)
-            logger.info(self.sections[section_].s_h)
-            NP = np.array([[0, 0, 1], [((x[section_] + 1) / 2) - 1, (x[section_] + 1) / 2, 0]])
+
+            NP = np.array([[0, 0, 1], [((self.x[section_] + 1) / 2) - 1, (self.x[section_] + 1) / 2, 0]])
 
             sectionForceINCR = np.matmul(NP, elementForceINCR)  # sectionForceINCR ---> 2X1 matrix
 
@@ -167,11 +145,11 @@ class Element:
             elementFlexibMat = 0  # calculate element stiffness
             logger.info("Element %d Sectional assembling running" % self.id)
             for section_ in range(self.n_sections):
-                NP = np.array([[0, 0, 1], [((x[section_] + 1) / 2) - 1, (x[section_] + 1) / 2, 0]])
+                NP = np.array([[0, 0, 1], [((self.x[section_] + 1) / 2) - 1, (self.x[section_] + 1) / 2, 0]])
                 fh = inv(self.sections[section_].section_k)
                 mat1 = np.matmul(np.transpose(NP), fh)
                 mat2 = np.matmul(mat1, NP)
-                mat3 = mat2 * wh[section_]
+                mat3 = mat2 * self.wh[section_]
                 mat4 = mat3 * (self.length / 2)
                 elementFlexibMat += mat4
 
