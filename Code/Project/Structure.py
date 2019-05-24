@@ -250,6 +250,7 @@ class Structure:
             self.save_deformations(deformation_vector)  # store deformations to nodes
             print(" - deformations save to nodes")
 
+            self.assemble_structure_k(1)
 
 
         return None
@@ -271,7 +272,7 @@ class Structure:
             if tag == 0:
                 k = element.calInitialElement_K("GLOBAL")
             else:
-                k = element.analyze()
+                k = element.analyze(999)
 
             y1 = self.DOF_PER_NODE * startNode
             y2 = y1 + self.DOF_PER_NODE
