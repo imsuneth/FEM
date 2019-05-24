@@ -21,6 +21,8 @@ class Element:
 
         for section_id in range(n_sections):
             section = Section(section_id, cross_section)
+            section.f_section_resist = section.analyze([0, 0])[0]
+            section.k_section_initial=section.analyze([0,0])[1]
             self.sections.put(section_id, section)
 
         if self.n_sections == 3:
@@ -109,7 +111,7 @@ class Element:
                 sectionForceINCR = np.matmul(section_.k_section_initial, sectionDefINCR_)
                 unbalanceForce = sectionForceINCR - section_.f_section_resist
 
-        elementFlexibMat = 0  # calculate element stiffness
+        K_element = 0
 
         for section_ in range(self.n_sections):
             NP = np.array([[0, 0, 1], [((self.x[section_] + 1) / 2) - 1, (self.x[section_] + 1) / 2, 0]])
@@ -118,9 +120,9 @@ class Element:
             mat2 = np.matmul(mat1, NP)
             mat3 = mat2 * self.wh[section_]
             mat4 = mat3 * (self.length / 2)
-            elementFlexibMat += mat4
+            K_element += mat4
 
-        K_element = inv(elementFlexibMat)
+        K_element = inv(K_element)
 
         return np.transpose(self.rotMatrix()) @ np.transpose(self.rigidBodyTransMatrix()) @ K_element @ self.rigidBodyTransMatrix() @ self.rotMatrix()  # 6x6 matrix refering global co-ordinate system
 
