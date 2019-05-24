@@ -105,8 +105,8 @@ class Structure:
             # print("angle in degrees=",(180/math.pi)*angle)
             # print("angle in degrees=",angle)
             angle = element["angle"]
-            yDiff = abs(self.nodes[start_node_id].p_y - self.nodes[end_node_id].p_y)
-            xDiff = abs(self.nodes[start_node_id].p_x - self.nodes[end_node_id].p_x)
+            yDiff = abs(start_node.p_y - end_node.p_y)
+            xDiff = abs(start_node.p_x - end_node.p_x)
             length = math.sqrt(math.pow(yDiff, 2) + math.pow(xDiff, 2))
 
             # logge# .debug("Element:%d\tLength:%d\tAngle:%d\tno of Sections:%d\tCross section type:%d\tStard node:%d\tEnd node:%d" %(id,length,angle,self.n_sections,cross_section,start_node_id,end_node_id))
@@ -204,7 +204,6 @@ class Structure:
 
         return None
 
-
     def force_controlled(self, force, force_id):
         if force == 0:
             return
@@ -216,23 +215,10 @@ class Structure:
         print("force_vector:\n", self.force_vector)
 
         while abs(applied_force) < abs(force):
+
             applied_force += self.static_force_step
 
-            # Applying boundary conditions
-            print("Applying boundary conditions")
-            force_vector_copy = self.force_vector
-            structure_k_copy = self.structure_k
-            index = 0
-            for force in force_vector_copy:
-                if math.isnan(force):
-                    structure_k_copy = np.delete(structure_k_copy, index, 0)
-                    structure_k_copy = np.delete(structure_k_copy, index, 1)
-                    force_vector_copy = np.delete(force_vector_copy, index, 0)
-                else:
-                    index += 1
-
-            print("structure_k:\n", structure_k_copy)
-            print("structure_force:\n", force_vector_copy)
+            [structure_k_copy, force_vector_copy] = self.apply_boundary_conditions()
 
             deformation = np.dot(np.linalg.inv(structure_k_copy), force_vector_copy)
 
@@ -251,7 +237,24 @@ class Structure:
             print(" - deformations save to nodes")
 
             self.assemble_structure_k(1)
+            print(" - assembling structure k\n", self.structure_k)
 
+            [structure_k_copy, force_vector_copy] = self.apply_boundary_conditions()
+
+            resisting_force = np.matmul(structure_k_copy, deformation)
+
+            print("force_vector_copy:\n", force_vector_copy)
+            print("resisting_force:\n", resisting_force)
+
+            unbalanced_force = force_vector_copy - resisting_force
+
+            print("unbalanced_force:\n", unbalanced_force)
+
+            corrective_deformation = np.matmul(np.linalg.inv(structure_k_copy), unbalanced_force)
+
+            print("corrective_deformation:\n", corrective_deformation)
+
+            break
 
         return None
 
@@ -317,3 +320,21 @@ class Structure:
             node.d_x = deformation_vector[from_i]
             node.d_y = deformation_vector[from_i + 1]
             node.dm_z = deformation_vector[from_i + 2]
+
+    def apply_boundary_conditions(self):
+        # Applying boundary conditions
+        print("Applying boundary conditions")
+        force_vector_copy = self.force_vector
+        structure_k_copy = self.structure_k
+        index = 0
+        for force in force_vector_copy:
+            if math.isnan(force):
+                structure_k_copy = np.delete(structure_k_copy, index, 0)
+                structure_k_copy = np.delete(structure_k_copy, index, 1)
+                force_vector_copy = np.delete(force_vector_copy, index, 0)
+            else:
+                index += 1
+
+        print("structure_k:\n", structure_k_copy)
+        print("structure_force:\n", force_vector_copy)
+        return [structure_k_copy, force_vector_copy]

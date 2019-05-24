@@ -22,7 +22,7 @@ class Element:
         for section_id in range(n_sections):
             section = Section(section_id, cross_section)
             section.f_section_resist = section.analyze([0, 0])[0]
-            section.k_section_initial=section.analyze([0,0])[1]
+            section.k_section_initial = section.analyze([0,0])[1]
             self.sections.put(section_id, section)
 
         if self.n_sections == 3:
@@ -86,36 +86,43 @@ class Element:
 
         logger.info("Element:%d Sectional level iteration running" % self.id)
 
-        elementDefINCR = np.array([self.start_node.d_x, self.start_node.d_y, self.start_node.dm_z, self.end_node.d_x, self.end_node.d_y, self.end_node.dm_z])
+        elementDefINCR = np.array([[self.start_node.d_x], [self.start_node.d_y], [self.start_node.dm_z], [self.end_node.d_x], [self.end_node.d_y], [self.end_node.dm_z]])
 
         rotate = np.matmul(self.rotMatrix(), elementDefINCR)  # convert defINCR to local co-ordinate systme
         basicSystem = np.matmul(self.rigidBodyTransMatrix(), rotate)  # remove rigid body modes (basicSystem 3x1 matrix)
 
         elementForceINCR = np.matmul(self.k_element_initial, basicSystem)
-
+        #print("elementForceINCR",elementForceINCR)
         for section_ in range(self.n_sections):  # newton raphson iteration
+            section=self.sections[section_]
             logger.info("Element %d sectional iteration running" % self.id)
 
             NP = np.array([[0, 0, 1], [((self.x[section_] + 1) / 2) - 1, (self.x[section_] + 1) / 2, 0]])
 
             sectionForceINCR = np.matmul(NP, elementForceINCR)  # sectionForceINCR ---> 2X1 matrix
 
-            sectionDefINCR_ = np.matmul(section_.k_section_initial, sectionForceINCR)
+            sectionDefINCR_ = np.matmul(section.k_section_initial, sectionForceINCR)
+            unbalanceForce = sectionForceINCR - section.f_section_resist
 
-            unbalanceForce = sectionForceINCR - section_.f_section_resist
-
+            #print("unbalanceForce",unbalanceForce)
             while (self.conditionCheck(unbalanceForce, tolerance)):
-                corrective_d = np.matmul(inv(section_.k_section_initial), unbalanceForce)
+                corrective_d = np.matmul(inv(section.k_section_initial), unbalanceForce)
+                # print("inv(section.k_section_initial)",inv(section.k_section_initial))
+                # print("unbalanceForce",unbalanceForce)
+                # print("corrective_d",corrective_d)
+
                 sectionDefINCR_ += corrective_d
-                [section_.f_section_resist, section_.k_section_initial] = self.sections[section_].analyze(sectionDefINCR_)
-                sectionForceINCR = np.matmul(section_.k_section_initial, sectionDefINCR_)
-                unbalanceForce = sectionForceINCR - section_.f_section_resist
+                [section.f_section_resist, section.k_section_initial] = section.analyze(sectionDefINCR_)
+                print("GUna wena deka:\n", section.k_section_initial, sectionDefINCR_)
+                sectionForceINCR = np.matmul(section.k_section_initial, sectionDefINCR_)
+                unbalanceForce = sectionForceINCR - section.f_section_resist
 
         K_element = 0
 
         for section_ in range(self.n_sections):
+            section = self.sections[section_]
             NP = np.array([[0, 0, 1], [((self.x[section_] + 1) / 2) - 1, (self.x[section_] + 1) / 2, 0]])
-            fh = inv(self.sections[section_].k_section_initial)
+            fh = inv(section.k_section_initial)
             mat1 = np.matmul(np.transpose(NP), fh)
             mat2 = np.matmul(mat1, NP)
             mat3 = mat2 * self.wh[section_]
