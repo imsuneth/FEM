@@ -180,7 +180,7 @@ class Structure:
         print("structure_k:", structure_k)
         print("structure_force:", force_vector)
 
-        deformation = np.dot(np.linalg.inv(structure_k), force_vector)
+        deformation = np.matmul(np.linalg.inv(structure_k), force_vector)
 
         print("deformation:", deformation)
 

@@ -7,7 +7,8 @@ from log_ import *
 
 
 class Element:
-    k_element_initial=None # initial stiffness matrix refering local co-ordinate system
+    k_element_initial = None  # initial stiffness matrix refering local co-ordinate system
+
     def __init__(self, id, start_node, end_node, cross_section, n_sections, angle, length):
         self.id = id
         self.start_node = start_node
@@ -71,20 +72,13 @@ class Element:
 
         k_element_initial = inv(initialElementFlexibMat)
 
-        self.k_element_initial=k_element_initial
+        self.k_element_initial = k_element_initial
 
         if Condition == "GLOBAL":
             return np.transpose(self.rotMatrix()) @ np.transpose(self.rigidBodyTransMatrix()) @ k_element_initial @ self.rigidBodyTransMatrix() @ self.rotMatrix()  # 6x6 matrix refering global co-ordinate system
 
         elif Condition == "LOCAL":
             return k_element_initial
-
-    # def iterate(self,tol,e_1):
-    #     f1=np.matmul(self.k_element_initial,e_1)
-    #
-    #     while(True):
-
-
 
     def analyze(self, tolerance):  # for the first iteration set the initial call to True
 
@@ -95,12 +89,7 @@ class Element:
         rotate = np.matmul(self.rotMatrix(), elementDefINCR)  # convert defINCR to local co-ordinate systme
         basicSystem = np.matmul(self.rigidBodyTransMatrix(), rotate)  # remove rigid body modes (basicSystem 3x1 matrix)
 
-        #K_element_intial = self.calInitialElement_K("LOCAL")  # calculate initialElement Stiffness matrix and update K_element_initial
         elementForceINCR = np.matmul(self.k_element_initial, basicSystem)
-
-
-        # elementForceINCR ---> 3x1 matrix
-        section_out_converge = True
 
         for section_ in range(self.n_sections):  # newton raphson iteration
             logger.info("Element %d sectional iteration running" % self.id)
@@ -109,60 +98,31 @@ class Element:
 
             sectionForceINCR = np.matmul(NP, elementForceINCR)  # sectionForceINCR ---> 2X1 matrix
 
-            self.sections[section_].s_h += sectionForceINCR
+            sectionDefINCR_ = np.matmul(section_.k_section_initial, sectionForceINCR)
 
-            [Section_R, Section_K_Initial] = self.sections[section_].analyze([0, 0])
+            unbalanceForce = sectionForceINCR - section_.f_section_resist
 
-            section_in_converge = False
+            while (self.conditionCheck(unbalanceForce, tolerance)):
+                corrective_d = np.matmul(inv(section_.k_section_initial), unbalanceForce)
+                sectionDefINCR_ += corrective_d
+                [section_.f_section_resist, section_.k_section_initial] = self.sections[section_].analyze(sectionDefINCR_)
+                sectionForceINCR = np.matmul(section_.k_section_initial, sectionDefINCR_)
+                unbalanceForce = sectionForceINCR - section_.f_section_resist
 
-            logger.info("Element %d section %d section force before converge" % (self.id, section_))
-            logger.info(sectionForceINCR)
-            for itr in range(1, 1000):
+        elementFlexibMat = 0  # calculate element stiffness
 
-                sectionDefINCR_ = Section_K_Initial @ sectionForceINCR
-                self.sections[section_].e_h += sectionDefINCR_
-                cross_section_result = self.sections[section_].analyze(self.sections[section_].e_h)
-                logger.info("self.sections[section_].e_h")
-                logger.info(self.sections[section_].e_h)
-                sectionResistingForce = cross_section_result[0]
-                Section_K = cross_section_result[1]
-                unbalanceForce = self.sections[section_].s_h - sectionResistingForce
-                logger.info("Section_K")
-                logger.info(Section_K)
+        for section_ in range(self.n_sections):
+            NP = np.array([[0, 0, 1], [((self.x[section_] + 1) / 2) - 1, (self.x[section_] + 1) / 2, 0]])
+            fh = inv(self.sections[section_].k_section_initial)
+            mat1 = np.matmul(np.transpose(NP), fh)
+            mat2 = np.matmul(mat1, NP)
+            mat3 = mat2 * self.wh[section_]
+            mat4 = mat3 * (self.length / 2)
+            elementFlexibMat += mat4
 
-                if self.conditionCheck(unbalanceForce, tolerance) == False:
-                    logger.info("Element %d section %d convergence done" % (self.id, section_))
-                    self.sections[section_].section_k = Section_K
-                    section_in_converge = True
-                    break
+        K_element = inv(elementFlexibMat)
 
-            if section_in_converge == False:
-                logger.info("Section LEVEL convergence can not achieve ")
-                section_out_converge = False
-                break
-        if section_out_converge == True:
-
-            elementFlexibMat = 0  # calculate element stiffness
-            logger.info("Element %d Sectional assembling running" % self.id)
-            for section_ in range(self.n_sections):
-                NP = np.array([[0, 0, 1], [((self.x[section_] + 1) / 2) - 1, (self.x[section_] + 1) / 2, 0]])
-                fh = inv(self.sections[section_].section_k)
-                mat1 = np.matmul(np.transpose(NP), fh)
-                mat2 = np.matmul(mat1, NP)
-                mat3 = mat2 * self.wh[section_]
-                mat4 = mat3 * (self.length / 2)
-                elementFlexibMat += mat4
-
-                logger.debug("Element %d section %d section flexibility matrix is" % (self.id, section_))
-                logger.debug(fh)
-
-            K_element = inv(elementFlexibMat)
-
-            returnMatrix = np.transpose(self.rotMatrix()) @ np.transpose(self.rigidBodyTransMatrix()) @ K_element @ self.rigidBodyTransMatrix() @ self.rotMatrix()  # 6x6 matrix refering global co-ordinate system
-
-            return returnMatrix
-        else:
-            logger.info("should die")
+        return np.transpose(self.rotMatrix()) @ np.transpose(self.rigidBodyTransMatrix()) @ K_element @ self.rigidBodyTransMatrix() @ self.rotMatrix()  # 6x6 matrix refering global co-ordinate system
 
     def conditionCheck(self, mat, value):
         max_abs_val = abs(max(mat.min(), mat.max(), key=abs))
