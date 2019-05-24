@@ -113,7 +113,6 @@ class Element:
 
                 sectionDefINCR_ += corrective_d
                 [section.f_section_resist, section.k_section_initial] = section.analyze(sectionDefINCR_)
-                print("GUna wena deka:\n", section.k_section_initial, sectionDefINCR_)
                 sectionForceINCR = np.matmul(section.k_section_initial, sectionDefINCR_)
                 unbalanceForce = sectionForceINCR - section.f_section_resist
 
