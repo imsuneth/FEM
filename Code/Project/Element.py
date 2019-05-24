@@ -118,7 +118,7 @@ class Element:
         for section_ in range(self.n_sections):
             section = self.sections[section_]
             NP = np.array([[0, 0, 1], [((self.x[section_] + 1) / 2) - 1, (self.x[section_] + 1) / 2, 0]])
-            fh = inv(self.sections[section_].k_section_initial)
+            fh = inv(section.k_section_initial)
             mat1 = np.matmul(np.transpose(NP), fh)
             mat2 = np.matmul(mat1, NP)
             mat3 = mat2 * self.wh[section_]
