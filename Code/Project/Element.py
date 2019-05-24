@@ -94,26 +94,29 @@ class Element:
         elementForceINCR = np.matmul(self.k_element_initial, basicSystem)
 
         for section_ in range(self.n_sections):  # newton raphson iteration
+
             logger.info("Element %d sectional iteration running" % self.id)
+            section=self.sections[section_]
 
             NP = np.array([[0, 0, 1], [((self.x[section_] + 1) / 2) - 1, (self.x[section_] + 1) / 2, 0]])
 
             sectionForceINCR = np.matmul(NP, elementForceINCR)  # sectionForceINCR ---> 2X1 matrix
 
-            sectionDefINCR_ = np.matmul(section_.k_section_initial, sectionForceINCR)
+            sectionDefINCR_ = np.matmul(section.k_section_initial, sectionForceINCR)
 
-            unbalanceForce = sectionForceINCR - section_.f_section_resist
+            unbalanceForce = sectionForceINCR - section.f_section_resist
 
             while (self.conditionCheck(unbalanceForce, tolerance)):
-                corrective_d = np.matmul(inv(section_.k_section_initial), unbalanceForce)
+                corrective_d = np.matmul(inv(section.k_section_initial), unbalanceForce)
                 sectionDefINCR_ += corrective_d
-                [section_.f_section_resist, section_.k_section_initial] = self.sections[section_].analyze(sectionDefINCR_)
-                sectionForceINCR = np.matmul(section_.k_section_initial, sectionDefINCR_)
-                unbalanceForce = sectionForceINCR - section_.f_section_resist
+                [section.f_section_resist, section.k_section_initial] = self.sections[section].analyze(sectionDefINCR_)
+                sectionForceINCR = np.matmul(section.k_section_initial, sectionDefINCR_)
+                unbalanceForce = sectionForceINCR - section.f_section_resist
 
         K_element = 0
 
         for section_ in range(self.n_sections):
+            section = self.sections[section_]
             NP = np.array([[0, 0, 1], [((self.x[section_] + 1) / 2) - 1, (self.x[section_] + 1) / 2, 0]])
             fh = inv(self.sections[section_].k_section_initial)
             mat1 = np.matmul(np.transpose(NP), fh)
