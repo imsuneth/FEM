@@ -21,17 +21,17 @@ class MaterialModel:
             index += 1
 
     def get_strain(self, stress):
-        for index in range(self.no_of_ranges-1):
+        for index in range(self.no_of_ranges - 1):
             # print("stress:",stress, " range_upper_limits[index]:",self.range_upper_limits[index])
             if stress < self.range_upper_limits[index]:
                 return self.formulas[index](stress)
         return self.formulas[-1](stress)
 
     def get_e(self, stress):
-        for index in range(self.no_of_ranges-1):
-            #if stress < self.range_upper_limits[index]:
-                #return self.d_formulas[index](stress)
-            return 2*(10**8)
+        for index in range(self.no_of_ranges - 1):
+            # if stress < self.range_upper_limits[index]:
+            # return self.d_formulas[index](stress)
+            return 2 * (10 ** 8)
 
 
 x = Symbol('x')
