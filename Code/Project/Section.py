@@ -4,9 +4,8 @@ from Fiber import Fiber
 
 
 class Section:
-    s_h = np.zeros((2, 1))  # section force for each section (included as in the paper)
-    e_h = np.zeros((2, 1))  # section deformation (included as in the paper)
-    section_k = None
+    k_section_initial = None
+    f_section_resist = None
 
     def __init__(self, id, cross_section):
         self.id = id
