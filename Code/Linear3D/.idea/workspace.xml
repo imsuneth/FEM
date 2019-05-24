@@ -2,13 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="532e7b35-459a-4ac4-b9f7-7e1c9390ea55" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/Linear3D.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Linear3D.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Project/.idea/Project.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../Project/.idea/Project.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Project/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Project/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Project/Structure.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Project/Structure.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Project/testStructure.json" beforeDir="false" afterPath="$PROJECT_DIR$/../Project/testStructure.json" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -17,12 +12,12 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Structure.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="168" column="8" selection-start-line="168" selection-start-column="8" selection-end-line="195" selection-end-column="55" />
+            <state relative-caret-position="357">
+              <caret line="136" column="23" selection-start-line="136" selection-start-column="12" selection-end-line="136" selection-end-column="23" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -35,7 +30,7 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="676" />
     <option name="width" value="697" />
     <option name="height" value="745" />
@@ -116,15 +111,15 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="754" extended-state="6" />
+    <frame x="-8" y="-8" width="1382" height="754" extended-state="7" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25567323" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25945538" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.32850242" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32850242" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -173,8 +168,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Structure.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="168" column="8" selection-start-line="168" selection-start-column="8" selection-end-line="195" selection-end-column="55" />
+        <state relative-caret-position="357">
+          <caret line="136" column="23" selection-start-line="136" selection-start-column="12" selection-end-line="136" selection-end-column="23" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>

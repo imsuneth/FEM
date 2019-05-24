@@ -161,58 +161,27 @@ class Structure:
             # self.n_totalFreeDof+=t_x+t_y+r_x+r_y
         logger.info("Fixed points Creation--> Done")
 
+        # initiating necessary variables
+        self.DOF_PER_NODE = 3
+        self.node_order = None
+        self.structure_k = None
+        self.force_vector = None
+
         return None
 
     def analyzeStructure(self):
 
-        # Initial Stiffness - k_0
-        DOF_PER_NODE = 3
-        mat_size = DOF_PER_NODE * (self.n_elements + 1)
-        self.k_0 = np.zeros([mat_size, mat_size])
+        # Initial Stiffness
+        mat_size = self.DOF_PER_NODE * (self.n_elements + 1)
+        self.structure_k = np.zeros([mat_size, mat_size])
         self.force_vector = np.zeros(mat_size, dtype=np.float_)
 
-        node_order = [-1] * (DOF_PER_NODE * self.n_nodes)
-        for element_id in range(self.n_elements):
-            element = self.elements[element_id]
-            startNode = element.start_node.id
-            endNode = element.end_node.id
-            k = element.calInitialElement_K("GLOBAL")
+        self.assemble_structure_k(0)
 
-            y1 = DOF_PER_NODE * startNode
-            y2 = y1 + DOF_PER_NODE
-            x1 = DOF_PER_NODE * startNode
-            x2 = x1 + DOF_PER_NODE
-            self.k_0[y1:y2, x1:x2] += k[:DOF_PER_NODE, :DOF_PER_NODE]
+        self.node_order = list(filter(lambda a: a != -1, self.node_order))
 
-            y1 = DOF_PER_NODE * startNode
-            y2 = y1 + DOF_PER_NODE
-            x1 = DOF_PER_NODE * endNode
-            x2 = x1 + DOF_PER_NODE
-            self.k_0[y1:y2, x1:x2] += k[:DOF_PER_NODE, DOF_PER_NODE:]
-
-            start_node = element.start_node
-            self.force_vector[y1:y2] += start_node.get_dof()
-            node_order[y1] = startNode
-
-            y1 = DOF_PER_NODE * endNode
-            y2 = y1 + DOF_PER_NODE
-            x1 = DOF_PER_NODE * startNode
-            x2 = x1 + DOF_PER_NODE
-            self.k_0[y1:y2, x1:x2] += k[DOF_PER_NODE:, :DOF_PER_NODE]
-
-            y1 = DOF_PER_NODE * endNode
-            y2 = y1 + DOF_PER_NODE
-            x1 = DOF_PER_NODE * endNode
-            x2 = x1 + DOF_PER_NODE
-            self.k_0[y1:y2, x1:x2] += k[DOF_PER_NODE:, DOF_PER_NODE:]
-
-            end_node = element.end_node
-            self.force_vector[y1:y2] += end_node.get_dof()
-            node_order[y1] = endNode
-
-        node_order = list(filter(lambda a: a != -1, node_order))
-        print("node_order:\n", node_order)
-        print("k_0:\n", self.k_0)
+        print("node_order:\n", self.node_order)
+        print("initial_k:\n", self.structure_k)
         print("force_vector:\n", self.force_vector)
 
         np.where(self.force_vector is not None, 0, self.force_vector)
@@ -220,22 +189,23 @@ class Structure:
         # Stiffness after applying static loads - k
 
         for force_id in range(mat_size):
-            node_id = node_order[int(math.floor(force_id / DOF_PER_NODE))]
+            node_id = self.node_order[int(math.floor(force_id / self.DOF_PER_NODE))]
             if not math.isnan(self.force_vector[force_id]):
                 node = self.nodes[node_id]
-                if force_id % DOF_PER_NODE == 0:
+                if force_id % self.DOF_PER_NODE == 0:
                     if not node.f_x.controlled:
-                        self.forceControlled(node.f_x.value, force_id)
-                elif force_id % DOF_PER_NODE == 1:
+                        self.force_controlled(node.f_x.value, force_id)
+                elif force_id % self.DOF_PER_NODE == 1:
                     if not node.f_y.controlled:
-                        self.forceControlled(node.f_y.value, force_id)
-                elif force_id % DOF_PER_NODE == 2:
+                        self.force_controlled(node.f_y.value, force_id)
+                elif force_id % self.DOF_PER_NODE == 2:
                     if not node.m_z.controlled:
-                        self.forceControlled(node.m_z.value, force_id)
+                        self.force_controlled(node.m_z.value, force_id)
 
         return None
 
-    def forceControlled(self, force, force_id):
+
+    def force_controlled(self, force, force_id):
         if force == 0:
             return
         print("force control started for static force", force)
@@ -251,37 +221,98 @@ class Structure:
             # Applying boundary conditions
             print("Applying boundary conditions")
             force_vector_copy = self.force_vector
-
+            structure_k_copy = self.structure_k
             index = 0
             for force in force_vector_copy:
                 if math.isnan(force):
-                    self.k_0 = np.delete(self.k_0, index, 0)
-                    self.k_0 = np.delete(self.k_0, index, 1)
+                    structure_k_copy = np.delete(structure_k_copy, index, 0)
+                    structure_k_copy = np.delete(structure_k_copy, index, 1)
                     force_vector_copy = np.delete(force_vector_copy, index, 0)
                 else:
                     index += 1
 
-            print("structure_k:", self.k_0)
-            print("structure_force:", force_vector_copy)
+            print("structure_k:\n", structure_k_copy)
+            print("structure_force:\n", force_vector_copy)
 
-            deformation = np.dot(np.linalg.inv(self.k_0), force_vector_copy)
+            deformation = np.dot(np.linalg.inv(structure_k_copy), force_vector_copy)
 
-            print("deformation:", deformation)
+            print("deformation:\n", deformation)
 
             deformation_vector = np.zeros(self.force_vector.size, dtype=np.float_)
             index_def = 0
-            index_force = 0
             for index_force in range(self.force_vector.size):
                 if not math.isnan(self.force_vector[index_force]):
                     deformation_vector[index_force] = deformation[index_def]
                     index_def += 1
-                index_force += 1
 
-            print("deformation_vector", deformation_vector)
+            print("deformation_vector:\n", deformation_vector)
 
-            
+            self.save_deformations(deformation_vector)  # store deformations to nodes
+            print(" - deformations save to nodes")
+
+
+
         return None
 
-    def displacementControlled(self):
+    def displacement_controlled(self):
 
         return None
+
+    def assemble_structure_k(self, tag):
+
+        if tag == 0:
+            self.node_order = [-1] * (self.DOF_PER_NODE * self.n_nodes)
+
+        for element_id in range(self.n_elements):
+            element = self.elements[element_id]
+            startNode = element.start_node.id
+            endNode = element.end_node.id
+
+            if tag == 0:
+                k = element.calInitialElement_K("GLOBAL")
+            else:
+                k = element.analyze()
+
+            y1 = self.DOF_PER_NODE * startNode
+            y2 = y1 + self.DOF_PER_NODE
+            x1 = self.DOF_PER_NODE * startNode
+            x2 = x1 + self.DOF_PER_NODE
+            self.structure_k[y1:y2, x1:x2] += k[:self.DOF_PER_NODE, :self.DOF_PER_NODE]
+
+            y1 = self.DOF_PER_NODE * startNode
+            y2 = y1 + self.DOF_PER_NODE
+            x1 = self.DOF_PER_NODE * endNode
+            x2 = x1 + self.DOF_PER_NODE
+            self.structure_k[y1:y2, x1:x2] += k[:self.DOF_PER_NODE, self.DOF_PER_NODE:]
+
+            if tag == 0:
+                start_node = element.start_node
+                self.force_vector[y1:y2] += start_node.get_dof()
+                self.node_order[y1] = startNode
+
+            y1 = self.DOF_PER_NODE * endNode
+            y2 = y1 + self.DOF_PER_NODE
+            x1 = self.DOF_PER_NODE * startNode
+            x2 = x1 + self.DOF_PER_NODE
+            self.structure_k[y1:y2, x1:x2] += k[self.DOF_PER_NODE:, :self.DOF_PER_NODE]
+
+            y1 = self.DOF_PER_NODE * endNode
+            y2 = y1 + self.DOF_PER_NODE
+            x1 = self.DOF_PER_NODE * endNode
+            x2 = x1 + self.DOF_PER_NODE
+            self.structure_k[y1:y2, x1:x2] += k[self.DOF_PER_NODE:, self.DOF_PER_NODE:]
+
+            if tag == 0:
+                end_node = element.end_node
+                self.force_vector[y1:y2] += end_node.get_dof()
+                self.node_order[y1] = endNode
+
+            return
+
+    def save_deformations(self, deformation_vector):
+        for node_id in self.node_order:
+            from_i = node_id * self.DOF_PER_NODE
+            node = self.nodes[node_id]
+            node.d_x = deformation_vector[from_i]
+            node.d_y = deformation_vector[from_i + 1]
+            node.dm_z = deformation_vector[from_i + 2]
