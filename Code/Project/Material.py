@@ -7,7 +7,7 @@ class MaterialModel:
     def __init__(self, id, no_of_ranges, range_upper_limits, formulas_list):
         self.no_of_ranges = no_of_ranges
         self.id = id
-        self.ranges = np.array(range_upper_limits)
+        self.range_upper_limits = np.array(range_upper_limits)
         self.formulas = np.empty(no_of_ranges, dtype=Function)
         self.d_formulas = np.empty(no_of_ranges, dtype=Function)
         index = 0
@@ -21,15 +21,17 @@ class MaterialModel:
             index += 1
 
     def get_strain(self, stress):
-        for index in range(self.no_of_ranges):
-            if stress < self.ranges[index]:
+        for index in range(self.no_of_ranges - 1):
+            # print("stress:",stress, " range_upper_limits[index]:",self.range_upper_limits[index])
+            if stress < self.range_upper_limits[index]:
                 return self.formulas[index](stress)
+        return self.formulas[-1](stress)
 
     def get_e(self, stress):
-        for index in range(self.no_of_ranges):
-            if stress < self.ranges[index]:
-                #return self.d_formulas[index](stress)
-                return 20*(10**6)
+        for index in range(self.no_of_ranges - 1):
+            # if stress < self.range_upper_limits[index]:
+            # return self.d_formulas[index](stress)
+            return 2 * (10 ** 8)
 
 
 x = Symbol('x')
@@ -45,7 +47,6 @@ def load_material_models(js):
         name = material_model_js["name"]
         no_of_ranges = material_model_js["no_of_ranges"]
         range_upper_limits = material_model_js["range_upper_limits"]
-        range_upper_limits.append(sys.float_info.max)
         formulas = material_model_js["formulas"]
         material_model = MaterialModel(id, no_of_ranges, range_upper_limits, formulas)
-        material_models.put(id, material_model)
+material_models.put(id, material_model)
