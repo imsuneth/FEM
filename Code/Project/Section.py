@@ -28,7 +28,9 @@ class Section:
         for fiber_id in range(self.cross_section.no_of_fibers):
             fiber = self.fibers[fiber_id]
             eps = eps_0 - fiber.y * k
+            # print("eps", eps)
             sigma = Material.material_models[fiber.material_id].get_strain(eps)
+
             area = fiber.area
             A_i = sigma * area
             resistance_force[0] += A_i
@@ -41,9 +43,8 @@ class Section:
             sectional_stiffness[0][1] += -1 * sectional_stiffness_01
             sectional_stiffness[1][1] = sectional_stiffness_11
         sectional_stiffness[1][0] = sectional_stiffness[0][1]
-        # print("Resistance force")
-        # print(resistance_force)
-        # print("sectional_stiffness")
-        # print(sectional_stiffness)
+
+        # print("Resistance force:\n", resistance_force)
+        # print("sectional_stiffness\n", sectional_stiffness)
 
         return [resistance_force, sectional_stiffness]

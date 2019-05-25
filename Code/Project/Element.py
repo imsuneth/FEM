@@ -95,19 +95,24 @@ class Element:
         #print("elementForceINCR",elementForceINCR)
         for section_ in range(self.n_sections):  # newton raphson iteration
 
+
             logger.info("Element %d sectional iteration running" % self.id)
             section=self.sections[section_]
 
             NP = np.array([[0, 0, 1], [((self.x[section_] + 1) / 2) - 1, (self.x[section_] + 1) / 2, 0]])
 
+            # ////////////starting newton-raphson iteration////////////////////
+
             sectionForceINCR = np.matmul(NP, elementForceINCR)  # sectionForceINCR ---> 2X1 matrix
 
             sectionDefINCR_ = np.matmul(section.k_section_initial, sectionForceINCR)
 
-            unbalanceForce = sectionForceINCR - section.f_section_resist
+            [section.f_section_resist, section.k_section_initial] = section.analyze(sectionDefINCR_)
 
+            unbalanceForce = sectionForceINCR - section.f_section_resist
             #print("unbalanceForce",unbalanceForce)
             while (self.conditionCheck(unbalanceForce, tolerance)):
+                
                 corrective_d = np.matmul(inv(section.k_section_initial), unbalanceForce)
 
                 # print("inv(section.k_section_initial)",inv(section.k_section_initial))
@@ -115,10 +120,14 @@ class Element:
                 # print("corrective_d",corrective_d)
 
                 sectionDefINCR_ += corrective_d
-                [section.f_section_resist, section.k_section_initial] = self.sections[section].analyze(sectionDefINCR_)
 
                 sectionForceINCR = np.matmul(section.k_section_initial, sectionDefINCR_)
+
+                [section.f_section_resist, section.k_section_initial] = section.analyze(sectionDefINCR_)
+
                 unbalanceForce = sectionForceINCR - section.f_section_resist
+
+            # ///////////ending newton raphson iteration/////////////////
 
         K_element = 0
 

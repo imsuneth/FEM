@@ -49,4 +49,5 @@ def load_material_models(js):
         range_upper_limits = material_model_js["range_upper_limits"]
         formulas = material_model_js["formulas"]
         material_model = MaterialModel(id, no_of_ranges, range_upper_limits, formulas)
-material_models.put(id, material_model)
+        material_models.put(id, material_model)
+
