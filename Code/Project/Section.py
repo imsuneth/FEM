@@ -27,6 +27,7 @@ class Section:
 
         for fiber_id in range(self.cross_section.no_of_fibers):
             fiber = self.fibers[fiber_id]
+            print("section_deformation[1]:", k)
             eps = eps_0 - fiber.y * k
             # print("eps", eps)
             sigma = Material.material_models[fiber.material_id].get_strain(eps)

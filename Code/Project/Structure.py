@@ -165,6 +165,7 @@ class Structure:
         self.force_vector = None
         self.deformation_vector = None
         self.static_force_step = 1
+        self.is_force_controlled_analysis = True
 
         return None
 
@@ -178,20 +179,53 @@ class Structure:
         # Fill initial force_vector, initial structure_k and node_order
         self.assemble_structure_k(0)
 
-        # Stiffness after applying static loads
+        controlled_force_info = []
+
+        # Calculate stiffness after applying static loads
         for force_id in range(mat_size):
             node_id = self.node_order[int(math.floor(force_id / self.DOF_PER_NODE))]
             if not math.isnan(self.force_vector[force_id]):
                 node = self.nodes[node_id]
                 if force_id % self.DOF_PER_NODE == 0:
-                    if not node.f_x.controlled:
+                    if node.f_x.controlled:
+                        controlled_force_info.append([node_id, force_id, 0])
+                    else:
                         self.force_controlled(node.f_x.value, force_id)
+
                 elif force_id % self.DOF_PER_NODE == 1:
-                    if not node.f_y.controlled:
+                    if node.f_y.controlled:
+                        controlled_force_info.append([node_id, force_id, 1])
+                    else:
                         self.force_controlled(node.f_y.value, force_id)
+
                 elif force_id % self.DOF_PER_NODE == 2:
-                    if not node.m_z.controlled:
+                    if node.m_z.controlled:
+                        controlled_force_info.append([node_id, force_id, 2])
+                    else:
                         self.force_controlled(node.m_z.value, force_id)
+
+        # Calculate stiffness applying control loads
+        for controlled_force in controlled_force_info:
+            node_id = controlled_force[0]
+            node = self.nodes[node_id]
+            force_id = controlled_force[1]
+            direction = controlled_force[2]
+
+            if self.is_force_controlled_analysis:
+                if direction == 0:
+                    self.force_controlled(node.f_x.value, force_id)
+                elif direction == 1:
+                    self.force_controlled(node.f_y.value, force_id)
+                elif direction == 2:
+                    self.force_controlled(node.f_z.value, force_id)
+
+            else:
+                if direction == 0:
+                    self.displacement_controlled(node.f_x.value, force_id)
+                elif direction == 1:
+                    self.displacement_controlled(node.f_y.value, force_id)
+                elif direction == 2:
+                    self.displacement_controlled(node.f_z.value, force_id)
 
         return None
 
@@ -228,13 +262,12 @@ class Structure:
             # corrective_deformation = self.assemble_deformation_vector(corrective_deformation)
             # print("corrective_deformation:", corrective_deformation)
             deformation += corrective_deformation
-            print("deformation:", deformation)
+            # print("deformation:", deformation)
             # break
 
         return None
 
-    def displacement_controlled(self):
-
+    def displacement_controlled(self, force, force_id):
         return None
 
     def assemble_deformation_vector(self, deformation):
@@ -248,7 +281,6 @@ class Structure:
         return self.deformation_vector
 
     def assemble_structure_k(self, tag):
-
         if tag == 0:
             self.node_order = [-1] * (self.DOF_PER_NODE * self.n_nodes)
 
