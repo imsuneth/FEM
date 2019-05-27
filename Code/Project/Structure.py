@@ -47,8 +47,8 @@ class Structure:
             fiber_material_ids = cross_section["fiber_material_ids"]
             new_cross_section = None
             if shape == "rectangle":
-                width = dimensions["y"]
-                height = dimensions["z"]
+                width = dimensions["z"]
+                height = dimensions["y"]
                 new_cross_section = SquareCrossSection(id, width, height, no_of_fibers, fiber_material_ids)
 
                 logger.debug("Cross Section id:%d\tType:%s\tno of Fibers:%d\twidth=%d\theight:%d" % (
@@ -262,7 +262,7 @@ class Structure:
             # corrective_deformation = self.assemble_deformation_vector(corrective_deformation)
             # print("corrective_deformation:", corrective_deformation)
             deformation += corrective_deformation
-            # print("deformation:", deformation)
+            print("deformation:", deformation)
             # break
 
         return None

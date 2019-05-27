@@ -42,8 +42,8 @@ class Structure:
             dimensions = cross_section["dimensions"]
             new_cross_section = None
             if shape == "rectangle":
-                width = dimensions["y"]
-                height = dimensions["z"]
+                width = dimensions["z"]
+                height = dimensions["y"]
                 new_cross_section = SquareCrossSection(id, width, height)
 
             elif shape == "circle":

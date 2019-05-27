@@ -16,7 +16,7 @@
 		{	"id":0,
 			"shape":"rectangle",
 			"dimensions":
-                {"y":0.35,"z":0.50},
+                {"y":0.5,"z":0.35},
 			"no_of_fibers":10,
 			"fiber_material_ids":
 				[0, 1, 0, 1,0,0,0,0,0,0]
