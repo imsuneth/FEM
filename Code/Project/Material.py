@@ -29,9 +29,10 @@ class MaterialModel:
 
     def get_e(self, stress):
         for index in range(self.no_of_ranges - 1):
-            # if stress < self.range_upper_limits[index]:
-            # return self.d_formulas[index](stress)
-            return 2 * (10 ** 8)
+            if stress < self.range_upper_limits[index]:
+                return self.d_formulas[index](stress)
+            # return 2 * (10 ** 8)
+        return self.d_formulas[-1](stress)
 
 
 x = Symbol('x')

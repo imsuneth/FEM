@@ -2,17 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="532e7b35-459a-4ac4-b9f7-7e1c9390ea55" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CrossSection.py" beforeDir="false" afterPath="$PROJECT_DIR$/CrossSection.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Element.py" beforeDir="false" afterPath="$PROJECT_DIR$/Element.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Structure.py" beforeDir="false" afterPath="$PROJECT_DIR$/Structure.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testStructure.json" beforeDir="false" afterPath="$PROJECT_DIR$/testStructure.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Project/.idea/Project.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../Project/.idea/Project.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Project/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Project/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Project/Section.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Project/Section.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Project/Structure.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Project/Structure.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Project/material_models.json" beforeDir="false" afterPath="$PROJECT_DIR$/../Project/material_models.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Project/testStructure.json" beforeDir="false" afterPath="$PROJECT_DIR$/../Project/testStructure.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Project/Material.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Project/Material.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -182,6 +172,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="754" extended-state="7" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.13086233" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
