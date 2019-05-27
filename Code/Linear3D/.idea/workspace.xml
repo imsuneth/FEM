@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="532e7b35-459a-4ac4-b9f7-7e1c9390ea55" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../Project/Material.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Project/Material.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Project/material_models.json" beforeDir="false" afterPath="$PROJECT_DIR$/../Project/material_models.json" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -91,7 +91,7 @@
   </component>
   <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="-7" />
-    <option name="width" value="697" />
+    <option name="width" value="815" />
     <option name="height" value="745" />
   </component>
   <component name="ProjectView">
@@ -172,7 +172,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="754" extended-state="7" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.13086233" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
