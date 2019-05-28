@@ -3,7 +3,7 @@ from Node import *
 from CrossSection import *
 from log_ import *
 from DOF import *
-from matplotlib import pyplot as plot
+
 
 
 class Structure:

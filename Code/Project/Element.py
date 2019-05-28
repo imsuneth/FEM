@@ -87,16 +87,16 @@ class Element:
         logger.info("Element:%d Sectional level iteration running" % self.id)
 
         elementDefINCR = np.array([[self.start_node.d_x], [self.start_node.d_y], [self.start_node.dm_z], [self.end_node.d_x], [self.end_node.d_y], [self.end_node.dm_z]])
-
+        #print("elementDefINCR",elementDefINCR)
         rotate = np.matmul(self.rotMatrix(), elementDefINCR)  # convert defINCR to local co-ordinate systme
         basicSystem = np.matmul(self.rigidBodyTransMatrix(), rotate)  # remove rigid body modes (basicSystem 3x1 matrix)
-
+        #print("basicSystem",basicSystem)
         elementForceINCR = np.matmul(self.k_element_initial, basicSystem)
         #print("elementForceINCR",elementForceINCR)
         for section_ in range(self.n_sections):  # newton raphson iteration
 
 
-            logger.info("Element %d sectional iteration running" % self.id)
+            logger.info("Element %d sectional iteration running" % section_)
             section=self.sections[section_]
 
             NP = np.array([[0, 0, 1], [((self.x[section_] + 1) / 2) - 1, (self.x[section_] + 1) / 2, 0]])
@@ -104,15 +104,15 @@ class Element:
             # ////////////starting newton-raphson iteration////////////////////
 
             sectionForceINCR = np.matmul(NP, elementForceINCR)  # sectionForceINCR ---> 2X1 matrix
-
+            #print("sectionForceINCR",sectionForceINCR)
             sectionDefINCR_ = np.matmul(section.k_section_initial, sectionForceINCR)
 
             [section.f_section_resist, section.k_section_initial] = section.analyze(sectionDefINCR_)
 
             unbalanceForce = sectionForceINCR - section.f_section_resist
-            #print("unbalanceForce",unbalanceForce)
+
             while (self.conditionCheck(unbalanceForce, tolerance)):
-                
+
                 corrective_d = np.matmul(inv(section.k_section_initial), unbalanceForce)
 
                 # print("inv(section.k_section_initial)",inv(section.k_section_initial))
@@ -147,7 +147,7 @@ class Element:
 
     def conditionCheck(self, mat, value):
         max_abs_val = abs(max(mat.min(), mat.max(), key=abs))
-        logger.info("Checking convergence. max_abs_val = %f" % max_abs_val)
+        #logger.info("Checking convergence. max_abs_val = %f" % max_abs_val)
         if max_abs_val > value:
             return True
         else:

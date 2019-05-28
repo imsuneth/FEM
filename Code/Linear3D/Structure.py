@@ -12,7 +12,7 @@ class Structure:
         # Load the jason file and construct the virtual structure
         # Create Node objects and put them in nparray "nodes"
 
-        logger.info("Creating the Virtual Structure for 3D Linear solving\n")
+        logger.info("Reading user input\n")
 
         # self.n_totalFreeDof = 0 #added by pubudu to extractDOF from deformation increment vector
         self.fix_Point_array = []
@@ -114,11 +114,12 @@ class Structure:
             node = self.nodes[node_id]
             [node.t_x, node.t_y, node.t_z, node.r_x, node.r_y, node.r_z] = [t_x, t_y, t_z, r_x, r_y, r_z]
 
-        logger.info("Fixed points Creation--> Done")
+        logger.info("Fixed points Creation--> Done\n")
 
-        return None
+
 
     def analyzeStructure(self):
+        logger.info("STARTED STRUCTURE LEVEL CALCULATION\n")
         DOF_PER_NODE = 6
         mat_size = DOF_PER_NODE * (self.n_elements + 1)
         structure_k = np.zeros([mat_size, mat_size])
@@ -162,7 +163,7 @@ class Structure:
             force_vector[y1:y2] += end_node.get_dof()
             node_order[y1]=endNode
 
-        print("structure_k:", structure_k)
+        print("structure_k:", structure_k[7][11])
         print("structure_force:", force_vector)
 
 
