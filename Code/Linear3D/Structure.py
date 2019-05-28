@@ -5,7 +5,6 @@ from CrossSection import *
 from numpy.linalg import inv
 from log_ import *
 
-
 class Structure:
 
     def __init__(self, js):
@@ -116,8 +115,6 @@ class Structure:
 
         logger.info("Fixed points Creation--> Done\n")
 
-
-
     def analyzeStructure(self):
         logger.info("STARTED STRUCTURE LEVEL CALCULATION\n")
         DOF_PER_NODE = 6
@@ -130,6 +127,7 @@ class Structure:
             startNode = element.start_node.id
             endNode = element.end_node.id
             k = element.K_element_global()
+            print("Element k:", element_id, "\n", k)
 
             y1 = DOF_PER_NODE * startNode
             y2 = y1 + DOF_PER_NODE
@@ -145,7 +143,7 @@ class Structure:
 
             start_node = element.start_node
             force_vector[y1:y2] += start_node.get_dof()
-            node_order[y1]=startNode
+            node_order[y1] = startNode
 
             y1 = DOF_PER_NODE * endNode
             y2 = y1 + DOF_PER_NODE
@@ -161,11 +159,10 @@ class Structure:
 
             end_node = element.end_node
             force_vector[y1:y2] += end_node.get_dof()
-            node_order[y1]=endNode
+            node_order[y1] = endNode
 
-        print("structure_k:", structure_k[7][11])
+        print("structure_k:\n", structure_k)
         print("structure_force:", force_vector)
-
 
         force_vector_copy = force_vector
 
@@ -178,7 +175,7 @@ class Structure:
             else:
                 index += 1
 
-        print("structure_k:", structure_k)
+        print("structure_k:\n", structure_k)
         print("structure_force:", force_vector)
 
         deformation = np.matmul(np.linalg.inv(structure_k), force_vector)
@@ -200,13 +197,13 @@ class Structure:
         print("Node order:", node_order)
 
         for node_id in node_order:
-            from_i = node_id*DOF_PER_NODE
+            from_i = node_id * DOF_PER_NODE
             node = self.nodes[node_id]
             node.d_x = deformation_vector[from_i]
-            node.d_y = deformation_vector[from_i+1]
-            node.d_z = deformation_vector[from_i+2]
-            node.dm_x = deformation_vector[from_i+3]
-            node.dm_y = deformation_vector[from_i+4]
-            node.dm_z = deformation_vector[from_i+5]
+            node.d_y = deformation_vector[from_i + 1]
+            node.d_z = deformation_vector[from_i + 2]
+            node.dm_x = deformation_vector[from_i + 3]
+            node.dm_y = deformation_vector[from_i + 4]
+            node.dm_z = deformation_vector[from_i + 5]
 
         return structure_k

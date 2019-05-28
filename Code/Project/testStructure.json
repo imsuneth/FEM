@@ -19,7 +19,7 @@
                 {"y":0.5,"z":0.35},
 			"no_of_fibers":10,
 			"fiber_material_ids":
-				[0, 1, 0, 1,0,0,0,0,0,0]
+				[0, 0, 0, 0,0,0,0,0,0,0]
 		}
 	],
     
@@ -45,7 +45,7 @@
             "id": 0, 
             "point_id":1,
             "force":
-            {   "x":[0, false], "y":[-1000, false, 1], "z":[0, false]},
+            {   "x":[0, false], "y":[-100000, false, 1], "z":[0, false]},
             "torque":
             {   "x":[0, false], "y":[0, false], "z":[0, false]}
         }

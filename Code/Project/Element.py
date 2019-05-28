@@ -21,7 +21,7 @@ class Element:
 
         for section_id in range(n_sections):
             section = Section(section_id, cross_section)
-            section.f_section_resist = section.analyze([0, 0])[0]
+            # section.f_section_resist = section.analyze([0, 0])[0]
             section.k_section_initial = section.analyze([0,0])[1]
             self.sections.put(section_id, section)
 
@@ -106,13 +106,13 @@ class Element:
             sectionForceINCR = np.matmul(NP, elementForceINCR)  # sectionForceINCR ---> 2X1 matrix
             #print("sectionForceINCR",sectionForceINCR)
             sectionDefINCR_ = np.matmul(section.k_section_initial, sectionForceINCR)
-
+            print("sectionDefINCR_", sectionDefINCR_)
             [section.f_section_resist, section.k_section_initial] = section.analyze(sectionDefINCR_)
 
             unbalanceForce = sectionForceINCR - section.f_section_resist
 
             while (self.conditionCheck(unbalanceForce, tolerance)):
-
+                print("section.k_section_initial:\n",section.k_section_initial)
                 corrective_d = np.matmul(inv(section.k_section_initial), unbalanceForce)
 
                 # print("inv(section.k_section_initial)",inv(section.k_section_initial))

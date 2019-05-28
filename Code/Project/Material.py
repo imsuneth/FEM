@@ -18,6 +18,7 @@ class MaterialModel:
             d_sympy_formula = sympy_formula.diff(Symbol('x'))
             f_d_sympy_formula = lambdify(x, d_sympy_formula)
             self.d_formulas.put(index, f_d_sympy_formula)
+
             index += 1
 
     def get_strain(self, stress):

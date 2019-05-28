@@ -164,7 +164,7 @@ class Structure:
         self.structure_k = None
         self.force_vector = None
         self.deformation_vector = None
-        self.static_force_step = 1
+        self.static_force_step = 1000
         self.is_force_controlled_analysis = True
 
         return None
@@ -175,6 +175,7 @@ class Structure:
         mat_size = self.DOF_PER_NODE * (self.n_elements + 1)
         self.structure_k = np.zeros([mat_size, mat_size])
         self.force_vector = np.zeros(mat_size, dtype=np.float_)
+        self.deformation_vector = np.zeros(self.force_vector.size, dtype=np.float_)
 
         # Fill initial force_vector, initial structure_k and node_order
         self.assemble_structure_k(0)
@@ -236,9 +237,7 @@ class Structure:
 
         # Find initial deformation
         [structure_k_copy, force_vector_copy] = self.apply_boundary_conditions()
-        deformation = np.dot(np.linalg.inv(structure_k_copy), force_vector_copy)
-        print("deformation:", deformation)
-        self.assemble_deformation_vector(deformation)
+        deformation = np.zeros(force_vector_copy.size, np.float_)
 
         self.static_force_step = self.static_force_step * force / abs(force)
         applied_force = 0
@@ -271,7 +270,6 @@ class Structure:
         return None
 
     def assemble_deformation_vector(self, deformation):
-        self.deformation_vector = np.zeros(self.force_vector.size, dtype=np.float_)
         index_def = 0
         for index_force in range(self.force_vector.size):
             if not math.isnan(self.force_vector[index_force]):

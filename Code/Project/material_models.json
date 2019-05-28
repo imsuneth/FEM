@@ -1,5 +1,5 @@
 {
-    "no_of_material_models":2,
+    "no_of_material_models":1,
 
     "material_models":[
         {   "id":0,"name":"contrete_0", "no_of_ranges":3,
@@ -10,17 +10,6 @@
 			],
 			"range_upper_limits":[
 				0,0.00007973086397
-			]
-		},
-
-		{   "id":1,"name":"contrete_1", "no_of_ranges":3,
-			"formulas":[
-				"x*4+2",
-				"4*x+2",
-				"-2*x+1"
-			],
-			"range_upper_limits":[
-				-0.05, 0.1
 			]
 		}
     ]

@@ -44,9 +44,9 @@ class Element:
         logger.info("Element %d created" % (self.id))
 
     def transform(self):
-        l = np.cos(math.pi / 180 * self.theta_x_e)
-        m = np.cos(math.pi / 180 * self.theta_y_e)
-        n = np.cos(math.pi / 180 * self.theta_z_e)
+        l = np.cos(self.theta_x_e)
+        m = np.cos(self.theta_y_e)
+        n = np.cos(self.theta_z_e)
         D = np.sqrt(np.power(l, 2) + np.power(m, 2))
         # print("l,m,n",[l,m,n])
         mat = np.array([[l, m, n],
