@@ -21,8 +21,8 @@ class Element:
 
         for section_id in range(n_sections):
             section = Section(section_id, cross_section)
-            section.f_section_resist = section.analyze([0, 0])[0]
-            section.k_section_initial = section.analyze([0,0])[1]
+            section.f_section_resist = section.analyze([[0], [0]])[0]
+            section.k_section_initial = section.analyze([[0],[0]])[1]
             self.sections.put(section_id, section)
 
         if self.n_sections == 3:
@@ -90,9 +90,10 @@ class Element:
         #print("elementDefINCR",elementDefINCR)
         rotate = np.matmul(self.rotMatrix(), elementDefINCR)  # convert defINCR to local co-ordinate systme
         basicSystem = np.matmul(self.rigidBodyTransMatrix(), rotate)  # remove rigid body modes (basicSystem 3x1 matrix)
-        #print("basicSystem",basicSystem)
+        print("basicSystem",basicSystem)
+
         elementForceINCR = np.matmul(self.k_element_initial, basicSystem)
-        #print("elementForceINCR",elementForceINCR)
+        print("elementForceINCR",elementForceINCR)
         for section_ in range(self.n_sections):  # newton raphson iteration
 
 
@@ -100,14 +101,16 @@ class Element:
             section=self.sections[section_]
 
             NP = np.array([[0, 0, 1], [((self.x[section_] + 1) / 2) - 1, (self.x[section_] + 1) / 2, 0]])
-
+            print("NP\n",NP)
+            sectionForceINCR = np.matmul(NP, elementForceINCR)  # sectionForceINCR ---> 2X1 matrix
             # ////////////starting newton-raphson iteration////////////////////
 
-            sectionForceINCR = np.matmul(NP, elementForceINCR)  # sectionForceINCR ---> 2X1 matrix
-            #print("sectionForceINCR",sectionForceINCR)
-            sectionDefINCR_ = np.matmul(section.k_section_initial, sectionForceINCR)
+            print("sectionForceINCR",sectionForceINCR)
+            #sectionDefINCR_=section.total_deformation
 
-            [section.f_section_resist, section.k_section_initial] = section.analyze(sectionDefINCR_)
+            sectionDefINCR_ = np.matmul(section.k_section_initial, sectionForceINCR)
+            print("sectionDefINCR_\n",sectionDefINCR_)
+            [section.f_section_resist, section.k_section_initial] = section.analyze(np.transpose(sectionDefINCR_))
 
             unbalanceForce = sectionForceINCR - section.f_section_resist
 
@@ -123,11 +126,13 @@ class Element:
 
                 sectionForceINCR = np.matmul(section.k_section_initial, sectionDefINCR_)
 
-                [section.f_section_resist, section.k_section_initial] = section.analyze(sectionDefINCR_)
+                [section.f_section_resist, section.k_section_initial] = section.analyze(np.transpose(sectionDefINCR_))
 
                 unbalanceForce = sectionForceINCR - section.f_section_resist
 
             # ///////////ending newton raphson iteration/////////////////
+            #print(sectionDefINCR_)
+            #section.total_deformation+=sectionDefINCR_
 
         K_element = 0
 

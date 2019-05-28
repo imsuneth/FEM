@@ -6,6 +6,7 @@ from Fiber import Fiber
 class Section:
     k_section_initial = None
     f_section_resist = None
+    total_deformation=np.zeros((2,1))
 
     def __init__(self, id, cross_section):
         self.id = id
