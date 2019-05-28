@@ -16,8 +16,8 @@ class SquareCrossSection(CrossSection):
 
     def calculate_inertia(self):
         i_x = self.width * self.height * ((self.width ** 2) + (self.height ** 2)) / 12
-        i_y = (self.width * (self.height ** 3)) / 12
-        i_z = (self.height * (self.width ** 3)) / 12
+        i_y = (self.height * (self.width ** 3)) / 12
+        i_z = (self.width * (self.height ** 3)) / 12
         return [i_x, i_y, i_z]
 
 

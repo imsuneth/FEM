@@ -21,71 +21,61 @@ class Element:
 
         self.length = math.sqrt(math.pow(yDiff, 2) + math.pow(xDiff, 2) + math.pow(zDiff, 2))
 
-        local_x = np.array([local_dirs[0]["x"], local_dirs[0]["y"], local_dirs[0]["z"]])
-        local_y = np.array([local_dirs[1]["x"], local_dirs[1]["y"], local_dirs[1]["z"]])
-        local_z = np.array([local_dirs[2]["x"], local_dirs[2]["y"], local_dirs[2]["z"]])
+        # local_x = np.array([local_dirs[0]["x"], local_dirs[0]["y"], local_dirs[0]["z"]])
+        # local_y = np.array([local_dirs[1]["x"], local_dirs[1]["y"], local_dirs[1]["z"]])
+        # local_z = np.array([local_dirs[2]["x"], local_dirs[2]["y"], local_dirs[2]["z"]])
 
         global_x = np.array([1, 0, 0])
         global_y = np.array([0, 1, 0])
         global_z = np.array([0, 0, 1])
 
-        #local_x = np.array([local_dirs[0]["x"], local_dirs[0]["y"], local_dirs[0]["z"]])
-        #local_y = np.cross(local_x, global_z)
-        #local_z = np.cross(local_x, local_y)
+        local_x = np.array([local_dirs[0]["x"], local_dirs[0]["y"], local_dirs[0]["z"]])
+        local_y = np.cross(global_z, local_x)
+        local_z = np.cross(local_x, local_y)
+        print("local_y", local_y)
+        print("local_z", local_z)
 
         self.theta_x_e = math.acos(np.inner(local_x, global_x) / (norm(local_x) * norm(global_x)))
-        self.theta_y_e = math.acos(np.inner(local_y, global_y) / (norm(local_y) * norm(global_y)))
-        self.theta_z_e = math.acos(np.inner(local_z, global_z) / (norm(local_z) * norm(global_z)))
-
+        self.theta_y_e = math.acos(np.inner(local_x, global_y) / (norm(local_x) * norm(global_y)))
+        self.theta_z_e = math.acos(np.inner(local_x, global_z) / (norm(local_x) * norm(global_z)))
+        print("self.theta_x_e", self.theta_x_e)
+        print("self.theta_y_e", self.theta_y_e)
+        print("self.theta_z_e", self.theta_z_e)
         logger.info("Element %d created" % (self.id))
 
     def transform(self):
-        l = np.cos(self.theta_x_e)
-        m = np.cos(self.theta_y_e)
-        n = np.cos(self.theta_z_e)
+        l = np.cos(math.pi / 180 * self.theta_x_e)
+        m = np.cos(math.pi / 180 * self.theta_y_e)
+        n = np.cos(math.pi / 180 * self.theta_z_e)
         D = np.sqrt(np.power(l, 2) + np.power(m, 2))
+        # print("l,m,n",[l,m,n])
+        mat = np.array([[l, m, n],
+                        [-m / D, l / D, 0],
+                        [-l * n / D, -m * n / D, D]])
 
-        # mat = [[l, m, n],
-        #        [-m / D, l / D, 0],
-        #        [-l * n / D, -m * n / D, D]]
+        trans_matrix = np.zeros((12, 12))
+        trans_matrix[0:3, 0:3] += mat
+        trans_matrix[3:6, 3:6] += mat
+        trans_matrix[6:9, 6:9] += mat
+        trans_matrix[9:12, 9:12] += mat
 
-        trans_matrix = np.array([[l, m, n, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                 [-m / D, l / D, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                 [-l * n / D, -m * n / D, D, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                 [0, 0, 0, l, m, n, 0, 0, 0, 0, 0, 0],
-                                 [0, 0, 0, -m / D, l / D, 0, 0, 0, 0, 0, 0, 0],
-                                 [0, 0, 0, -l * n / D, -m * n / D, D, 0, 0, 0, 0, 0, 0],
-                                 [0, 0, 0, 0, 0, 0, l, m, n, 0, 0, 0],
-                                 [0, 0, 0, 0, 0, 0, -m / D, l / D, 0, 0, 0, 0],
-                                 [0, 0, 0, 0, 0, 0, -l * n / D, -m * n / D, D, 0, 0, 0],
-                                 [0, 0, 0, 0, 0, 0, 0, 0, 0, l, m, n],
-                                 [0, 0, 0, 0, 0, 0, 0, 0, 0, -m / D, l / D, 0],
-                                 [0, 0, 0, 0, 0, 0, 0, 0, 0, -l * n / D, -m * n / D, D]])
+        # trans_matrix = np.array([[l, m, n, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        #                          [-m / D, l / D, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        #                          [-l * n / D, -m * n / D, D, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        #                          [0, 0, 0, l, m, n, 0, 0, 0, 0, 0, 0],
+        #                          [0, 0, 0, -m / D, l / D, 0, 0, 0, 0, 0, 0, 0],
+        #                          [0, 0, 0, -l * n / D, -m * n / D, D, 0, 0, 0, 0, 0, 0],
+        #                          [0, 0, 0, 0, 0, 0, l, m, n, 0, 0, 0],
+        #                          [0, 0, 0, 0, 0, 0, -m / D, l / D, 0, 0, 0, 0],
+        #                          [0, 0, 0, 0, 0, 0, -l * n / D, -m * n / D, D, 0, 0, 0],
+        #                          [0, 0, 0, 0, 0, 0, 0, 0, 0, l, m, n],
+        #                          [0, 0, 0, 0, 0, 0, 0, 0, 0, -m / D, l / D, 0],
+        #                          [0, 0, 0, 0, 0, 0, 0, 0, 0, -l * n / D, -m * n / D, D]])
+
+        # print("trans_matrix\n",trans_matrix)
         return trans_matrix
 
     def K_element_local(self):
-        # mat_1 = E * A / L * np.array([[1, -1],
-        #                               [-1, 1]])
-        # mat_2 = G * J / L * np.array([[1, -1],
-        #                               [-1, 1]])
-        # c1 = (E * Iz) / (L)  # value of mat_3
-        # c2 = (E * Iz) / (L ** 2)  # value of mat_3
-        # c3 = (E * Iz) / (L ** 3)
-        #
-        # mat_3 = np.array([[12 * c3, 6 * c2, -12 * c3, 6 * c2],
-        #                   [6 * c2, 4 * c1, -6 * c2, 2 * c1],
-        #                   [-12 * c3, -6 * c2, 125 * c3, -6 * c2],
-        #                   [6 * c2, 2 * c1, -6 * c2, 4 * c1]])
-        #
-        # b1 = (E * Iy) / (L)  # value of mat_4
-        # b2 = (E * Iy) / (L ** 2)  # value of mat_4
-        # b3 = (E * Iy) / (L ** 3)  # value of mat_4
-        #
-        # mat_4 = np.array([[12 * b3, -6 * b2, -12 * b3, -6 * b2],
-        #                   [-6 * b2, 4 * b1, 6 * b2, 2 * b1],
-        #                   [-12 * b3, 6 * b2, 12 * b3, 6 * b2],
-        #                   [-6 * b2, 2 * b1, 6 * b2, 4 * b1]])
-
         material = Material.material_models[self.material_id]
 
         E = material.get_e()  # young's modulus
@@ -111,7 +101,7 @@ class Element:
         d1 = (E * Iy) / (L)  # value of mat_4
 
         # local_k_mat 12*12 element matrix
-        local_k_mat = np.array([[a, 0, 0, 0, 0, 0, a, 0, 0, 0, 0, 0],
+        local_k_mat = np.array([[a, 0, 0, 0, 0, 0, -a, 0, 0, 0, 0, 0],
 
                                 [0, 12 * c3, 0, 0, 0, 6 * c2, 0, -12 * c3, 0, 0, 0, 6 * c2],
 
@@ -119,7 +109,7 @@ class Element:
 
                                 [0, 0, 0, b, 0, 0, 0, 0, 0, -b, 0, 0],
 
-                                [0, 0, 0, 0, 4 * d1, 0, 0, 0, 6 * d2, 0, 2 * d1, 0],
+                                [0, 0, -6 * d2, 0, 4 * d1, 0, 0, 0, 6 * d2, 0, 2 * d1, 0],
 
                                 [0, 6 * c2, 0, 0, 0, 4 * c1, 0, -6 * c2, 0, 0, 0, 2 * c1],
 
@@ -134,7 +124,15 @@ class Element:
                                 [0, 0, -6 * d2, 0, 2 * d1, 0, 0, 0, 6 * d2, 0, 4 * d1, 0],
 
                                 [0, 6 * c2, 0, 0, 0, 2 * c1, 0, -6 * c2, 0, 0, 0, 4 * c1]])
+        #print("local_k_mat \n", local_k_mat)
+
         return local_k_mat
 
     def K_element_global(self):
-        return np.transpose(self.transform()) * self.K_element_local() * self.transform()
+        trans_matrix=self.transform()
+        mat1=np.matmul(np.transpose(trans_matrix) ,self.K_element_local())
+
+        global_k_mat = np.matmul(mat1,trans_matrix)
+
+        # print("after transformation\n",global_k_mat[7][11])
+        return global_k_mat
