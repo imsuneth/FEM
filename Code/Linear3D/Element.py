@@ -5,6 +5,7 @@ from numpy.linalg import norm
 from log_ import *
 
 
+
 class Element:
 
     def __init__(self, id, start_node, end_node, cross_section, material_id, local_dirs):
@@ -44,11 +45,12 @@ class Element:
         logger.info("Element %d created" % (self.id))
 
     def transform(self):
-        l = np.cos(math.pi / 180 * self.theta_x_e)
-        m = np.cos(math.pi / 180 * self.theta_y_e)
-        n = np.cos(math.pi / 180 * self.theta_z_e)
-        D = np.sqrt(np.power(l, 2) + np.power(m, 2))
-        # print("l,m,n",[l,m,n])
+        l = math.cos(self.theta_x_e)
+        m = math.cos(self.theta_y_e)
+        n = math.cos(self.theta_z_e)
+
+        D = math.sqrt(math.pow(l, 2) + math.pow(m, 2))
+        print("l,m,n", [l, m, n])
         mat = np.array([[l, m, n],
                         [-m / D, l / D, 0],
                         [-l * n / D, -m * n / D, D]])
@@ -124,15 +126,15 @@ class Element:
                                 [0, 0, -6 * d2, 0, 2 * d1, 0, 0, 0, 6 * d2, 0, 4 * d1, 0],
 
                                 [0, 6 * c2, 0, 0, 0, 2 * c1, 0, -6 * c2, 0, 0, 0, 4 * c1]])
-        #print("local_k_mat \n", local_k_mat)
+        # print("local_k_mat \n", local_k_mat)
 
         return local_k_mat
 
     def K_element_global(self):
-        trans_matrix=self.transform()
-        mat1=np.matmul(np.transpose(trans_matrix) ,self.K_element_local())
+        trans_matrix = self.transform()
+        mat1 = np.matmul(np.transpose(trans_matrix), self.K_element_local())
 
-        global_k_mat = np.matmul(mat1,trans_matrix)
+        global_k_mat = np.matmul(mat1, trans_matrix)
 
-        # print("after transformation\n",global_k_mat[7][11])
+        print("after transformation\n", global_k_mat[7][11])
         return global_k_mat

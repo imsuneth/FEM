@@ -163,7 +163,7 @@ class Structure:
             force_vector[y1:y2] += end_node.get_dof()
             node_order[y1]=endNode
 
-        print("structure_k:", structure_k[7][11])
+        print("structure_k:",structure_k)
         print("structure_force:", force_vector)
 
 
