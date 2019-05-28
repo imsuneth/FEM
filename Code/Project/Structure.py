@@ -237,31 +237,34 @@ class Structure:
 
         # Find initial deformation
         [structure_k_copy, force_vector_copy] = self.apply_boundary_conditions()
-        deformation = np.zeros(force_vector_copy.size, np.float_)
+        deformation = np.matmul(np.linalg.inv(structure_k_copy), force_vector_copy)
+        self.assemble_deformation_vector(deformation)
+        print("structure_k:\n", self.structure_k)
 
         self.static_force_step = self.static_force_step * force / abs(force)
         applied_force = 0
         self.force_vector[force_id] = self.static_force_step
 
+
+
         while abs(applied_force) <= abs(force):
             applied_force += self.static_force_step
-            # print("applied_force:\n", applied_force)
-
             self.save_deformations(self.deformation_vector)  # store deformations to nodes
             self.assemble_structure_k(1)
             [structure_k_copy, force_vector_copy] = self.apply_boundary_conditions()
 
             resisting_force = np.matmul(structure_k_copy, deformation)
-            # print("resisting_force:\n", resisting_force)
+            print("resisting_force:", resisting_force)
 
             unbalanced_force = force_vector_copy - resisting_force
-            # print("unbalanced_force:\n", unbalanced_force)
+            print("unbalanced_force:", unbalanced_force)
 
             corrective_deformation = np.matmul(np.linalg.inv(structure_k_copy), unbalanced_force)
             # corrective_deformation = self.assemble_deformation_vector(corrective_deformation)
-            # print("corrective_deformation:", corrective_deformation)
+            print("corrective_deformation:", corrective_deformation)
             deformation += corrective_deformation
-            print("deformation:", deformation)
+            self.assemble_deformation_vector(deformation)
+            print("deformation:", self.deformation_vector)
             # break
 
         return None
@@ -276,7 +279,6 @@ class Structure:
                 self.deformation_vector[index_force] = deformation[index_def]
                 index_def += 1
         # print("deformation_vector:\n", self.deformation_vector)
-        return self.deformation_vector
 
     def assemble_structure_k(self, tag):
         if tag == 0:
@@ -288,7 +290,7 @@ class Structure:
             end_node_id = element.end_node.id
 
             if tag == 0:
-                k = element.calInitialElement_K("GLOBAL")
+                k = element.calInitialElement_K()
             else:
                 k = element.analyze(1)
 

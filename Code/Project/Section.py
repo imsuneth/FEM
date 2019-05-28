@@ -4,10 +4,9 @@ from Fiber import Fiber
 
 
 class Section:
-    k_section_initial = None
-    f_section_resist = None
-
     def __init__(self, id, cross_section):
+        self.k_section_initial = None
+        self.f_section_resist = None
         self.id = id
         self.cross_section = cross_section
         self.fibers = np.empty(cross_section.no_of_fibers, dtype=Fiber)
@@ -19,6 +18,7 @@ class Section:
             self.fibers.put(fiber_id, fiber)
 
     def analyze(self, section_deformation):
+        # print("section_deformation",section_deformation)
         eps_0 = section_deformation[0]  # centroid strain
         k = section_deformation[1]
 
@@ -43,7 +43,8 @@ class Section:
             sectional_stiffness[1][1] = sectional_stiffness_11
         sectional_stiffness[1][0] = sectional_stiffness[0][1]
 
-        # print("Resistance force:\n", resistance_force)
-        # print("sectional_stiffness\n", sectional_stiffness)
-
-        return [resistance_force, sectional_stiffness]
+        print("Resistance force:\n", resistance_force)
+        print("sectional_stiffness\n", sectional_stiffness)
+        self.f_section_resist = resistance_force
+        self.k_section_initial = sectional_stiffness
+        # return [resistance_force, sectional_stiffness]
