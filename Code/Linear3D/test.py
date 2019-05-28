@@ -7,7 +7,9 @@ b=np.array([[1,2,3,4,5],
 			[41,42,43,44,45]])
 print("a\n",a)
 print("b\n",b)
+print(b[2:4,2:4])
 b[2:4,2:4]=a
 print(b)
+print(b[2:4,2:4])
 c=np.zeros((3,4))
-print(c)
+#print(c)
