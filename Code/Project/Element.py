@@ -104,7 +104,7 @@ class Element:
             # ////////////starting newton-raphson iteration////////////////////
 
             sectionForceINCR = np.matmul(NP, elementForceINCR)  # sectionForceINCR ---> 2X1 matrix
-            #print("sectionForceINCR",sectionForceINCR)
+            # print("sectionForceINCR",sectionForceINCR)
             sectionDefINCR_ = np.matmul(section.k_section_initial, sectionForceINCR)
             print("sectionDefINCR_", sectionDefINCR_)
             [section.f_section_resist, section.k_section_initial] = section.analyze(sectionDefINCR_)
