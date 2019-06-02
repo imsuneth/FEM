@@ -272,6 +272,15 @@ class Structure:
     def displacement_controlled(self, force, force_id):
         return None
 
+    def condition_check(self, mat, value):
+        max_abs_val = abs(max(mat.min(), mat.max(), key=abs))
+        # logger.info("Checking convergence. max_abs_val = %f" % max_abs_val)
+        if max_abs_val > value:
+            return True
+        else:
+
+            return False
+
     def assemble_deformation_vector(self, deformation):
         index_def = 0
         for index_force in range(self.force_vector.size):
