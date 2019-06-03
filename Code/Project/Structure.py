@@ -47,8 +47,8 @@ class Structure:
             fiber_material_ids = cross_section["fiber_material_ids"]
             new_cross_section = None
             if shape == "rectangle":
-                width = dimensions["y"]
-                height = dimensions["z"]
+                width = dimensions["z"]
+                height = dimensions["y"]
                 new_cross_section = SquareCrossSection(id, width, height, no_of_fibers, fiber_material_ids)
 
                 logger.debug("Cross Section id:%d\tType:%s\tno of Fibers:%d\twidth=%d\theight:%d" % (
@@ -164,7 +164,8 @@ class Structure:
         self.structure_k = None
         self.force_vector = None
         self.deformation_vector = None
-        self.static_force_step = 1
+        self.static_force_step = 1000
+        self.is_force_controlled_analysis = True
 
         return None
 
@@ -174,24 +175,58 @@ class Structure:
         mat_size = self.DOF_PER_NODE * (self.n_elements + 1)
         self.structure_k = np.zeros([mat_size, mat_size])
         self.force_vector = np.zeros(mat_size, dtype=np.float_)
+        self.deformation_vector = np.zeros(self.force_vector.size, dtype=np.float_)
 
         # Fill initial force_vector, initial structure_k and node_order
         self.assemble_structure_k(0)
 
-        # Stiffness after applying static loads
+        controlled_force_info = []
+
+        # Calculate stiffness after applying static loads
         for force_id in range(mat_size):
             node_id = self.node_order[int(math.floor(force_id / self.DOF_PER_NODE))]
             if not math.isnan(self.force_vector[force_id]):
                 node = self.nodes[node_id]
                 if force_id % self.DOF_PER_NODE == 0:
-                    if not node.f_x.controlled:
+                    if node.f_x.controlled:
+                        controlled_force_info.append([node_id, force_id, 0])
+                    else:
                         self.force_controlled(node.f_x.value, force_id)
+
                 elif force_id % self.DOF_PER_NODE == 1:
-                    if not node.f_y.controlled:
+                    if node.f_y.controlled:
+                        controlled_force_info.append([node_id, force_id, 1])
+                    else:
                         self.force_controlled(node.f_y.value, force_id)
+
                 elif force_id % self.DOF_PER_NODE == 2:
-                    if not node.m_z.controlled:
+                    if node.m_z.controlled:
+                        controlled_force_info.append([node_id, force_id, 2])
+                    else:
                         self.force_controlled(node.m_z.value, force_id)
+
+        # Calculate stiffness applying control loads
+        for controlled_force in controlled_force_info:
+            node_id = controlled_force[0]
+            node = self.nodes[node_id]
+            force_id = controlled_force[1]
+            direction = controlled_force[2]
+
+            if self.is_force_controlled_analysis:
+                if direction == 0:
+                    self.force_controlled(node.f_x.value, force_id)
+                elif direction == 1:
+                    self.force_controlled(node.f_y.value, force_id)
+                elif direction == 2:
+                    self.force_controlled(node.f_z.value, force_id)
+
+            else:
+                if direction == 0:
+                    self.displacement_controlled(node.f_x.value, force_id)
+                elif direction == 1:
+                    self.displacement_controlled(node.f_y.value, force_id)
+                elif direction == 2:
+                    self.displacement_controlled(node.f_z.value, force_id)
 
         return None
 
@@ -202,9 +237,7 @@ class Structure:
 
         # Find initial deformation
         [structure_k_copy, force_vector_copy] = self.apply_boundary_conditions()
-        deformation = np.dot(np.linalg.inv(structure_k_copy), force_vector_copy)
-        print("deformation:", deformation)
-        self.assemble_deformation_vector(deformation)
+        deformation = np.zeros(force_vector_copy.size, np.float_)
 
         self.static_force_step = self.static_force_step * force / abs(force)
         applied_force = 0
@@ -233,12 +266,10 @@ class Structure:
 
         return None
 
-    def displacement_controlled(self):
-
+    def displacement_controlled(self, force, force_id):
         return None
 
     def assemble_deformation_vector(self, deformation):
-        self.deformation_vector = np.zeros(self.force_vector.size, dtype=np.float_)
         index_def = 0
         for index_force in range(self.force_vector.size):
             if not math.isnan(self.force_vector[index_force]):
@@ -248,7 +279,6 @@ class Structure:
         return self.deformation_vector
 
     def assemble_structure_k(self, tag):
-
         if tag == 0:
             self.node_order = [-1] * (self.DOF_PER_NODE * self.n_nodes)
 
