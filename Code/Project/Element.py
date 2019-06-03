@@ -95,10 +95,11 @@ class Element:
         # print("self.rigidBodyTransMatrix()\n",self.rigidBodyTransMatrix())
 
         basicSystem = np.matmul(self.rigidBodyTransMatrix(), rotate)  # remove rigid body modes (basicSystem 3x1 matrix)
-        print("basicSystem",basicSystem)
-        print("self.k_element_initial\n",self.k_element_initial)
+        # print("basicSystem",basicSystem)
+        # print("self.k_element_initial\n",self.k_element_initial)
+
         elementForceINCR = np.matmul(self.k_element_initial, basicSystem)
-        print("elementForceINCR",elementForceINCR)
+        # print("elementForceINCR",elementForceINCR)
         for section_ in range(self.n_sections):  # newton raphson iteration
 
             logger.info("Element %d sectional iteration running" % section_)
@@ -110,7 +111,7 @@ class Element:
 
             sectionForceINCR = np.matmul(NP, elementForceINCR)  # sectionForceINCR ---> 2X1 matrix
             # print("sectionForceINCR",sectionForceINCR)
-            sectionDefINCR_ = np.matmul(section.k_section_initial, sectionForceINCR)
+            sectionDefINCR_ = np.matmul(inv(section.k_section_initial), sectionForceINCR)
             # print("sectionDefINCR_", sectionDefINCR_)
             section.analyze(np.transpose(sectionDefINCR_)[0])
 

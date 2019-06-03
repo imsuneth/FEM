@@ -20,7 +20,7 @@ def plotTheStruct(elements,nodes):
         x=N.p_x
         y=N.p_y
         ax = plt.axes()
-        s="Node "+str(N.id)+"\nFX="+str(round(float(N.f_x.value), 3))+"\nFY="+str(round(float(N.f_y.value), 3))+"\nMZ="+str(round(float(N.m_z.value), 3))
+        s="Node "+str(N.id)+"\nFX="+str(round(float(N.f_x), 3))+"\nFY="+str(round(float(N.f_y), 3))+"\nMZ="+str(round(float(N.m_z), 3))
         s+='\nDX=' + str(N.d_x)+'\nDY=' + str(N.d_y)+'\nDMZ=' + str(N.dm_z)
         plt.text(x, y, s)
 

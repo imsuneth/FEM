@@ -36,15 +36,15 @@ class Section:
             resistance_force[1] += -1 * A_i * fiber.y
             E_t = Material.material_models[fiber.material_id].get_e(eps)
             sectional_stiffness_00 = E_t * area
-            sectional_stiffness_01 = sectional_stiffness_00 * fiber.y
-            sectional_stiffness_11 = sectional_stiffness_01 * fiber.y
+            sectional_stiffness_01 = -E_t * area * fiber.y
+            sectional_stiffness_11 = E_t * area * fiber.y * fiber.y
             sectional_stiffness[0][0] += sectional_stiffness_00
-            sectional_stiffness[0][1] += -1 * sectional_stiffness_01
-            sectional_stiffness[1][1] = sectional_stiffness_11
+            sectional_stiffness[0][1] += sectional_stiffness_01
+            sectional_stiffness[1][1] += sectional_stiffness_11
         sectional_stiffness[1][0] = sectional_stiffness[0][1]
 
-        print("Resistance force:\n", resistance_force)
-        print("sectional_stiffness\n", sectional_stiffness)
+        # if eps_0 == 0 and k == 0:
+        #     print("initial_sectional_stiffness\n", sectional_stiffness)
         self.f_section_resist = resistance_force
         self.k_section_initial = sectional_stiffness
         # return [resistance_force, sectional_stiffness]
