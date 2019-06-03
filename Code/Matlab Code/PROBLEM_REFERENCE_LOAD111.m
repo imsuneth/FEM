@@ -294,8 +294,8 @@ hipo_section_strain=cell(noe,nIP);
 figure  
 % subplot(2,2,1); 
 grid on
-Gstru=animatedline('Marker','.');
-addpoints(Gstru,0,0)
+%Gstru=animatedline('Marker','.');
+%addpoints(Gstru,0,0)
 % axis([0 0.005 0 460]);
 title('Structure')
 
@@ -395,8 +395,10 @@ for n=1:displacement_steps%Displacement step
             deltaqerbm_global=deltaUi_stiffness_cal(LCM(:,e),1);
             deltaqerbm=ROT*deltaqerbm_global;
             deltaqe=RBM*deltaqerbm;
+            
             fb=zeros(3,3);
             deltaQe=hipo_element_stiffness{1,e}*deltaqe; 
+            disp(size(hipo_element_stiffness{1,e}))
 
             for h=1:nIP %section level
                 Np=[0 0 1;((x(1,h)+1)/2)-1 (x(1,h)+1)/2 0];
@@ -558,7 +560,7 @@ for n=1:displacement_steps%Displacement step
                     deltaShs=Shsunb;
                 end
                 number_of_section_level_iterations = sprintf(' number_of_section_level_iterations = %g', z);
-                disp(number_of_section_level_iterations)
+                %disp(number_of_section_level_iterations)
                 if z==max_z
                      disp('section level convergence cannot be achieved')
                      return 
