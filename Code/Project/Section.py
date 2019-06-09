@@ -16,7 +16,7 @@ class Section:
 
         for fiber_id in range(cross_section.no_of_fibers):
             y = fiber_height * (cross_section.no_of_fibers - 1 - 2 * fiber_id) / 2
-            fiber = Fiber(fiber_id, y, cross_section.width, fiber_height, cross_section.fiber_material_ids[fiber_id])
+            fiber = Fiber(fiber_id, y, cross_section.width, fiber_height, cross_section.material_id)
             self.fibers.put(fiber_id, fiber)
 
     def analyze(self, section_deformation):
@@ -46,6 +46,26 @@ class Section:
             sectional_stiffness[0][0] += sectional_stiffness_00
             sectional_stiffness[0][1] += sectional_stiffness_01
             sectional_stiffness[1][1] += sectional_stiffness_11
+
+        for reinforcement in self.cross_section.reinforcements:
+            y = reinforcement.distance_from_centroid
+            area = reinforcement.area
+            material_id = reinforcement.material_id
+            eps = eps_0 - y*k
+            sigma = Material.material_models[material_id].get_strain(eps)
+            reinforcement.eps = eps
+            reinforcement.sigma = sigma
+            A_i = sigma * area
+            resistance_force[0] += A_i
+            resistance_force[1] += -1 * A_i * y
+            E_t = Material.material_models[material_id].get_e(eps)
+            sectional_stiffness_00 = E_t * area
+            sectional_stiffness_01 = -E_t * area * y
+            sectional_stiffness_11 = E_t * area * y * y
+            sectional_stiffness[0][0] += sectional_stiffness_00
+            sectional_stiffness[0][1] += sectional_stiffness_01
+            sectional_stiffness[1][1] += sectional_stiffness_11
+
         sectional_stiffness[1][0] = sectional_stiffness[0][1]
 
         self.f_section_resist = resistance_force

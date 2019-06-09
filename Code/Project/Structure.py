@@ -1,7 +1,7 @@
 from Element import *
 from Node import *
 from CrossSection import *
-
+from Reinforcement import *
 from DOF import *
 from matplotlib import pyplot as plt
 
@@ -39,17 +39,26 @@ class Structure:
             shape = cross_section["shape"]
             dimensions = cross_section["dimensions"]
             no_of_fibers = cross_section["no_of_fibers"]
-            fiber_material_ids = cross_section["fiber_material_ids"]
-            new_cross_section = None
+            material_id = cross_section["material_id"]
+            no_reinforcements = cross_section["no_reinforcements"]
+            reinforcements = cross_section["reinforcements"]
+            reinf = np.empty(no_reinforcements, dtype=Reinforcement)
+            for reinforcement in reinforcements:
+                r_id = reinforcement["id"]
+                r_material_id = reinforcement["material_id"]
+                distance_from_center = reinforcement["distance_from_center"]
+                area = reinforcement["area"]
+                new_reinforcement = Reinforcement(r_material_id, distance_from_center, area)
+                reinf.put(r_id, new_reinforcement)
+
             if shape == "rectangle":
                 width = dimensions["z"]
                 height = dimensions["y"]
-                new_cross_section = SquareCrossSection(id, width, height, no_of_fibers, fiber_material_ids)
-
+                new_cross_section = SquareCrossSection(id, width, height, no_of_fibers, material_id, reinf)
 
             elif shape == "circle":
                 radius = dimensions["radius"]
-                new_cross_section = CircularCrossSection(id, radius, no_of_fibers, fiber_material_ids)
+                new_cross_section = CircularCrossSection(id, radius, no_of_fibers, material_id, reinf)
 
             self.cross_sections.put(id, new_cross_section)
 
