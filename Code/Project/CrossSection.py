@@ -9,7 +9,7 @@ class CrossSection:
 class SquareCrossSection(CrossSection):
 
     def __init__(self, id, width, height, no_of_fibers, fiber_material_ids):
-        self.resisting_force = np.empty(2, dtype=np.float_)
+        self.resisting_force = np.zeros(2, dtype=np.float_)
         self.id = id
         self.width = width
         self.height = height
@@ -26,4 +26,4 @@ class CircularCrossSection(CrossSection):
         self.radius = radius
         self.no_of_fibers = no_of_fibers
         self.fiber_material_ids = fiber_material_ids
-        self.fiber_areas = np.empty(no_of_fibers, dtype=np.float_)
+        self.fiber_areas = np.zeros(no_of_fibers, dtype=np.float_)

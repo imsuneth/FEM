@@ -32,17 +32,26 @@ class Element:
 
         local_x = np.array([local_dirs[0]["x"], local_dirs[0]["y"], local_dirs[0]["z"]])
         local_y = np.cross(global_z, local_x)
+
+        if local_y[0]<0 and local_y[1]==0 and local_y[2]==0:
+            local_y = -global_x
+        elif np.linalg.norm(local_y)==0:
+            local_y=global_x
+
         local_z = np.cross(local_x, local_y)
-        print("local_y", local_y)
-        print("local_z", local_z)
+
+
+        # print("local_y", local_y)
+        # print("local_z", local_z)
 
         self.theta_x_e = math.acos(np.inner(local_x, global_x) / (norm(local_x) * norm(global_x)))
         self.theta_y_e = math.acos(np.inner(local_x, global_y) / (norm(local_x) * norm(global_y)))
         self.theta_z_e = math.acos(np.inner(local_x, global_z) / (norm(local_x) * norm(global_z)))
-        print("self.theta_x_e", self.theta_x_e)
-        print("self.theta_y_e", self.theta_y_e)
-        print("self.theta_z_e", self.theta_z_e)
-        logger.info("Element %d created" % (self.id))
+        # print("Element id",self.id)
+        # print("self.theta_x_e", self.theta_x_e)
+        # print("self.theta_y_e", self.theta_y_e)
+        # print("self.theta_z_e", self.theta_z_e)
+
 
     def transform(self):
         l = math.cos(self.theta_x_e)
@@ -50,7 +59,7 @@ class Element:
         n = math.cos(self.theta_z_e)
 
         D = math.sqrt(math.pow(l, 2) + math.pow(m, 2))
-        print("l,m,n", [l, m, n])
+        # print("l,m,n", [l, m, n])
         mat = np.array([[l, m, n],
                         [-m / D, l / D, 0],
                         [-l * n / D, -m * n / D, D]])
@@ -136,5 +145,5 @@ class Element:
 
         global_k_mat = np.matmul(mat1, trans_matrix)
 
-        print("after transformation\n", global_k_mat[7][11])
+        # print("after transformation\n", global_k_mat[7][11])
         return global_k_mat

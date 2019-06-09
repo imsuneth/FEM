@@ -1,9 +1,9 @@
 from Element import *
 from Node import *
 from CrossSection import *
-from log_ import *
+
 from DOF import *
-from plotTheStruct import *
+from matplotlib import pyplot as plt
 
 
 class Structure:
@@ -14,9 +14,7 @@ class Structure:
     def __init__(self, js):
         # Load the jason file and construct the virtual structure
         # Create Node objects and put them in nparray "nodes"
-        logger.info("################################\n")
-        logger.info("Creating the Virtual Structure\n")
-        logger.info("################################\n")
+
         # self.n_totalFreeDof = 0 #added by pubudu to extractDOF from deformation increment vector
         self.fix_Point_array = []
 
@@ -28,12 +26,10 @@ class Structure:
             p_x = node["x"]
             p_y = node["y"]
             p_z = node["z"]
-            logger.debug("Node id= %d, Coordinates [%d %d %d]" % (id, p_x, p_y, p_z))
+
             new_node = Node(id, p_x, p_y, p_z)
             self.nodes.put(id, new_node)
 
-        # logger.info("Node reading --> Done")
-        logger.info("Node reading --> Done")
 
         # Create CrossSection objects and put them in nparray "cross_sections"
         self.no_of_crosssection_types = js["no_of_crosssection_types"]
@@ -51,19 +47,14 @@ class Structure:
                 height = dimensions["y"]
                 new_cross_section = SquareCrossSection(id, width, height, no_of_fibers, fiber_material_ids)
 
-                logger.debug("Cross Section id:%d\tType:%s\tno of Fibers:%d\twidth=%d\theight:%d" % (
-                    id, shape, no_of_fibers, width, height))
 
             elif shape == "circle":
                 radius = dimensions["radius"]
                 new_cross_section = CircularCrossSection(id, radius, no_of_fibers, fiber_material_ids)
 
-                logger.debug(
-                    "Cross Section id:%d\tType:%s\tno of Fibers:%d\tRadius:%d" % (id, shape, no_of_fibers, radius))
 
             self.cross_sections.put(id, new_cross_section)
 
-        logger.info("Cross section reading--> Done")
 
         # Create Element objects and put them in nparray "elements"
         self.n_elements = js["no_of_elements"]
@@ -108,7 +99,7 @@ class Structure:
 
             new_element = Element(id, start_node, end_node, cross_section, self.n_sections, angle, length)
             self.elements.put(id, new_element)
-        logger.info("Elements Creation --> Done")
+
 
         # Take loads applied and assign them to Nodes
         self.no_of_loads = js["no_of_loads"]
@@ -127,10 +118,7 @@ class Structure:
 
             node = self.nodes[node_id]
             [node.f_x, node.f_y, node.f_z, node.m_x, node.m_y, node.m_z] = [f_x, f_y, f_z, m_x, m_y, m_z]
-            logger.debug(
-                "Load applied node:%d\tForce:[%s %s %s]\tTorque:[%s %s %s]" % (
-                    node_id, f_x.__str__(), f_y.__str__(), f_z.__str__(), m_x.__str__(), m_y.__str__(), m_z.__str__()))
-        logger.info("Loads Assigning--> Done")
+
         # Take fixed points and assign nodes as fixed
         self.no_of_fixed_points = js["no_of_fixed_points"]
         js_fixed_points = js["fixed_points"]
@@ -151,10 +139,6 @@ class Structure:
             node = self.nodes[node_id]
             [node.t_x, node.t_y, node.t_z, node.r_x, node.r_y, node.r_z] = [t_x, t_y, t_z, r_x, r_y, r_z]
 
-            logger.debug("Node %d is Fixed. Translations [t_x=%s,t_y=%s,t_z=%s],Rotations [r_x=%s,r_y=%s,r_z=%s]" % (
-                node_id, t_x, t_y, t_z, r_x, r_y, r_z))
-            # self.n_totalFreeDof+=t_x+t_y+r_x+r_y
-        logger.info("Fixed points Creation--> Done")
 
         # initiating necessary variables
         self.DOF_PER_NODE = 3
@@ -180,6 +164,7 @@ class Structure:
 
         # Fill initial force_vector, initial structure_k and node_order
         self.assemble_structure_k(0)
+        # print("initial stiffness:\n", self.structure_k)
         controlled_force_info = []
 
         # Calculate stiffness after applying static loads
@@ -243,43 +228,54 @@ class Structure:
         deformation = np.matmul(np.linalg.inv(structure_k_copy), force_vector_copy)
         self.assemble_deformation_vector(deformation)
         self.force_vector = np.matmul(self.structure_k, self.deformation_vector)
+        self.total_force_vector =  np.array(self.force_vector)
+        self.total_deformations = np.array(self.deformation_vector)
         self.save_deformations(self.deformation_vector)
-
-        # plotTheStruct(self.elements, self.nodes)
 
         while abs(applied_force) <= abs(force):
             self.force_step_no += 1
             applied_force += self.static_force_step
             print("force step no:", self.force_step_no)
+
             self.save_deformations(self.deformation_vector)  # store deformations to nodes
             self.assemble_structure_k(1)
+
             [structure_k_copy, force_vector_copy] = self.apply_boundary_conditions()
-
             resisting_force = np.matmul(structure_k_copy, np.transpose(deformation))
-
             unbalanced_force = force_vector_copy - resisting_force
 
-            while self.condition_check(unbalanced_force, 1):
-                resisting_force = np.matmul(structure_k_copy, deformation)
+            print("Structure level Iteration starts:")
+            loop_count_structure=0
+            while self.condition_check(unbalanced_force, 0.1):
+                self.save_deformations(self.deformation_vector)  # store deformations to nodes
+                self.assemble_structure_k(1)
+                # print("stiffness:\n", self.structure_k)
+                [structure_k_copy, force_vector_copy] = self.apply_boundary_conditions()
+                resisting_force = np.matmul(structure_k_copy, np.transpose(deformation))
 
                 unbalanced_force = force_vector_copy - resisting_force
-
                 corrective_deformation = np.matmul(np.linalg.inv(structure_k_copy), unbalanced_force)
                 # corrective_deformation = self.assemble_deformation_vector(corrective_deformation)
 
                 deformation += corrective_deformation
                 self.assemble_deformation_vector(deformation)
-                break
-            break
-
-        return None
+                loop_count_structure +=1
+            deformation.fill(0)
+            print("structure level iterations ends =",loop_count_structure)
+            self.total_force_vector += np.matmul(self.structure_k, self.deformation_vector)
+            self.total_deformations += self.deformation_vector
+            x_value = abs(self.total_deformations[force_id])
+            y_value = abs(self.total_force_vector[force_id])
+            plt.scatter(x_value, y_value)
+            plt.pause(0.01)
+        plt.show()
 
     def displacement_controlled(self, force, force_id):
         return None
 
     def condition_check(self, mat, value):
         max_abs_val = abs(max(mat.min(), mat.max(), key=abs))
-        # logger.info("Checking convergence. max_abs_val = %f" % max_abs_val)
+
         if max_abs_val > value:
             return True
         else:

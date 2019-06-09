@@ -67,10 +67,8 @@ class Structure:
             cross_section = self.cross_sections[element["element_type"]]
             material_id = element["material_id"]
             local_x_dir = element["local_x_dir"]
-            local_y_dir = element["local_y_dir"]
-            local_z_dir = element["local_z_dir"]
 
-            local_dirs = [local_x_dir, local_y_dir, local_z_dir]
+            local_dirs = [local_x_dir, 0, 0]
 
             new_element = Element(id, start_node, end_node, cross_section, material_id, local_dirs)
             self.elements.put(id, new_element)
@@ -119,7 +117,7 @@ class Structure:
     def analyzeStructure(self):
         logger.info("STARTED STRUCTURE LEVEL CALCULATION\n")
         DOF_PER_NODE = 6
-        mat_size = DOF_PER_NODE * (self.n_elements + 1)
+        mat_size = DOF_PER_NODE * (self.n_nodes)
         structure_k = np.zeros([mat_size, mat_size])
         force_vector = np.zeros(mat_size, dtype=np.float_)
         node_order = [-1] * (DOF_PER_NODE * self.n_nodes)
@@ -128,7 +126,7 @@ class Structure:
             startNode = element.start_node.id
             endNode = element.end_node.id
             k = element.K_element_global()
-            print("Element k:", element_id, "\n", k)
+            # print("Element k:", element_id, "\n", k)
 
             y1 = DOF_PER_NODE * startNode
             y2 = y1 + DOF_PER_NODE
@@ -143,7 +141,7 @@ class Structure:
             structure_k[y1:y2, x1:x2] += k[:DOF_PER_NODE, DOF_PER_NODE:]
 
             start_node = element.start_node
-            force_vector[y1:y2] += start_node.get_dof()
+            force_vector[y1:y2] = start_node.get_dof()
             node_order[y1] = startNode
 
             y1 = DOF_PER_NODE * endNode
@@ -159,12 +157,13 @@ class Structure:
             structure_k[y1:y2, x1:x2] += k[DOF_PER_NODE:, DOF_PER_NODE:]
 
             end_node = element.end_node
-            force_vector[y1:y2] += end_node.get_dof()
+            force_vector[y1:y2] = end_node.get_dof()
             node_order[y1] = endNode
 
         print("structure_k:\n", structure_k)
         print("structure_force:", force_vector)
 
+        structure_k_copy = structure_k
         force_vector_copy = force_vector
 
         index = 0
@@ -176,8 +175,8 @@ class Structure:
             else:
                 index += 1
 
-        print("structure_k:\n", structure_k)
-        print("structure_force:", force_vector)
+        print("reduced_structure_k:\n", structure_k)
+        print("reduced_structure_force:", force_vector)
 
         deformation = np.matmul(np.linalg.inv(structure_k), force_vector)
 
@@ -194,6 +193,9 @@ class Structure:
 
         print("deformation_vector", deformation_vector)
 
+        force_vector_2 = np.matmul(structure_k_copy, deformation_vector)
+        print("force_vector_2", force_vector_2)
+
         node_order = list(filter(lambda a: a != -1, node_order))
         print("Node order:", node_order)
 
@@ -207,5 +209,22 @@ class Structure:
             node.dm_y = deformation_vector[from_i + 4]
             node.dm_z = deformation_vector[from_i + 5]
 
-        plotTheStruct(self.elements, self.nodes)
+        # plotTheStruct(self.elements, self.nodes)
+        self.showResults(force_vector_2, deformation_vector, node_order)
         return structure_k
+
+    def showResults(self, force_vector, deformation_vector, node_order):
+        for node_id in node_order:
+            print("node_id:", node_id)
+            print("\tfx:", force_vector[node_id*6])
+            print("\tfy:", force_vector[node_id * 6+1])
+            print("\tfz:", force_vector[node_id * 6+2],"\n")
+            print("\tmx:", force_vector[node_id * 6+3])
+            print("\tmy:", force_vector[node_id * 6+4])
+            print("\tmz:", force_vector[node_id * 6+5],"\n")
+            print("\tdx:", deformation_vector[node_id * 6])
+            print("\tdy:", deformation_vector[node_id * 6 + 1])
+            print("\tdz:", deformation_vector[node_id * 6 + 2], "\n")
+            print("\tdmx:", deformation_vector[node_id * 6 + 3])
+            print("\tdmy:", deformation_vector[node_id * 6 + 4])
+            print("\tdmz:", deformation_vector[node_id * 6 + 5], "\n")
