@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="532e7b35-459a-4ac4-b9f7-7e1c9390ea55" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../Project/Reinforcement.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Project/CrossSection.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Project/CrossSection.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Project/Section.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Project/Section.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Project/Structure.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Project/Structure.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Project/testStructure.json" beforeDir="false" afterPath="$PROJECT_DIR$/../Project/testStructure.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Project/Main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Project/Main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Project/structure00.json" beforeDir="false" afterPath="$PROJECT_DIR$/../Project/structure00.json" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
