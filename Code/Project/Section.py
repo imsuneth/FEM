@@ -7,6 +7,7 @@ class Section:
     def __init__(self, id, cross_section):
         self.k_section_initial = None
         self.f_section_resist = None
+        self.total_deformation=np.zeros((2,1))
         self.id = id
         self.cross_section = cross_section
         self.fibers = np.empty(cross_section.no_of_fibers, dtype=Fiber)
