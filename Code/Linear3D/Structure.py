@@ -4,6 +4,7 @@ from Node import *
 from CrossSection import *
 from numpy.linalg import inv
 from log_ import *
+from plotTheStruct import *
 
 class Structure:
 
@@ -206,4 +207,5 @@ class Structure:
             node.dm_y = deformation_vector[from_i + 4]
             node.dm_z = deformation_vector[from_i + 5]
 
+        plotTheStruct(self.elements, self.nodes)
         return structure_k

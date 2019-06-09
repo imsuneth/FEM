@@ -65,9 +65,11 @@ class Element:
             Section_K = self.sections[section_].k_section_initial
             NP = np.array([[0, 0, 1],
                            [((self.x[section_] + 1) / 2) - 1, (self.x[section_] + 1) / 2, 0]])
-            fh = inv(Section_K)
-            mat1 = np.matmul(np.transpose(NP), fh)
-            mat2 = np.matmul(mat1, NP)
+
+            fh = np.linalg.inv(Section_K)
+            mat1 = np.matmul(np.transpose(NP),fh)
+            mat2 = np.matmul(mat1 ,NP)
+
             mat3 = mat2 * self.wh[section_]
             mat4 = mat3 * (self.length / 2)
             initialElementFlexibMat += mat4
@@ -75,9 +77,11 @@ class Element:
         k_element_initial = inv(initialElementFlexibMat)
         self.k_element_initial = k_element_initial
         mat1 = np.matmul(np.transpose(self.rigidBodyTransMatrix()), k_element_initial)
+
         k_element_initial_local = np.matmul(mat1, self.rigidBodyTransMatrix())
 
         mat2 = np.matmul(np.transpose(self.rotMatrix()), k_element_initial_local)
+
         k_element_initial_global = np.matmul(mat2, self.rotMatrix())
 
         return k_element_initial_global
@@ -95,10 +99,13 @@ class Element:
         # print("self.rigidBodyTransMatrix()\n",self.rigidBodyTransMatrix())
 
         basicSystem = np.matmul(self.rigidBodyTransMatrix(), rotate)  # remove rigid body modes (basicSystem 3x1 matrix)
-        print("basicSystem", basicSystem)
-        print("self.k_element_initial\n", self.k_element_initial)
+
+        # print("basicSystem",basicSystem)
+        # print("self.k_element_initial\n",self.k_element_initial)
+
         elementForceINCR = np.matmul(self.k_element_initial, basicSystem)
-        print("elementForceINCR", elementForceINCR)
+        # print("elementForceINCR",elementForceINCR)
+
         for section_ in range(self.n_sections):  # newton raphson iteration
 
             logger.info("Element %d sectional iteration running" % section_)
@@ -110,7 +117,9 @@ class Element:
 
             sectionForceINCR = np.matmul(NP, elementForceINCR)  # sectionForceINCR ---> 2X1 matrix
             # print("sectionForceINCR",sectionForceINCR)
-            sectionDefINCR_ = np.matmul(section.k_section_initial, sectionForceINCR)
+
+            sectionDefINCR_ = np.matmul(inv(section.k_section_initial), sectionForceINCR)
+
             # print("sectionDefINCR_", sectionDefINCR_)
             section.analyze(np.transpose(sectionDefINCR_)[0])
 
