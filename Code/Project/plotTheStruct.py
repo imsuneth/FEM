@@ -25,3 +25,5 @@ def plotTheStruct(elements,nodes):
         plt.text(x, y, s)
 
     plt.show()
+
+

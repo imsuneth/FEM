@@ -1,5 +1,11 @@
-x=232323
-print("hello")
-print("afsfsf")
-y=23232323
-print("asfasf")
+import numpy as np
+import matplotlib.pyplot as plt
+
+plt.axis([0, 10, 0, 1])
+
+for i in range(10):
+    y = np.random.random()
+    plt.scatter(i, y)
+    plt.pause(0.05)
+
+plt.show()

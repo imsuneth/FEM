@@ -1,0 +1,163 @@
+{
+    "no_of_crosssection_types":1,
+    "no_of_nodes":8,
+	"no_of_materials":1,
+    "no_of_elements":8,
+    "no_of_loads" : 2,
+    "no_of_fixed_points" : 4,
+	
+    "nodes":[
+        {   "id":0,"x":0,"y":0,"z":0    },
+        {   "id":1,"x":0,"y":0,"z":2.5  },
+        {   "id":2,"x":2.5,"y":0,"z":2.5 },
+        {   "id":3,"x":2.5,"y":0,"z":0    },
+        {   "id":4,"x":0,"y":2.5,"z":0    },
+        {   "id":5,"x":0,"y":2.5,"z":2.5    },
+        {   "id":6,"x":2.5,"y":2.5,"z":2.5    },
+        {   "id":7,"x":2.5,"y":2.5,"z":0    }
+    ],
+
+	
+	"cross_sections":[
+		{	"id":0,
+			"shape":"rectangle",
+			"dimensions":
+                {"y":0.4,"z":0.4}
+		}
+	],
+    
+    "elements": [
+        {
+            "id": 0,
+            "start_node_id":0,
+            "end_node_id":1,
+            "element_type": 0,
+            "material_id":0,
+            "local_x_dir":
+                {"x":0,"y":0,"z":2.5}
+        },
+        {
+            "id": 1,
+            "start_node_id":1,
+            "end_node_id":2,
+            "element_type": 0,
+            "material_id":0,
+            "local_x_dir":
+                {"x":2.5,"y":0,"z":0}
+        },
+        {
+            "id": 2,
+            "start_node_id":2,
+            "end_node_id":3,
+            "element_type": 0,
+            "material_id":0,
+            "local_x_dir":
+                {"x":0,"y":0,"z":-2.5}
+        },
+        {
+            "id": 3,
+            "start_node_id":4,
+            "end_node_id":5,
+            "element_type": 0,
+            "material_id":0,
+            "local_x_dir":
+                {"x":0,"y":0,"z":2.5}
+        },
+        {
+            "id": 4,
+            "start_node_id":5,
+            "end_node_id":6,
+            "element_type": 0,
+            "material_id":0,
+            "local_x_dir":
+                {"x":2.5,"y":0,"z":0}
+        },
+        {
+            "id": 5,
+            "start_node_id":6,
+            "end_node_id":7,
+            "element_type": 0,
+            "material_id":0,
+            "local_x_dir":
+                {"x":0,"y":0,"z":-2.5}
+        },
+        {
+            "id": 6,
+            "start_node_id":5,
+            "end_node_id":1,
+            "element_type": 0,
+            "material_id":0,
+            "local_x_dir":
+                {"x":0,"y":-2.5,"z":0}
+        },
+        {
+            "id": 7,
+            "start_node_id":6,
+            "end_node_id":2,
+            "element_type": 0,
+            "material_id":0,
+            "local_x_dir":
+                {"x":0,"y":-2.5,"z":0}
+        }
+    ],
+
+
+    "loads": [
+        {
+            "id": 0, 
+            "point_id":1,
+            "force":
+            {   "x":100, "y":0, "z":0},
+            "torque":
+            {   "x":0, "y":0, "z":0 }
+        },
+        {
+            "id": 1,
+            "point_id":5,
+            "force":
+            {   "x":100, "y":0, "z":0},
+            "torque":
+            {   "x":0, "y":0, "z":0 }
+        }
+    ],
+
+
+
+    "fixed_points": [
+        {
+            "id" : 0,
+            "point_id":0,
+            "translation":
+            {  "x":true,"y":true,"z":true},
+            "rotation":
+            {  "x":true,"y":true,"z":true}
+        },
+        {
+            "id" : 1,
+            "point_id":3,
+            "translation":
+            {  "x":true,"y":true,"z":true},
+            "rotation":
+            {  "x":true,"y":true,"z":true}
+        },
+        {
+            "id" : 2,
+            "point_id":4,
+            "translation":
+            {  "x":true,"y":true,"z":true},
+            "rotation":
+            {  "x":true,"y":true,"z":true}
+        },
+        {
+            "id" : 3,
+            "point_id":7,
+            "translation":
+            {  "x":true,"y":true,"z":true},
+            "rotation":
+            {  "x":true,"y":true,"z":true}
+        }
+
+
+
+    ]
+}

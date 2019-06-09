@@ -3,6 +3,13 @@ from DOF import DOF
 
 
 class Node:
+    f_x = DOF([0, False, 0])
+    f_y = DOF([0, False, 0])
+    f_z = DOF([0, False, 0])
+    m_x = DOF([0, False, 0])
+    m_y = DOF([0, False, 0])
+    m_z = DOF([0, False, 0])
+
     d_x = 0
     d_y = 0
     d_z = 0
@@ -17,23 +24,18 @@ class Node:
     tdm_y = 0
     tdm_z = 0
 
-    def __init__(self, id, p_x, p_y, p_z, f_x, f_y, f_z, m_x, m_y, m_z, t_x, t_y, t_z, r_x, r_y, r_z):
+    t_x = None  # t for translations
+    t_y = None
+    t_z = None
+    r_x = None  # r for rotations
+    r_y = None
+    r_z = None
+
+    def __init__(self, id, p_x, p_y, p_z):
         self.id = id
         self.p_x = p_x  # p for co-ordinate
         self.p_y = p_y
         self.p_z = p_z
-        self.f_x = f_x
-        self.f_y = f_y
-        self.f_z = f_z
-        self.m_x = m_x
-        self.m_y = m_y
-        self.m_z = m_z
-        self.t_x = t_x
-        self.t_y = t_y
-        self.t_z = t_z
-        self.r_x = r_x
-        self.r_y = r_y
-        self.r_z = r_z
 
         return None
 
