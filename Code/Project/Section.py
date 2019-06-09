@@ -7,8 +7,8 @@ class Section:
     def __init__(self, id, cross_section):
         self.k_section_initial = None
         self.f_section_resist = None
-        self.total_deformation=np.zeros((2,1))
-        self.total_force=np.zeros((2,1))
+        self.total_deformation = np.zeros((2, 1))
+        self.total_force = np.zeros((2, 1))
         self.id = id
         self.cross_section = cross_section
         self.fibers = np.empty(cross_section.no_of_fibers, dtype=Fiber)
@@ -20,10 +20,8 @@ class Section:
             self.fibers.put(fiber_id, fiber)
 
     def analyze(self, section_deformation):
-        # print("section_deformation",section_deformation)
         eps_0 = section_deformation[0]  # centroid strain
         k = section_deformation[1]
-        # print("eps_0:", eps_0, "k:", k)
         resistance_force = np.zeros((2, 1), dtype=np.float_)
         sectional_stiffness = np.zeros(shape=(2, 2), dtype=np.float_)
 
@@ -44,15 +42,11 @@ class Section:
             E_t = Material.material_models[fiber.material_id].get_e(eps)
             sectional_stiffness_00 = E_t * area
             sectional_stiffness_01 = -E_t * area * fiber.y
-            #print("sectional_stiffness_01:", sectional_stiffness_01)
             sectional_stiffness_11 = E_t * area * fiber.y * fiber.y
             sectional_stiffness[0][0] += sectional_stiffness_00
             sectional_stiffness[0][1] += sectional_stiffness_01
             sectional_stiffness[1][1] += sectional_stiffness_11
         sectional_stiffness[1][0] = sectional_stiffness[0][1]
 
-        # if eps_0 == 0 and k == 0:
-        # print("f_section_resist:", resistance_force, "k_section_initial:",sectional_stiffness)
         self.f_section_resist = resistance_force
         self.k_section_initial = sectional_stiffness
-        # return [resistance_force, sectional_stiffness]

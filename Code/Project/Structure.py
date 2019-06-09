@@ -140,34 +140,33 @@ class Structure:
         self.node_order = None
         self.structure_k = None
         self.force_vector = None
-        self.initial_force_vector = None
+        self.restraints = None
         self.deformation_vector = None
         self.static_force_step = 1
         self.is_force_controlled_analysis = True
         self.force_step_no = 0
         self.total_force_vector = None
         self.total_deformations = None
+        self.mat_size = None
 
         return None
 
-    def analyzeStructure(self):
+    def analyze_structure(self):
 
-        # Initial Stiffness
-        mat_size = self.DOF_PER_NODE * (self.n_elements + 1)
-        self.structure_k = np.zeros([mat_size, mat_size])
-        self.force_vector = np.zeros(mat_size, dtype=np.float_).transpose()
-        self.initial_force_vector = np.zeros(mat_size, dtype=np.float_).transpose()
-        self.deformation_vector = np.zeros(mat_size, dtype=np.float_).transpose()
+        self.mat_size = self.DOF_PER_NODE * (self.n_elements + 1)
+        self.structure_k = np.zeros([self.mat_size, self.mat_size])
+        self.force_vector = np.zeros(self.mat_size, dtype=np.float_).transpose()
+        self.restraints = np.zeros(self.mat_size, dtype=np.float_).transpose()
+        self.deformation_vector = np.zeros(self.mat_size, dtype=np.float_).transpose()
 
         # Fill initial force_vector, initial structure_k and node_order
         self.assemble_structure_k(0)
-        # print("initial stiffness:\n", self.structure_k)
         controlled_force_info = []
 
         # Calculate stiffness after applying static loads
-        for force_id in range(mat_size):
+        for force_id in range(self.mat_size):
             node_id = self.node_order[int(math.floor(force_id / self.DOF_PER_NODE))]
-            if not math.isnan(self.initial_force_vector[force_id]):
+            if not math.isnan(self.restraints[force_id]):
                 node = self.nodes[node_id]
                 if force_id % self.DOF_PER_NODE == 0:
                     if node.f_x.controlled:
@@ -218,7 +217,7 @@ class Structure:
         self.static_force_step = self.static_force_step * force / abs(force)
         applied_force = self.static_force_step
         self.force_vector[force_id] = self.static_force_step
-        print("force step no:", self.force_step_no)
+        # print("force step no:", self.force_step_no)
 
         # Find initial deformation
         [structure_k_copy, force_vector_copy] = self.apply_boundary_conditions()
@@ -233,14 +232,14 @@ class Structure:
         while abs(applied_force) <= abs(force):
             self.force_step_no += 1
             applied_force += self.static_force_step
-            print("force step no:", self.force_step_no)
+            #print("force step no:", self.force_step_no)
 
             self.assemble_structure_k(1)
 
             resisting_force = np.matmul(self.structure_k, self.deformation_vector)
             unbalanced_force = self.force_vector - resisting_force
 
-            print("Structure level Iteration starts:")
+            #print("Structure level Iteration starts:")
             loop_count_structure = 0
             while self.condition_check(unbalanced_force, 0.1):
                 reduced_structure_k = self.apply_boundary_conditions_k(self.structure_k)
@@ -254,19 +253,20 @@ class Structure:
                 unbalanced_force = self.force_vector - resisting_force
                 loop_count_structure += 1
 
-            print("structure level iterations ends =", loop_count_structure)
-
-            self.assemble_deformation_vector(deformation)
+            #print("structure level iterations ends =", loop_count_structure)
             deformation.fill(0)
 
             self.total_force_vector += np.matmul(self.structure_k, self.deformation_vector)
             self.total_deformations += self.deformation_vector
-            self.save_deformations(self.total_deformations)
 
             x_value = abs(self.total_deformations[force_id])
             y_value = abs(self.total_force_vector[force_id])
+            # print("x:", x_value, "y:", y_value)
             plt.scatter(x_value, y_value)
             plt.pause(0.01)
+
+        self.save_deformations(self.total_deformations)
+        self.save_forces(self.total_force_vector)
         plt.show()
 
     def displacement_controlled(self, force, force_id):
@@ -282,8 +282,8 @@ class Structure:
 
     def assemble_deformation_vector(self, deformation):
         index_def = 0
-        for index_force in range(self.initial_force_vector.size):
-            if not math.isnan(self.initial_force_vector[index_force]):
+        for index_force in range(self.mat_size):
+            if not math.isnan(self.restraints[index_force]):
                 self.deformation_vector[index_force] = deformation[index_def]
                 index_def += 1
 
@@ -337,7 +337,7 @@ class Structure:
         if tag == 0:
             self.node_order = list(filter(lambda a: a != -1, self.node_order))
             np.where(self.force_vector is not None, 0, self.force_vector)
-            self.initial_force_vector = np.array(self.force_vector)
+            self.restraints = np.array(self.force_vector)
 
     def save_deformations(self, deformation_vector):
         for node_id in self.node_order:
@@ -347,12 +347,20 @@ class Structure:
             node.d_y = deformation_vector[from_i + 1]
             node.dm_z = deformation_vector[from_i + 2]
 
+    def save_forces(self, force_vector):
+        for node_id in self.node_order:
+            from_i = node_id * self.DOF_PER_NODE
+            node = self.nodes[node_id]
+            node.f_x = force_vector[from_i]
+            node.f_y = force_vector[from_i + 1]
+            node.m_z = force_vector[from_i + 2]
+
     def apply_boundary_conditions(self):
         # Applying boundary conditions
         force_vector_copy = self.force_vector
         structure_k_copy = self.structure_k
         index = 0
-        for force in self.initial_force_vector:
+        for force in self.restraints:
             if math.isnan(force):
                 structure_k_copy = np.delete(structure_k_copy, index, 0)
                 structure_k_copy = np.delete(structure_k_copy, index, 1)
@@ -366,7 +374,7 @@ class Structure:
         # Applying boundary conditions
         force_vector_copy = force_vector
         index = 0
-        for force in self.initial_force_vector:
+        for force in self.restraints:
             if math.isnan(force):
                 force_vector_copy = np.delete(force_vector_copy, index, 0)
             else:
@@ -377,7 +385,7 @@ class Structure:
         # Applying boundary conditions
         structure_k_copy = stiffness
         index = 0
-        for force in self.initial_force_vector:
+        for force in self.restraints:
             if math.isnan(force):
                 structure_k_copy = np.delete(structure_k_copy, index, 0)
                 structure_k_copy = np.delete(structure_k_copy, index, 1)

@@ -128,7 +128,7 @@ class Element:
 
             unbalanceForce = total_sectionForceINCR - section.f_section_resist
             loop_count=0
-            print("section level iteration starts: ")
+            # print("section level iteration starts: ")
             while (self.conditionCheck(unbalanceForce, tolerance)):
                 #print("section.k_section_initial",section.k_section_initial)
                 #print("unbalanceForce",unbalanceForce)
@@ -143,7 +143,7 @@ class Element:
 
             section.total_deformation = total_sectionDefINCR_
             section.total_force = total_sectionForceINCR
-            print("Section level iterations ends =",loop_count)
+            # print("Section level iterations ends =",loop_count)
         K_element = 0
 
         for section_ in range(self.n_sections):

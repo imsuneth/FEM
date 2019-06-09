@@ -9,7 +9,7 @@ structure_js = readFile('testStructure.json')
 material_models_js = readFile('material_models.json')
 load_material_models(material_models_js)
 structure = Structure(structure_js)
-structure.analyzeStructure()
+structure.analyze_structure()
 
 
 # # Section level test bench----------------------
