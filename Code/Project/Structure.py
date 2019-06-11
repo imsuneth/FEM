@@ -1,7 +1,7 @@
 from Element import *
 from Node import *
 from CrossSection import *
-
+import plotTheStruct
 from DOF import *
 from matplotlib import pyplot as plt
 
@@ -260,6 +260,7 @@ class Structure:
                 deformation += corrective_deformation
                 self.assemble_deformation_vector(deformation)
                 loop_count_structure +=1
+
             deformation.fill(0)
             print("structure level iterations ends =",loop_count_structure)
             self.total_force_vector += np.matmul(self.structure_k, self.deformation_vector)
@@ -268,6 +269,8 @@ class Structure:
             y_value = abs(self.total_force_vector[force_id])
             plt.scatter(x_value, y_value)
             plt.pause(0.01)
+
+
         plt.show()
 
     def displacement_controlled(self, force, force_id):
