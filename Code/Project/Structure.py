@@ -1,7 +1,9 @@
 from Element import *
 from Node import *
 from CrossSection import *
+import plotTheStruct
 from Reinforcement import *
+
 from DOF import *
 from matplotlib import pyplot as plt
 
@@ -263,6 +265,7 @@ class Structure:
                 loop_count_structure += 1
 
             #print("structure level iterations ends =", loop_count_structure)
+
             deformation.fill(0)
 
             self.total_force_vector += np.matmul(self.structure_k, self.deformation_vector)
@@ -274,8 +277,10 @@ class Structure:
             plt.scatter(x_value, y_value)
             plt.pause(0.01)
 
+
         self.save_deformations(self.total_deformations)
         self.save_forces(self.total_force_vector)
+
         plt.show()
 
     def displacement_controlled(self, force, force_id):

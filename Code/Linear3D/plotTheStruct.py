@@ -1,27 +1,21 @@
-from matplotlib import pyplot as plt
+from mpl_toolkits.mplot3d import axes3d
+import matplotlib.pyplot as plt
+from matplotlib import style
 import numpy as np
 
+plot_x_values,plot_y_values,plot_z_values=[],[],[]
 
-def plotTheStruct(elements,nodes):
-    plt.ylim(-3, 7)
+def create_list(x,y,z):
+    plot_x_values.append(x)
+    plot_y_values.append(y)
+    plot_z_values.append(z)
 
-    for ele in elements:
-        startNode = ele.start_node
-        endNode = ele.end_node
-        x1 = startNode.p_x
-        y1 = startNode.p_y
-
-        x2 = endNode.p_x
-        y2 = endNode.p_y
-        #print(x1, y1, "||", x2, y2)
-        plt.plot([x1, x2], [y1, y2], 'r>-')
-
-    for N in nodes:
-        x=N.p_x
-        y=N.p_y
-        ax = plt.axes()
-        s="Node "+str(N.id)+"\nFX="+str(round(float(N.f_x), 3))+"\nFY="+str(round(float(N.f_y), 3))+"\nMZ="+str(round(float(N.m_z), 3))
-        s+='\nDX=' + str(N.d_x)+'\nDY=' + str(N.d_y)+'\nDMZ=' + str(N.dm_z)
-        plt.text(x, y, s)
-
+def plotNew(x,y,z):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    z = np.array([z])
+    ax.plot_wireframe(x, y, z)
     plt.show()
+
+
+
