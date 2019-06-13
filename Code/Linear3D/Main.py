@@ -6,7 +6,7 @@ material_js = readFile('material_models.json')
 Material.load_material_models(material_js)
 
 
-#structure_js = readFile('testStructure.json')
+# structure_js = readFile('testStructure.json')
 structure_js = readFile('structure01.json')
 structure = Structure(structure_js)
 structure.analyzeStructure()

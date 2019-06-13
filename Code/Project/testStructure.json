@@ -18,8 +18,13 @@
 			"dimensions":
                 {"y":0.5,"z":0.35},
 			"no_of_fibers":20,
-			"fiber_material_ids":
-				[0, 1, 0, 0,0,0,0,0,0,0,0, 0, 0, 0,0,0,0,0,1,0]
+			"material_id":0,
+            "no_reinforcements":2,
+            "reinforcements":
+            [
+                {"id":0, "material_id": 1, "distance_from_center": 0.25, "area": 0.0035},
+                {"id":1, "material_id": 1, "distance_from_center": -0.25, "area": 0.0035}
+            ]
 		}
 	],
     

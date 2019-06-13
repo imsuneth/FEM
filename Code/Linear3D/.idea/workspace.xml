@@ -2,12 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="532e7b35-459a-4ac4-b9f7-7e1c9390ea55" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Structure.py" beforeDir="false" afterPath="$PROJECT_DIR$/Structure.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/plotTheStruct.py" beforeDir="false" afterPath="$PROJECT_DIR$/plotTheStruct.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
+
       <change beforePath="$PROJECT_DIR$/../Project/Main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Project/Main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Project/Structure.py" beforeDir="false" afterPath="$PROJECT_DIR$/../Project/Structure.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Project/structure00.json" beforeDir="false" afterPath="$PROJECT_DIR$/../Project/structure00.json" afterDir="false" />
+
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -15,6 +13,7 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+
   <component name="FUSProjectUsageTrigger">
     <session id="-1307675547">
       <usages-collector id="statistics.lifecycle.project">
@@ -51,13 +50,10 @@
       </usages-collector>
     </session>
   </component>
-  <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Structure.py">
-          <provider selected="true" editor-type-id="text-editor">
+
             <state relative-caret-position="108">
               <caret line="206" selection-start-line="206" selection-end-line="206" />
+
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -107,8 +103,10 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Main.py">
           <provider selected="true" editor-type-id="text-editor">
+
             <state relative-caret-position="170">
               <caret line="10" column="35" lean-forward="true" selection-start-line="10" selection-start-column="35" selection-end-line="10" selection-end-column="35" />
+
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
               </folding>
@@ -119,6 +117,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/plotTheStruct.py">
           <provider selected="true" editor-type-id="text-editor">
+
             <state relative-caret-position="239">
               <caret line="15" column="5" selection-start-line="15" selection-start-column="5" selection-end-line="15" selection-end-column="5" />
               <folding>
@@ -126,6 +125,7 @@
                 <marker date="1560103651905" expanded="true" signature="196:282" ph="..." />
                 <marker date="1560103651905" expanded="true" signature="301:441" ph="..." />
               </folding>
+
             </state>
           </provider>
         </entry>
@@ -153,6 +153,7 @@
         <option value="$PROJECT_DIR$/testStructure.json" />
         <option value="$PROJECT_DIR$/structure00.json" />
         <option value="$PROJECT_DIR$/structure01.json" />
+
         <option value="$PROJECT_DIR$/Element.py" />
         <option value="$PROJECT_DIR$/plotTheStruct.py" />
         <option value="$PROJECT_DIR$/test.py" />
@@ -161,17 +162,18 @@
       </list>
     </option>
   </component>
+
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="y" value="25" />
     <option name="width" value="683" />
     <option name="height" value="678" />
+
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -183,10 +185,12 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Project" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
@@ -275,14 +279,17 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="25" width="1366" height="678" extended-state="6" />
+    <frame x="-8" y="-8" width="1382" height="754" extended-state="7" />
+    <editor active="true" />
     <layout>
+
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.21891288" />
+
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.565" />
+
       <window_info anchor="bottom" id="Debug" order="3" weight="0.22166666" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -317,8 +324,10 @@
       <window_info anchor="right" id="PlantUML" order="3" />
     </layout-to-restore>
   </component>
+
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
+
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/logger-debug.log">
@@ -331,6 +340,7 @@
       <provider selected="true" editor-type-id="images" />
     </entry>
     <entry file="file://$PROJECT_DIR$/structure00.json">
+
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="171">
           <caret line="86" column="29" selection-start-line="86" selection-start-column="29" selection-end-line="86" selection-end-column="29" />
@@ -338,12 +348,8 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/structure01.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="24">
-          <caret line="109" column="23" selection-start-line="109" selection-start-column="20" selection-end-line="109" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
+
+
     <entry file="file://$PROJECT_DIR$/CrossSection.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="323">
@@ -376,6 +382,7 @@
       </provider>
     </entry>
     <entry file="file:///usr/local/lib/python3.6/dist-packages/matplotlib/axes/_base.py">
+
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="116">
           <caret line="1280" selection-start-line="1280" selection-end-line="1280" />
@@ -411,29 +418,37 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test.py">
+
+    <entry file="file://$PROJECT_DIR$/Structure.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" column="14" lean-forward="true" selection-start-line="6" selection-start-column="14" selection-end-line="6" selection-end-column="14" />
+        <state relative-caret-position="471">
+          <caret line="229" column="49" selection-start-line="229" selection-start-column="49" selection-end-line="229" selection-end-column="49" />
           <folding>
-            <element signature="e#0#39#0" expanded="true" />
+            <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Node.py">
+    <entry file="file://$PROJECT_DIR$/material_models.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-34">
-          <caret line="25" column="24" selection-start-line="25" selection-start-column="24" selection-end-line="25" selection-end-column="24" />
+        <state relative-caret-position="187">
+          <caret line="11" column="1" selection-start-line="11" selection-start-column="1" selection-end-line="11" selection-end-column="1" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Structure.py">
+    <entry file="file://$PROJECT_DIR$/plotTheStruct.py">
       <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="12" selection-start-column="12" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Material.py">
+
         <state relative-caret-position="108">
-          <caret line="206" selection-start-line="206" selection-end-line="206" />
+
           <folding>
-            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#0#23#0" expanded="true" />
           </folding>
         </state>
       </provider>
