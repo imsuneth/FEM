@@ -65,6 +65,7 @@ class Structure:
             self.cross_sections.put(id, new_cross_section)
 
         # Create Element objects and put them in nparray "elements"
+        local_x=np.array([1,0])
         self.n_elements = js["no_of_elements"]
         self.elements = np.empty(self.n_elements, dtype=Element)
         js_elements = js["elements"]
@@ -83,22 +84,15 @@ class Structure:
             x_cord = element["local_x_dir"]["x"]
             y_cord = element["local_x_dir"]["y"]
 
-            # angleRatio=y_cord/x_cord
-            # angle=None
-            # if angleRatio>0:
-            #     #angle=math.atan(angleRatio)
-            #     if(x_cord>0 and y_cord>0):
-            #         angle=math.atan(angleRatio)
-            #     else:
-            #         angle=math.pi+math.atan(angleRatio)
-            # else:
-            #     if(x_cord<0):
-            #         angle=math.pi+math.atan(angleRatio)
-            #     else:
-            #         angle=2*math.pi+math.atan(angleRatio)
-            #
-            # # angle = element["angle"]
-            angle = 0
+            local_vector=np.array([x_cord,y_cord])
+            angle = np.arccos(np.dot(local_x, local_vector) / (np.linalg.norm(local_x) * np.linalg.norm(local_vector)))
+
+            if y_cord>=0:
+                angle=angle
+            else:
+                angle=2*np.pi-angle
+
+            print("anlge in degrees =",(180*angle)/np.pi)
             yDiff = abs(start_node.p_y - end_node.p_y)
             xDiff = abs(start_node.p_x - end_node.p_x)
             length = math.sqrt(math.pow(yDiff, 2) + math.pow(xDiff, 2))
