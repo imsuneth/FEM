@@ -243,14 +243,14 @@ class Structure:
         while abs(applied_force) <= abs(force):
             self.force_step_no += 1
             applied_force += self.static_force_step
-            #print("force step no:", self.force_step_no)
+            # print("force step no:", self.force_step_no)
 
             self.assemble_structure_k(1)
 
             resisting_force = np.matmul(self.structure_k, self.deformation_vector)
             unbalanced_force = self.force_vector - resisting_force
 
-            #print("Structure level Iteration starts:")
+            # print("Structure level Iteration starts:")
             loop_count_structure = 0
             while self.condition_check(unbalanced_force, 0.1):
                 reduced_structure_k = self.apply_boundary_conditions_k(self.structure_k)
@@ -264,7 +264,7 @@ class Structure:
                 unbalanced_force = self.force_vector - resisting_force
                 loop_count_structure += 1
 
-            #print("structure level iterations ends =", loop_count_structure)
+            # print("structure level iterations ends =", loop_count_structure)
 
             deformation.fill(0)
 
@@ -276,7 +276,6 @@ class Structure:
             # print("x:", x_value, "y:", y_value)
             plt.scatter(x_value, y_value)
             plt.pause(0.01)
-
 
         self.save_deformations(self.total_deformations)
         self.save_forces(self.total_force_vector)
