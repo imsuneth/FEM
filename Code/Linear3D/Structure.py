@@ -6,6 +6,7 @@ from numpy.linalg import inv
 from log_ import *
 from plotTheStruct import *
 
+
 class Structure:
 
     def __init__(self, js):
@@ -24,7 +25,6 @@ class Structure:
             p_z = node["z"]
             new_node = Node(id, p_x, p_y, p_z)
             self.nodes.put(id, new_node)
-
 
         # Create CrossSection objects and put them in nparray "cross_sections"
         self.no_of_crosssection_types = js["no_of_crosssection_types"]
@@ -46,8 +46,6 @@ class Structure:
 
             self.cross_sections.put(id, new_cross_section)
 
-
-
         # Create Element objects and put them in nparray "elements"
         self.n_elements = js["no_of_elements"]
         self.elements = np.empty(self.n_elements, dtype=Element)
@@ -66,8 +64,6 @@ class Structure:
 
             new_element = Element(id, start_node, end_node, cross_section, material_id, local_dirs)
             self.elements.put(id, new_element)
-
-
 
         # Take loads applied and assign them to Nodes
         self.no_of_loads = js["no_of_loads"]
@@ -106,8 +102,6 @@ class Structure:
 
             node = self.nodes[node_id]
             [node.t_x, node.t_y, node.t_z, node.r_x, node.r_y, node.r_z] = [t_x, t_y, t_z, r_x, r_y, r_z]
-
-
 
     def analyzeStructure(self):
 
@@ -204,19 +198,18 @@ class Structure:
             node.dm_y = deformation_vector[from_i + 4]
             node.dm_z = deformation_vector[from_i + 5]
 
-
         self.showResults(force_vector_2, deformation_vector, node_order)
         return structure_k
 
     def showResults(self, force_vector, deformation_vector, node_order):
         for node_id in node_order:
             print("node_id:", node_id)
-            print("\tfx:", force_vector[node_id*6])
-            print("\tfy:", force_vector[node_id * 6+1])
-            print("\tfz:", force_vector[node_id * 6+2],"\n")
-            print("\tmx:", force_vector[node_id * 6+3])
-            print("\tmy:", force_vector[node_id * 6+4])
-            print("\tmz:", force_vector[node_id * 6+5],"\n")
+            print("\tfx:", force_vector[node_id * 6])
+            print("\tfy:", force_vector[node_id * 6 + 1])
+            print("\tfz:", force_vector[node_id * 6 + 2], "\n")
+            print("\tmx:", force_vector[node_id * 6 + 3])
+            print("\tmy:", force_vector[node_id * 6 + 4])
+            print("\tmz:", force_vector[node_id * 6 + 5], "\n")
             print("\tdx:", deformation_vector[node_id * 6])
             print("\tdy:", deformation_vector[node_id * 6 + 1])
             print("\tdz:", deformation_vector[node_id * 6 + 2], "\n")
