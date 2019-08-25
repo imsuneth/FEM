@@ -93,11 +93,13 @@ class Element:
                                    [self.end_node.d_y],
                                    [self.end_node.dm_z]])
 
-        rotate = np.matmul(self.rotMatrix(), elementDefINCR)  # convert defINCR to local co-ordinate systme
+        Rot =self.rotMatrix()
+        rotate = np.matmul(Rot, elementDefINCR)  # convert defINCR to local co-ordinate systme
+        RB=self.rigidBodyTransMatrix()
 
-        basicSystem = np.matmul(self.rigidBodyTransMatrix(), rotate)  # remove rigid body modes (basicSystem 3x1 matrix)
-
-        mat_cal=elementForceINCR = np.matmul(self.k_element_initial, basicSystem)
+        basicSystem = np.matmul(RB, rotate)  # remove rigid body modes (basicSystem 3x1 matrix)
+        k_ =self.k_element_initial
+        mat_cal = np.matmul(k_, basicSystem)
 
         if self.element_initial_status==True:
             elementForceINCR = np.matmul(self.k_element_initial, basicSystem)
@@ -128,7 +130,7 @@ class Element:
 
             unbalanceForce = total_sectionForceINCR - section.f_section_resist
             loop_count=0
-            # print("section level iteration starts: ")
+
             while (self.conditionCheck(unbalanceForce, tolerance)):
                 #print("section.k_section_initial",section.k_section_initial)
                 #print("unbalanceForce",unbalanceForce)
