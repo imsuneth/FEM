@@ -22,8 +22,8 @@
             "no_reinforcements":2,
             "reinforcements":
             [
-                {"id":0, "material_id": 1, "distance_from_center":  0.2, "area": 0.0035},
-                {"id":1, "material_id": 1, "distance_from_center": -0.2, "area": 0.0035}
+                {"id":0, "material_id": 1, "distance_from_center":  0.2, "area": 0.000402},
+                {"id":1, "material_id": 1, "distance_from_center": -0.2, "area": 0.000402}
             ]
 		}
 	],

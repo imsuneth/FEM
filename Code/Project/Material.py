@@ -23,7 +23,7 @@ class MaterialModel:
             self.d_formulas.put(index, f_d_sympy_formula)
 
             index += 1
-        self.plot()
+        #self.plot()
 
     def get_strain(self, stress):
         for index in range(self.no_of_ranges - 1):
