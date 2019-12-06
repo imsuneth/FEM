@@ -5,9 +5,9 @@ class MaterialModel:
     def __init__(self, id, name, youngs_mod):
         self.id = id
         self.name = name
-        self.youngs_m =youngs_mod
+        self.youngs_m = youngs_mod
         self.mu = 0.3
-        self.g = youngs_mod/2/(1+self.mu)
+        self.g = youngs_mod / 2 / (1 + self.mu)
 
     def get_e(self):
         return self.youngs_m
@@ -17,7 +17,6 @@ class MaterialModel:
 
     def get_mu(self):
         return self.mu
-
 
 
 def load_material_models(js):
