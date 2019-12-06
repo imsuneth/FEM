@@ -61,7 +61,7 @@ class MaterialModel:
 
 
 x = Symbol('x')
-
+material_models=None
 
 def load_material_models(js):
     global material_models

@@ -5,7 +5,7 @@ from Fiber import Fiber
 
 class Section:
     def __init__(self, id, cross_section):
-        self.k_section_initial = None
+        self.k_section = None
         self.f_section_resist = None
         self.total_deformation = np.zeros((2, 1))
         self.total_force = np.zeros((2, 1))
@@ -69,4 +69,4 @@ class Section:
         sectional_stiffness[1][0] = sectional_stiffness[0][1]
 
         self.f_section_resist = resistance_force
-        self.k_section_initial = sectional_stiffness
+        self.k_section = sectional_stiffness

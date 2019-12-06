@@ -13,6 +13,8 @@ class Structure:
     tolerence = 0.00001
     max_Iterations = 10
 
+    structure_level_itr=0
+
     def __init__(self, js):
         # Load the jason file and construct the virtual structure
         # Create Node objects and put them in nparray "nodes"
@@ -147,7 +149,7 @@ class Structure:
         self.force_vector = None
         self.restraints = None
         self.deformation_vector = None
-        self.static_force_step = 1
+        self.static_force_step = 5
         self.is_force_controlled_analysis = True
         self.force_step_no = 0
         self.total_force_vector = None
@@ -217,12 +219,13 @@ class Structure:
         return None
 
     def force_controlled(self, force, force_id):
+
         if force == 0:
             return
         self.static_force_step = self.static_force_step * force / abs(force)
         applied_force = self.static_force_step
         self.force_vector[force_id] = self.static_force_step
-        # print("force step no:", self.force_step_no)
+        print("force step no:", self.force_step_no)
 
         # Find initial deformation
         [structure_k_copy, force_vector_copy] = self.apply_boundary_conditions()
@@ -237,14 +240,14 @@ class Structure:
         while abs(applied_force) <= abs(force):
             self.force_step_no += 1
             applied_force += self.static_force_step
-            # print("force step no:", self.force_step_no)
+            print("force step no:", self.force_step_no)
 
             self.assemble_structure_k(1)
 
             resisting_force = np.matmul(self.structure_k, self.deformation_vector)
             unbalanced_force = self.force_vector - resisting_force
 
-            # print("Structure level Iteration starts:")
+            print("Structure level Iteration starts:")
             loop_count_structure = 0
             while self.condition_check(unbalanced_force, 0.1):
                 reduced_structure_k = self.apply_boundary_conditions_k(self.structure_k)
@@ -258,7 +261,7 @@ class Structure:
                 unbalanced_force = self.force_vector - resisting_force
                 loop_count_structure += 1
 
-            # print("structure level iterations ends =", loop_count_structure)
+            print("structure level iterations ends =", loop_count_structure)
 
             deformation.fill(0)
 
