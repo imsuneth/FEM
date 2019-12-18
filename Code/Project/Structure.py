@@ -13,6 +13,8 @@ class Structure:
     tolerence = 0.00001
     max_Iterations = 10
 
+    structure_level_itr=0
+
     def __init__(self, js):
         # Load the jason file and construct the virtual structure
         # Create Node objects and put them in nparray "nodes"
@@ -66,6 +68,7 @@ class Structure:
             self.cross_sections.put(id, new_cross_section)
 
         # Create Element objects and put them in nparray "elements"
+        local_x=np.array([1,0])
         self.n_elements = js["no_of_elements"]
         self.elements = np.empty(self.n_elements, dtype=Element)
         js_elements = js["elements"]
@@ -84,22 +87,15 @@ class Structure:
             x_cord = element["local_x_dir"]["x"]
             y_cord = element["local_x_dir"]["y"]
 
-            # angleRatio=y_cord/x_cord
-            # angle=None
-            # if angleRatio>0:
-            #     #angle=math.atan(angleRatio)
-            #     if(x_cord>0 and y_cord>0):
-            #         angle=math.atan(angleRatio)
-            #     else:
-            #         angle=math.pi+math.atan(angleRatio)
-            # else:
-            #     if(x_cord<0):
-            #         angle=math.pi+math.atan(angleRatio)
-            #     else:
-            #         angle=2*math.pi+math.atan(angleRatio)
-            #
-            # # angle = element["angle"]
-            angle = 0
+            local_vector=np.array([x_cord,y_cord])
+            angle = np.arccos(np.dot(local_x, local_vector) / (np.linalg.norm(local_x) * np.linalg.norm(local_vector)))
+
+            if y_cord>=0:
+                angle=angle
+            else:
+                angle=2*np.pi-angle
+
+            print("anlge in degrees =",(180*angle)/np.pi)
             yDiff = abs(start_node.p_y - end_node.p_y)
             xDiff = abs(start_node.p_x - end_node.p_x)
             length = math.sqrt(math.pow(yDiff, 2) + math.pow(xDiff, 2))
@@ -154,7 +150,7 @@ class Structure:
         self.force_vector = None
         self.restraints = None
         self.deformation_vector = None
-        self.static_force_step = 1
+        self.static_force_step = 5
         self.is_force_controlled_analysis = True
         self.force_step_no = 0
         self.total_force_vector = None
@@ -224,12 +220,13 @@ class Structure:
         return None
 
     def force_controlled(self, force, force_id):
+
         if force == 0:
             return
         self.static_force_step = self.static_force_step * force / abs(force)
         applied_force = self.static_force_step
         self.force_vector[force_id] = self.static_force_step
-        # print("force step no:", self.force_step_no)
+        print("force step no:", self.force_step_no)
 
         # Find initial deformation
         [structure_k_copy, force_vector_copy] = self.apply_boundary_conditions()
@@ -244,14 +241,14 @@ class Structure:
         while abs(applied_force) <= abs(force):
             self.force_step_no += 1
             applied_force += self.static_force_step
-            # print("force step no:", self.force_step_no)
+            print("force step no:", self.force_step_no)
 
             self.assemble_structure_k(1)
 
             resisting_force = np.matmul(self.structure_k, self.deformation_vector)
             unbalanced_force = self.force_vector - resisting_force
 
-            # print("Structure level Iteration starts:")
+            print("Structure level Iteration starts:")
             loop_count_structure = 0
             while self.condition_check(unbalanced_force, 0.1):
                 reduced_structure_k = self.apply_boundary_conditions_k(self.structure_k)
@@ -265,7 +262,7 @@ class Structure:
                 unbalanced_force = self.force_vector - resisting_force
                 loop_count_structure += 1
 
-            # print("structure level iterations ends =", loop_count_structure)
+            print("structure level iterations ends =", loop_count_structure)
 
             deformation.fill(0)
 

@@ -84,7 +84,7 @@ class Element:
 
         return k_element_initial_global
 
-    def analyze(self, tolerance):  # for the first iteration set the initial call to True
+    def analyze(self, tolerance):
 
         elementDefINCR = np.array([[self.start_node.d_x],
                                    [self.start_node.d_y],
@@ -129,8 +129,9 @@ class Element:
             section.analyze(np.transpose(total_sectionDefINCR_)[0])
 
             unbalanceForce = total_sectionForceINCR - section.f_section_resist
-            loop_count=0
 
+            print("section level iteration starts: ")
+            loop_count=0
             while (self.conditionCheck(unbalanceForce, tolerance)):
                 #print("section.k_section_initial",section.k_section_initial)
                 #print("unbalanceForce",unbalanceForce)
@@ -145,7 +146,7 @@ class Element:
 
             section.total_deformation = total_sectionDefINCR_
             section.total_force = total_sectionForceINCR
-            # print("Section level iterations ends =",loop_count)
+            print("Section level iterations ends =",loop_count)
         K_element = 0
 
         for section_ in range(self.n_sections):
@@ -168,8 +169,10 @@ class Element:
             self.rigidBodyTransMatrix()) @ K_element @ self.rigidBodyTransMatrix() @ self.rotMatrix()  # 6x6 matrix refering global co-ordinate system
 
     def conditionCheck(self, mat, value):
+        #print(mat)
+        #print(value)
         max_abs_val = abs(max(mat.min(), mat.max(), key=abs))
-
+        #print(max_abs_val)
         if max_abs_val > value:
             return True
         else:
