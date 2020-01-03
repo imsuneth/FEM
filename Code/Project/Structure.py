@@ -20,6 +20,7 @@ class Structure:
         # Create Node objects and put them in nparray "nodes"
 
         # self.n_totalFreeDof = 0 #added by pubudu to extractDOF from deformation increment vector
+        global new_cross_section
         self.fix_Point_array = []
 
         self.n_nodes = js["no_of_nodes"]
