@@ -23,28 +23,31 @@ def test_section(section_force):
 
     initial_section_deformation = np.matmul(np.linalg.inv(initial_section_k), section_force)
     total_section_deformation += initial_section_deformation
-    total_section_force += section_force
-
     section = structure.elements[0].sections[0]
-    section.analyze(np.transpose(total_section_deformation)[0])
-
+    section.analyze(total_section_deformation)
+    total_section_force += section_force
     unbalanceForce = total_section_force - section.f_section_resist
     
     while (conditionCheck(unbalanceForce, 0.1)):
         corrective_deformation = np.matmul(inv(section.k_section), unbalanceForce)
 
         total_section_deformation += corrective_deformation
-        section.analyze(np.transpose(total_section_deformation)[0])
+        section.analyze(total_section_deformation)
         unbalanceForce = total_section_force - section.f_section_resist
 
+        #print('in while loop')
 
-for y_force in range(0,100):
+
+for y_force in range(0,1000):
+
     section_force = np.array([[0],[3]])
     test_section(section_force)
     x_values = total_section_deformation[1]
     y_values = total_section_force[1]
     #print(total_section_force)
+    plt.xlim([0,0.01])
     plt.scatter(x_values, y_values)
     plt.pause(0.01)
+    print('y_force:',y_force)
 
 plt.show()

@@ -60,7 +60,7 @@ class Element:
         initialElementFlexibMat = 0
 
         for section_ in range(self.n_sections):
-            Section_K = self.sections[section_].k_section_initial
+            Section_K = self.sections[section_].k_section
             NP = np.array([[0, 0, 1],
                            [((self.x[section_] + 1) / 2) - 1, (self.x[section_] + 1) / 2, 0]])
 
@@ -99,7 +99,7 @@ class Element:
 
         basicSystem = np.matmul(RB, rotate)  # remove rigid body modes (basicSystem 3x1 matrix)
         k_ =self.k_element_initial
-        mat_cal = np.matmul(k_, basicSystem)
+        #mat_cal = np.matmul(k_, basicSystem)
 
         if self.element_initial_status==True:
             elementForceINCR = np.matmul(self.k_element_initial, basicSystem)
@@ -113,7 +113,7 @@ class Element:
             total_sectionDefINCR_ = section.total_deformation
             total_sectionForceINCR = section.total_force
 
-            k_section = section.k_section_initial
+            k_section = section.k_section
             NP = np.array([[0, 0, 1], [((self.x[section_] + 1) / 2) - 1, (self.x[section_] + 1) / 2, 0]])
 
             # ////////////starting newton-raphson iteration////////////////////
@@ -135,7 +135,7 @@ class Element:
             while (self.conditionCheck(unbalanceForce, tolerance)):
                 #print("section.k_section_initial",section.k_section_initial)
                 #print("unbalanceForce",unbalanceForce)
-                corrective_d = np.matmul(inv(section.k_section_initial), unbalanceForce)
+                corrective_d = np.matmul(inv(section.k_section), unbalanceForce)
 
                 total_sectionDefINCR_ += corrective_d
                 section.analyze(np.transpose(total_sectionDefINCR_)[0])
@@ -151,7 +151,7 @@ class Element:
 
         for section_ in range(self.n_sections):
             section = self.sections[section_]
-            k_section=section.k_section_initial
+            k_section=section.k_section
             NP = np.array([[0, 0, 1], [((self.x[section_] + 1) / 2) - 1, (self.x[section_] + 1) / 2, 0]])
             fh = inv(k_section)
             mat1 = np.matmul(np.transpose(NP), fh)
@@ -163,7 +163,8 @@ class Element:
         K_element = inv(K_element)
         self.k_element_initial=K_element
         element_res_force=np.matmul(K_element,basicSystem)
-        self.k_element_unbalance_force=mat_cal-element_res_force
+        #self.k_element_unbalance_force=mat_cal-element_res_force
+        self.k_element_unbalance_force = elementForceINCR - element_res_force
 
         return np.transpose(self.rotMatrix()) @ np.transpose(
             self.rigidBodyTransMatrix()) @ K_element @ self.rigidBodyTransMatrix() @ self.rotMatrix()  # 6x6 matrix refering global co-ordinate system

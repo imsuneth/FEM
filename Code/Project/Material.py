@@ -23,13 +23,16 @@ class MaterialModel:
             self.d_formulas.put(index, f_d_sympy_formula)
 
             index += 1
-        #self.plot()
+        self.plot()
 
     def get_strain(self, stress):
         for index in range(self.no_of_ranges - 1):
             # print("stress:",stress, " range_upper_limits[index]:",self.range_upper_limits[index])
             if stress < self.range_upper_limits[index]:
+                if index == 0:
+                    print('************')
                 return self.formulas[index](stress)
+        print('############')
         return self.formulas[-1](stress)
 
     def get_e(self, stress):

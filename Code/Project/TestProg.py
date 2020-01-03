@@ -1,11 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
 
-plt.axis([0, 10, 0, 1])
-
-for i in range(10):
-    y = np.random.random()
-    plt.scatter(i, y)
-    plt.pause(0.05)
-
-plt.show()
+x=np.array([[3,6,7],[5,-3,0]])
+y=np.array([[1,1],[2,1],[3,-3]])
+print(np.matmul(x,y))

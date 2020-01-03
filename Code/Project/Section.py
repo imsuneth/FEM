@@ -16,6 +16,7 @@ class Section:
 
         for fiber_id in range(cross_section.no_of_fibers):
             y = fiber_height * (cross_section.no_of_fibers - 1 - 2 * fiber_id) / 2
+            #y = fiber_height * (1 - (1/cross_section.no_of_fibers) - 2 * (fiber_id/cross_section.no_of_fibers)) / 2
             fiber = Fiber(fiber_id, y, cross_section.width, fiber_height, cross_section.material_id)
             self.fibers.put(fiber_id, fiber)
 
