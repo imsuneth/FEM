@@ -30,10 +30,9 @@ class MaterialModel:
         for index in range(self.no_of_ranges - 1):
             # print("stress:",stress, " range_upper_limits[index]:",self.range_upper_limits[index])
             if stress < self.range_upper_limits[index]:
-                if index == 0:
-                    print('************')
+                print('model id:',self.id,'range index', index)
                 return self.formulas[index](stress)
-        print('############')
+        print('model id:',self.id,'range index', 2)
         return self.formulas[-1](stress)
 
     def get_e(self, stress):
