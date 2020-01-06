@@ -1,3 +1,4 @@
+
 from sympy import *
 import numpy as np
 import sys
@@ -29,7 +30,9 @@ class MaterialModel:
         for index in range(self.no_of_ranges - 1):
             # print("stress:",stress, " range_upper_limits[index]:",self.range_upper_limits[index])
             if stress < self.range_upper_limits[index]:
+                print('model id:',self.id,'range index', index)
                 return self.formulas[index](stress)
+        print('model id:',self.id,'range index', 2)
         return self.formulas[-1](stress)
 
     def get_e(self, stress):
@@ -57,13 +60,11 @@ class MaterialModel:
             lower_limit = upper_limit
             y_values = formula(x_values)
             plt.plot(x_values, y_values)
-
         plt.show()
 
 
 x = Symbol('x')
-
-material_models =None
+material_models=None
 
 def load_material_models(js):
     global material_models
