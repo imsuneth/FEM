@@ -26,20 +26,20 @@ class MaterialModel:
             index += 1
         self.plot()
 
-    def get_strain(self, stress):
+    def get_stress(self, strain):
         for index in range(self.no_of_ranges - 1):
             # print("stress:",stress, " range_upper_limits[index]:",self.range_upper_limits[index])
-            if stress < self.range_upper_limits[index]:
-                print('model id:',self.id,'range index', index)
-                return self.formulas[index](stress)
-        print('model id:',self.id,'range index', 2)
-        return self.formulas[-1](stress)
+            if strain < self.range_upper_limits[index]:
+                # print('model id:',self.id,'range index', index)
+                return self.formulas[index](strain)
+        # print('model id:',self.id,'range index', 2)
+        return self.formulas[-1](strain)
 
-    def get_e(self, stress):
+    def get_e(self, strain):
         for index in range(self.no_of_ranges - 1):
-            if stress < self.range_upper_limits[index]:
-                return self.d_formulas[index](stress)
-        return self.d_formulas[-1](stress)
+            if strain < self.range_upper_limits[index]:
+                return self.d_formulas[index](strain)
+        return self.d_formulas[-1](strain)
 
     def plot(self):
 

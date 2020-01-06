@@ -16,7 +16,7 @@ class Section:
 
         for fiber_id in range(cross_section.no_of_fibers):
             y = fiber_height * (cross_section.no_of_fibers - 1 - 2 * fiber_id) / 2
-            #y = fiber_height * (1 - (1/cross_section.no_of_fibers) - 2 * (fiber_id/cross_section.no_of_fibers)) / 2
+            # y = fiber_height * (1 - (1/cross_section.no_of_fibers) - 2 * (fiber_id/cross_section.no_of_fibers)) / 2
             fiber = Fiber(fiber_id, y, cross_section.width, fiber_height, cross_section.material_id)
             self.fibers.put(fiber_id, fiber)
 
@@ -31,7 +31,8 @@ class Section:
             # print("section_deformation[1]:", k)
             # print("eps_0:",eps_0)
             eps = eps_0 - fiber.y * k
-            sigma = Material.material_models[fiber.material_id].get_strain(eps)
+            sigma = Material.material_models[fiber.material_id].get_stress(eps)
+            print('strain:', eps, ' stress:', sigma)
             fiber.eps = eps
             fiber.sigma = sigma
             area = fiber.area
@@ -52,8 +53,8 @@ class Section:
             y = reinforcement.distance_from_centroid
             area = reinforcement.area
             material_id = reinforcement.material_id
-            eps = eps_0 - y*k
-            sigma = Material.material_models[material_id].get_strain(eps)
+            eps = eps_0 - y * k
+            sigma = Material.material_models[material_id].get_stress(eps)
             reinforcement.eps = eps
             reinforcement.sigma = sigma
             A_i = sigma * area

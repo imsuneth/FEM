@@ -48,6 +48,6 @@ for y_force in range(0,1000):
     #plt.xlim([0,0.01])
     plt.scatter(x_values, y_values)
     plt.pause(0.01)
-    print('y_force:',y_force)
+    print('\ny_force:',y_force)
 
 plt.show()
