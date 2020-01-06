@@ -32,7 +32,7 @@ class Section:
             # print("eps_0:",eps_0)
             eps = eps_0 - fiber.y * k
             sigma = Material.material_models[fiber.material_id].get_stress(eps)
-            print('strain:', eps, ' stress:', sigma)
+            print('concrete strain:', eps, ' stress:', sigma)
             fiber.eps = eps
             fiber.sigma = sigma
             area = fiber.area
@@ -55,6 +55,7 @@ class Section:
             material_id = reinforcement.material_id
             eps = eps_0 - y * k
             sigma = Material.material_models[material_id].get_stress(eps)
+            print('steel strain:', eps, ' stress:', sigma)
             reinforcement.eps = eps
             reinforcement.sigma = sigma
             A_i = sigma * area
