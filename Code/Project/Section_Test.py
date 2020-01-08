@@ -16,26 +16,30 @@ def conditionCheck(mat, value):
     else:
         return False
 
+section = structure.elements[0].sections[0] #-->change
+section.k_section=initial_section_k #-->change
 
 def test_section(section_force):
     global total_section_deformation
     global total_section_force
-
-    initial_section_deformation = np.matmul(np.linalg.inv(initial_section_k), section_force)
-    total_section_deformation += initial_section_deformation
-    section = structure.elements[0].sections[0]
-    section.analyze(total_section_deformation)
     total_section_force += section_force
+    #initial_section_deformation = np.matmul(np.linalg.inv(initial_section_k), section_force)
+    #initial_section_deformation = np.matmul(inv(section.k_section), total_section_force) #-->change
+    initial_section_deformation = np.matmul(inv(section.k_section), section_force)  # -->change
+    total_section_deformation += initial_section_deformation
+
+    section.analyze(total_section_deformation)
+
     unbalanceForce = total_section_force - section.f_section_resist
     
-    while (conditionCheck(unbalanceForce, 0.1)):
+    while (conditionCheck(unbalanceForce, 10**(-10))):
         corrective_deformation = np.matmul(inv(section.k_section), unbalanceForce)
 
         total_section_deformation += corrective_deformation
         section.analyze(total_section_deformation)
         unbalanceForce = total_section_force - section.f_section_resist
 
-        #print('in while loop')
+        #print('in while loop----------------------------------------')
 
 
 for y_force in range(0,1000):
@@ -46,7 +50,11 @@ for y_force in range(0,1000):
     y_values = total_section_force[1]
     #print(total_section_force)
     #plt.xlim([0,0.01])
+
+    print("call plotting")
     plt.scatter(x_values, y_values)
+    if x_values<0:
+        break
     plt.pause(0.01)
     print('y_force:',y_force)
 
