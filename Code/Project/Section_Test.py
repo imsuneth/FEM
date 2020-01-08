@@ -34,16 +34,21 @@ def test_section(section_force):
     section.analyze(total_section_deformation)
 
     unbalanceForce = total_section_force - section.f_section_resist
-
+    iterations = 0
     while conditionCheck(unbalanceForce, 10 ** (-10)):
         corrective_deformation = np.matmul(inv(section.k_section), unbalanceForce)
 
         total_section_deformation += corrective_deformation
         section.analyze(total_section_deformation)
         unbalanceForce = total_section_force - section.f_section_resist
-        print('unbalanceForce', unbalanceForce)
+        print('section force\n', total_section_force)
+        print('section_resist\n', section.f_section_resist)
+        print('section stiffness\n', section.k_section)
+        print('unbalanceForce\n', unbalanceForce)
+        iterations += 1
 
         # print('in while loop')
+    print('iterations:' , iterations)
 
 
 for y_force in range(0, 1000):
@@ -55,8 +60,9 @@ for y_force in range(0, 1000):
     # plt.xlim([0,0.01])
     plt.scatter(x_values, y_values)
     # print('total_section_deformation:\n', total_section_deformation, '\ntotal_section_force:\n', total_section_force)
-    # if(x_values<0):
-    #     break
+
+    if(x_values<0):
+         break
     plt.pause(0.01)
     print('\ny_force:', y_force)
 

@@ -1,4 +1,3 @@
-
 from sympy import *
 import numpy as np
 import sys
@@ -19,6 +18,7 @@ class MaterialModel:
             sympy_formula = sympify(formula)
             f_sympy_formula = lambdify(x, sympy_formula)
             self.formulas.put(index, f_sympy_formula)
+
             d_sympy_formula = sympy_formula.diff(Symbol('x'))
             f_d_sympy_formula = lambdify(x, d_sympy_formula)
             self.d_formulas.put(index, f_d_sympy_formula)
@@ -49,7 +49,7 @@ class MaterialModel:
         lower_limit = -0.005
         range_id = 0
         for formula in self.formulas:
-            if range_id == self.no_of_ranges-1:
+            if range_id == self.no_of_ranges - 1:
                 upper_limit = 0.005
             else:
                 upper_limit = self.range_upper_limits[range_id]
@@ -64,7 +64,8 @@ class MaterialModel:
 
 
 x = Symbol('x')
-material_models=None
+material_models = None
+
 
 def load_material_models(js):
     global material_models
