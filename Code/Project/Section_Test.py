@@ -5,9 +5,9 @@ from Main import *
 from Structure import *
 from matplotlib import pyplot as plt
 
-total_section_deformation = 0
-total_section_force = 0
-initial_section_k = np.array([[5.78976806e+06, -2.91038305e-11], [-2.91038305e-11, 1.47224867e+05]])
+total_section_deformation = np.array([[0], [0]], dtype=np.float64)
+total_section_force = np.array([[0], [0]], dtype=np.float64)
+initial_section_k = np.array([[4.55056806e+06, -2.18278728e-11], [-2.18278728e-11, 9.76568675e+04]])
 
 def conditionCheck(mat, value):
     max_abs_val = abs(max(mat.min(), mat.max(), key=abs))
@@ -52,9 +52,10 @@ for y_force in range(0,1000):
     #plt.xlim([0,0.01])
 
     print("call plotting")
-    plt.scatter(x_values, y_values)
     if x_values<0:
-        break
+        x_values=-1*x_values
+    plt.scatter(x_values, y_values)
+
     plt.pause(0.01)
     print('y_force:',y_force)
 
