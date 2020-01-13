@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 
 total_section_deformation = np.array([[0], [0]], dtype=np.float64)
 total_section_force = np.array([[0], [0]], dtype=np.float64)
-# initial_section_k = np.array([[5.78976806e+06, -2.91038305e-11], [-2.91038305e-11, 1.47224867e+05]])
+
 initial_section_k = np.array([[4.55056806e+06, -2.18278728e-11], [-2.18278728e-11, 9.76568675e+04]])
 # initial_section_k = np.array([[5.612190356482407e+06, 0], [0, 0.119102335060676e+06]])
 
@@ -19,7 +19,6 @@ def conditionCheck(mat, value):
     else:
         return False
 
-
 section = structure.elements[0].sections[0]
 section.k_section = initial_section_k
 
@@ -29,7 +28,10 @@ def test_section(section_force):
     global total_section_force
 
     total_section_force += section_force
-    initial_section_deformation = np.matmul(np.linalg.inv(section.k_section), section_force)
+    #initial_section_deformation = np.matmul(np.linalg.inv(initial_section_k), section_force)
+    #initial_section_deformation = np.matmul(inv(section.k_section), total_section_force) #-->change
+    initial_section_deformation = np.matmul(inv(section.k_section), section_force)  # -->change
+
     total_section_deformation += initial_section_deformation
 
     section.analyze(total_section_deformation)
@@ -49,8 +51,10 @@ def test_section(section_force):
         print('unbalanceForce\n', unbalanceForce)
         iterations += 1
 
+
         # print('in while loop')
     print('iterations:' , iterations)
+
 
 
 for y_force in range(0, 1000):
@@ -58,6 +62,7 @@ for y_force in range(0, 1000):
     test_section(section_force)
     x_values = total_section_deformation[1]
     y_values = total_section_force[1]
+
     # print(total_section_force)
     # plt.xlim([0,0.01])
 
