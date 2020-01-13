@@ -15,11 +15,9 @@ class Section:
         fiber_height = cross_section.height / cross_section.no_of_fibers
 
         for fiber_id in range(cross_section.no_of_fibers):
-            y = fiber_height * (cross_section.no_of_fibers - 1 - 2 * fiber_id) / 2
-            # y = fiber_height * (1 - (1 / cross_section.no_of_fibers) - 2 * ((fiber_id) / cross_section.no_of_fibers)) / 2
+            # y = fiber_height * (cross_section.no_of_fibers - 1 - 2 * fiber_id) / 2
+            y = (fiber_height/2) * (1 - (1 / cross_section.no_of_fibers) - 2 * (fiber_id)/ cross_section.no_of_fibers)
             # y = np.round(y, decimals=4)
-
-
 
             print('fiber_id:', fiber_id, ' y:', y)
             fiber = Fiber(fiber_id, y, cross_section.width, fiber_height, cross_section.material_id)
@@ -28,7 +26,7 @@ class Section:
     def analyze(self, section_deformation):
         eps_0 = section_deformation[0]  # centroid strain
         k = section_deformation[1]
-        resistance_force = np.zeros((2, 1), dtype=np.float_)
+        resistance_force = np.zeros(shape=(2, 1), dtype=np.float_)
         sectional_stiffness = np.zeros(shape=(2, 2), dtype=np.float_)
 
         for fiber_id in range(self.cross_section.no_of_fibers):
