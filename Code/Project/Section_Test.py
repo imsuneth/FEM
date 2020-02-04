@@ -8,7 +8,9 @@ from matplotlib import pyplot as plt
 total_section_deformation = np.array([[0], [0]], dtype=np.float64)
 total_section_force = np.array([[0], [0]], dtype=np.float64)
 
-initial_section_k = np.array([[4.55056806e+06, -2.18278728e-11], [-2.18278728e-11, 9.76568675e+04]])
+
+initial_section_k = np.array([[ 4.01601550e+06, -3.63797881e-11], [-3.63797881e-11, 5.34565486e+04]])
+# initial_section_k = np.array([[4.55056806e+06, -2.18278728e-11], [-2.18278728e-11, 9.76568675e+04]])
 # initial_section_k = np.array([[5.612190356482407e+06, 0], [0, 0.119102335060676e+06]])
 
 
@@ -39,7 +41,7 @@ def test_section(section_force):
     unbalanceForce = total_section_force - section.f_section_resist
     iterations = 0
 
-    while conditionCheck(unbalanceForce, 10 ** (-1)):
+    while conditionCheck(unbalanceForce, 0.1):
         corrective_deformation = np.matmul(inv(section.k_section), unbalanceForce)
 
         total_section_deformation += corrective_deformation
@@ -58,14 +60,13 @@ def test_section(section_force):
 
 
 for y_force in range(0, 1000):
-    section_force = np.array([[0], [3]])
+    section_force = np.array([[0], [2]])
     test_section(section_force)
     x_values = total_section_deformation[1]
     y_values = total_section_force[1]
 
     # print(total_section_force)
     # plt.xlim([0,0.01])
-
 
     plt.scatter(x_values, y_values)
     print('total_section_deformation:\n', total_section_deformation, '\ntotal_section_force:\n', total_section_force)

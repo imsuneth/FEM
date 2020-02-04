@@ -15,11 +15,11 @@ class Section:
         fiber_height = cross_section.height / cross_section.no_of_fibers
 
         for fiber_id in range(cross_section.no_of_fibers):
-            # y = fiber_height * (cross_section.no_of_fibers - 1 - 2 * fiber_id) / 2
-            y = (fiber_height/2) * (1 - (1 / cross_section.no_of_fibers) - 2 * (fiber_id)/ cross_section.no_of_fibers)
+            y = fiber_height * (cross_section.no_of_fibers - 1 - 2 * fiber_id) / 2
+            # y = (fiber_height/2) * (1 - (1 / cross_section.no_of_fibers) - 2 * (fiber_id)/ cross_section.no_of_fibers)
             # y = np.round(y, decimals=4)
 
-            print('fiber_id:', fiber_id, ' y:', y)
+            # print('fiber_id:', fiber_id, ' y:', y)
             fiber = Fiber(fiber_id, y, cross_section.width, fiber_height, cross_section.material_id)
             self.fibers.put(fiber_id, fiber)
 
