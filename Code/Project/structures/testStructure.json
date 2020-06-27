@@ -1,0 +1,73 @@
+{
+    "no_of_crosssection_types":1,
+    "no_of_nodes":2,
+	"no_of_materials":2,
+    "no_of_elements": 1,
+    "no_of_loads" : 1,
+    "no_of_fixed_points" : 1,
+	
+    "nodes":[
+        {   "id":0,"x":0,"y":0,"z":0    },
+        {   "id":1,"x":3.5,"y":0,"z":0    }
+    ],
+
+	
+	"cross_sections":[
+		{	"id":0,
+			"shape":"rectangle",
+			"dimensions":
+                {"y":0.5,"z":0.35},
+			"no_of_fibers":20,
+			"material_id":0,
+            "no_reinforcements":2,
+            "reinforcements":
+            [
+                {"id":0, "material_id": 1, "distance_from_center":  0.2, "area": 0.000402},
+                {"id":1, "material_id": 1, "distance_from_center": -0.2, "area": 0.000402}
+            ]
+		}
+	],
+    
+    "elements": [
+        {
+            "id": 0,
+            "start_node_id":0,
+            "end_node_id":1,
+            "element_type": 0,
+			"angle":0,
+            "local_x_dir":
+                {"x":1.0,"y":0.0,"z":0.0},
+            "local_y_dir":
+                {"x":0.0,"y":0.0,"z":0.0},
+            "local_z_dir":
+                {"x":0.0,"y":0.0,"z":0.0}
+        }
+    ],
+
+
+    "loads": [
+        {
+            "id": 0, 
+            "point_id":1,
+            "force":
+            {   "x":[0, false], "y":[-1000, true, 1], "z":[0, false]},
+            "torque":
+            {   "x":[0, false], "y":[0, false], "z":[0, false]}
+        }
+    ],
+
+
+
+    "fixed_points": [
+        {
+            "id" : 0,
+            "point_id":0,
+            "translation":
+            {  "x":true,"y":true,"z":true},
+            "rotation":
+            {  "x":true,"y":true,"z":true}
+        }
+
+
+    ]
+}

@@ -2,11 +2,12 @@ from Structure import *
 from JsonRead import *
 from Material import *
 
-#structure_js = readFile('hipoStructure.json')
-structure_js = readFile('testStructure.json')
-#structure_js = readFile('structure00.json')
-material_models_js = readFile('material_models.json')
+material_models_js = readFile('.\\materials\\material_models.json')
 load_material_models(material_models_js)
-structure = Structure(structure_js)
-# structure.analyze_structure()
 
+# structure_js = readFile('.\\structures\\testStructure.json')
+structure_js = readFile('.\\structures\\hipoStructure.json')
+
+structure = Structure(structure_js)
+structure.visualize()
+# structure.analyze_structure()

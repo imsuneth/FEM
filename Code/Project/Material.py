@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 
 
 class MaterialModel:
-    def __init__(self, id, name, no_of_ranges, range_upper_limits, formulas_list):
+    def __init__(self, meterial_model_id, name, no_of_ranges, range_upper_limits, formulas_list):
         self.no_of_ranges = no_of_ranges
-        self.id = id
+        self.id = meterial_model_id
         self.name = name
         self.range_upper_limits = np.array(range_upper_limits, dtype=Function)
         self.range_upper_limits = sympify(self.range_upper_limits)
@@ -24,7 +24,7 @@ class MaterialModel:
             self.d_formulas.put(index, f_d_sympy_formula)
 
             index += 1
-        self.plot()
+        # self.plot()
 
     def get_stress(self, strain):
         for index in range(self.no_of_ranges - 1):

@@ -7,10 +7,11 @@ from Section import *
 
 class Element:
     k_element_initial = None  # initial stiffness matrix refering local co-ordinate system
-    k_element_unbalance_force=None
-    element_initial_status=True
-    def __init__(self, id, start_node, end_node, cross_section, n_sections, angle, length):
-        self.id = id
+    k_element_unbalance_force = None
+    element_initial_status = True
+
+    def __init__(self, element_id, start_node, end_node, cross_section, n_sections, angle, length):
+        self.id = element_id
         self.start_node = start_node
         self.end_node = end_node
         self.cross_section = cross_section
@@ -58,7 +59,8 @@ class Element:
                          [0, 1 / L, 0, 0, -1 / L, 1],
                          [-1, 0, 0, 1, 0, 0]])
 
-    def calInitialElement_K(self):  # Condition="LOCAL" for refering local co-ordinate system & Condition="GLOBAL" for refering global co-ordinate system
+    def calInitialElement_K(
+            self):  # Condition="LOCAL" for refering local co-ordinate system & Condition="GLOBAL" for refering global co-ordinate system
 
         initialElementFlexibMat = 0
 
@@ -96,25 +98,25 @@ class Element:
                                    [self.end_node.d_y],
                                    [self.end_node.dm_z]])
 
-        Rot =self.rotMatrix()
+        Rot = self.rotMatrix()
         rotate = np.matmul(Rot, elementDefINCR)  # convert defINCR to local co-ordinate systme
-        RB=self.rigidBodyTransMatrix()
+        RB = self.rigidBodyTransMatrix()
 
         basicSystem = np.matmul(RB, rotate)  # remove rigid body modes (basicSystem 3x1 matrix)
-        k_ =self.k_element_initial
-        #mat_cal = np.matmul(k_, basicSystem)
+        k_ = self.k_element_initial
+        # mat_cal = np.matmul(k_, basicSystem)
 
-        if self.element_initial_status==True:
+        if self.element_initial_status == True:
             elementForceINCR = np.matmul(self.k_element_initial, basicSystem)
-            self.element_initial_status=False
+            self.element_initial_status = False
         else:
-            elementForceINCR = np.matmul(self.k_element_initial, basicSystem)-self.k_element_unbalance_force
+            elementForceINCR = np.matmul(self.k_element_initial, basicSystem) - self.k_element_unbalance_force
 
         for section_ in range(self.n_sections):  # newton raphson iteration
 
             section = self.sections[section_]
-            total_sectionDefINCR_ = section.total_deformation
-            total_sectionForceINCR = section.total_force
+            total_section_deformation = section.total_deformation
+            total_section_force = section.total_force
 
             k_section = section.k_section
             NP = np.array([[0, 0, 1], [((self.x[section_] + 1) / 2) - 1, (self.x[section_] + 1) / 2, 0]])
@@ -123,38 +125,37 @@ class Element:
 
             sectionForceINCR = np.matmul(NP, elementForceINCR)
 
-
             sectionDefINCR_ = np.matmul(inv(k_section), sectionForceINCR)
 
-            total_sectionDefINCR_ += sectionDefINCR_
-            total_sectionForceINCR += sectionForceINCR
+            total_section_deformation += sectionDefINCR_
+            total_section_force += sectionForceINCR
 
-            section.analyze(np.transpose(total_sectionDefINCR_)[0])
+            section.analyze(np.transpose(total_section_deformation)[0])
 
-            unbalanceForce = total_sectionForceINCR - section.f_section_resist
+            unbalance_force = total_section_force - section.f_section_resist
 
             print("section level iteration starts: ")
-            loop_count=0
-            while (self.conditionCheck(unbalanceForce, tolerance)):
-                #print("section.k_section_initial",section.k_section_initial)
-                #print("unbalanceForce",unbalanceForce)
-                corrective_d = np.matmul(inv(section.k_section), unbalanceForce)
+            loop_count = 0
+            while self.conditionCheck(unbalance_force, tolerance):
+                # print("section.k_section_initial",section.k_section_initial)
+                # print("unbalance_force",unbalance_force)
+                corrective_deformation = np.matmul(inv(section.k_section), unbalance_force)
 
-                total_sectionDefINCR_ += corrective_d
-                section.analyze(np.transpose(total_sectionDefINCR_)[0])
-                unbalanceForce = total_sectionForceINCR - section.f_section_resist
-                loop_count +=1
-                #print("total_sectionDefINCR_In loop:", total_sectionDefINCR_)
+                total_section_deformation += corrective_deformation
+                section.analyze(total_section_deformation)
+                unbalance_force = total_section_force - section.f_section_resist
+                loop_count += 1
+                # print("total_sectionDefINCR_In loop:", total_section_deformation)
             # ///////////ending newton raphson iteration/////////////////
 
-            section.total_deformation = total_sectionDefINCR_
-            section.total_force = total_sectionForceINCR
-            print("Section level iterations ends =",loop_count)
+            section.total_deformation = total_section_deformation
+            section.total_force = total_section_force
+            print("Section level iterations ends =", loop_count)
         K_element = 0
 
         for section_ in range(self.n_sections):
             section = self.sections[section_]
-            k_section=section.k_section
+            k_section = section.k_section
             NP = np.array([[0, 0, 1], [((self.x[section_] + 1) / 2) - 1, (self.x[section_] + 1) / 2, 0]])
             fh = inv(k_section)
             mat1 = np.matmul(np.transpose(NP), fh)
@@ -164,19 +165,19 @@ class Element:
             K_element += mat4
 
         K_element = inv(K_element)
-        self.k_element_initial=K_element
-        element_res_force=np.matmul(K_element,basicSystem)
-        #self.k_element_unbalance_force=mat_cal-element_res_force
+        self.k_element_initial = K_element
+        element_res_force = np.matmul(K_element, basicSystem)
+        # self.k_element_unbalance_force=mat_cal-element_res_force
         self.k_element_unbalance_force = elementForceINCR - element_res_force
 
         return np.transpose(self.rotMatrix()) @ np.transpose(
             self.rigidBodyTransMatrix()) @ K_element @ self.rigidBodyTransMatrix() @ self.rotMatrix()  # 6x6 matrix refering global co-ordinate system
 
     def conditionCheck(self, mat, value):
-        #print(mat)
-        #print(value)
+        # print(mat)
+        # print(value)
         max_abs_val = abs(max(mat.min(), mat.max(), key=abs))
-        #print(max_abs_val)
+        # print(max_abs_val)
         if max_abs_val > value:
             return True
         else:

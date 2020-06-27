@@ -1,7 +1,6 @@
 import numpy as np
 from DOF import DOF
 
-
 class Node:
     f_x = DOF([0, False, 0])
     f_y = DOF([0, False, 0])

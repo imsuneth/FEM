@@ -6,41 +6,41 @@ from Reinforcement import *
 
 from DOF import *
 from matplotlib import pyplot as plt
-
+from mpl_toolkits import mplot3d
 
 class Structure:
     n_sections = 6
-    tolerence = 0.00001
+    tolerance = 0.00001
     max_Iterations = 10
 
-    structure_level_itr=0
+    structure_level_itr = 0
 
     def __init__(self, js):
         # Load the jason file and construct the virtual structure
         # Create Node objects and put them in nparray "nodes"
 
         # self.n_totalFreeDof = 0 #added by pubudu to extractDOF from deformation increment vector
-        global new_cross_section
+        # global new_cross_section
         self.fix_Point_array = []
 
         self.n_nodes = js["no_of_nodes"]
         self.nodes = np.empty(self.n_nodes, dtype=Node)
         js_nodes = js["nodes"]
         for node in js_nodes:
-            id = node["id"]
+            section_id = node["id"]
             p_x = node["x"]
             p_y = node["y"]
             p_z = node["z"]
 
-            new_node = Node(id, p_x, p_y, p_z)
-            self.nodes.put(id, new_node)
+            new_node = Node(section_id, p_x, p_y, p_z)
+            self.nodes.put(section_id, new_node)
 
         # Create CrossSection objects and put them in nparray "cross_sections"
         self.no_of_crosssection_types = js["no_of_crosssection_types"]
         self.cross_sections = np.empty(self.no_of_crosssection_types, dtype=CrossSection)
         js_cross_sections = js["cross_sections"]
         for cross_section in js_cross_sections:
-            id = cross_section["id"]
+            section_id = cross_section["id"]
             shape = cross_section["shape"]
             dimensions = cross_section["dimensions"]
             no_of_fibers = cross_section["no_of_fibers"]
@@ -59,21 +59,21 @@ class Structure:
             if shape == "rectangle":
                 width = dimensions["z"]
                 height = dimensions["y"]
-                new_cross_section = SquareCrossSection(id, width, height, no_of_fibers, material_id, reinf)
+                new_cross_section = SquareCrossSection(section_id, width, height, no_of_fibers, material_id, reinf)
 
             elif shape == "circle":
                 radius = dimensions["radius"]
-                new_cross_section = CircularCrossSection(id, radius, no_of_fibers, material_id, reinf)
+                new_cross_section = CircularCrossSection(section_id, radius, no_of_fibers, material_id, reinf)
 
-            self.cross_sections.put(id, new_cross_section)
+            self.cross_sections.put(section_id, new_cross_section)
 
         # Create Element objects and put them in nparray "elements"
-        local_x=np.array([1,0])
+        local_x = np.array([1, 0])
         self.n_elements = js["no_of_elements"]
         self.elements = np.empty(self.n_elements, dtype=Element)
         js_elements = js["elements"]
         for element in js_elements:
-            id = element["id"]
+            section_id = element["id"]
             start_node_id = element["start_node_id"]
             start_node = self.nodes[start_node_id]
             end_node_id = element["end_node_id"]
@@ -87,23 +87,23 @@ class Structure:
             x_cord = element["local_x_dir"]["x"]
             y_cord = element["local_x_dir"]["y"]
 
-            local_vector=np.array([x_cord,y_cord])
+            local_vector = np.array([x_cord, y_cord])
             angle = np.arccos(np.dot(local_x, local_vector) / (np.linalg.norm(local_x) * np.linalg.norm(local_vector)))
 
-            if y_cord>=0:
-                angle=angle
+            if y_cord >= 0:
+                angle = angle
             else:
-                angle=2*np.pi-angle
+                angle = 2 * np.pi - angle
 
-            print("anlge in degrees =",(180*angle)/np.pi)
+            # print("anlge in degrees =", (180 * angle) / np.pi)
             yDiff = abs(start_node.p_y - end_node.p_y)
             xDiff = abs(start_node.p_x - end_node.p_x)
             length = math.sqrt(math.pow(yDiff, 2) + math.pow(xDiff, 2))
 
             # logge# .debug("Element:%d\tLength:%d\tAngle:%d\tno of Sections:%d\tCross section type:%d\tStard node:%d\tEnd node:%d" %(id,length,angle,self.n_sections,cross_section,start_node_id,end_node_id))
 
-            new_element = Element(id, start_node, end_node, cross_section, self.n_sections, angle, length)
-            self.elements.put(id, new_element)
+            new_element = Element(section_id, start_node, end_node, cross_section, self.n_sections, angle, length)
+            self.elements.put(section_id, new_element)
 
         # Take loads applied and assign them to Nodes
         self.no_of_loads = js["no_of_loads"]
@@ -157,10 +157,8 @@ class Structure:
         self.total_deformations = None
         self.mat_size = None
 
-        return None
-
     def analyze_structure(self):
-
+        print("============================== Structure analysis started ==============================")
         self.mat_size = self.DOF_PER_NODE * (self.n_elements + 1)
         self.structure_k = np.zeros([self.mat_size, self.mat_size])
         self.force_vector = np.zeros(self.mat_size, dtype=np.float_).transpose()
@@ -220,7 +218,7 @@ class Structure:
         return None
 
     def force_controlled(self, force, force_id):
-
+        print("\nForce controlled analysis")
         if force == 0:
             return
         self.static_force_step = self.static_force_step * force / abs(force)
@@ -241,6 +239,7 @@ class Structure:
         while abs(applied_force) <= abs(force):
             self.force_step_no += 1
             applied_force += self.static_force_step
+
             print("force step no:", self.force_step_no)
 
             self.assemble_structure_k(1)
@@ -262,7 +261,7 @@ class Structure:
                 unbalanced_force = self.force_vector - resisting_force
                 loop_count_structure += 1
 
-            print("structure level iterations ends =", loop_count_structure)
+            print("Structure level iterations ends =", loop_count_structure)
 
             deformation.fill(0)
 
@@ -403,3 +402,58 @@ class Structure:
             else:
                 index += 1
         return structure_k_copy
+
+    def visualize(self):
+        from mpl_toolkits.mplot3d import Axes3D
+        
+        fig = plt.figure()
+        ax = Axes3D(fig, proj_type='persp')
+        ax.set_xlim3d(-4,4)
+        ax.set_ylim3d(-4,4)
+        ax.set_zlim3d(0,4)
+        ax.set_xlabel('X axis')
+        ax.set_ylabel('Z axis')
+        ax.set_zlabel('Y axis')
+
+        
+        # Draw beams and columns
+        for element in self.elements:
+            start_node = element.start_node
+            end_node = element.end_node
+
+            xs = [start_node.p_x, end_node.p_x]
+            zs = [start_node.p_y, end_node.p_y]
+            ys = [start_node.p_z, end_node.p_z]
+
+            ax.plot(xs, ys, zs, c='blue')
+        
+        
+        
+        for node in self.nodes:
+            point= np.array([node.p_x, node.p_y, node.p_z])
+            
+            # Draw forces
+            force = np.array([node.f_x.value, node.f_y.value, node.f_z.value])
+            ax.quiver3D(point[0], point[2], point[1], force[0], force[2], force[1], arrow_length_ratio=0.3, length=0.001, color='green', pivot='tip')
+            
+            mag = np.linalg.norm(force)
+            if mag != 0:
+                t_point = point - force/1000
+                ax.text3D(t_point[0], t_point[2], t_point[1], str(mag), fontsize=10, color='green')
+
+            print([node.t_x, node.t_y, node.t_z])
+
+            # Draw restrains
+            if node.t_x == True:
+                ax.quiver3D(point[0], point[2], point[1], 500, 0, 0, arrow_length_ratio=0.3, length=0.001, color='red', pivot='middle')
+            if node.t_y == True:
+                ax.quiver3D(point[0], point[2], point[1], 0, 0, 500, arrow_length_ratio=0.3, length=0.001, color='red', pivot='middle')
+            if node.t_z == True:
+                ax.quiver3D(point[0], point[2], point[1], 0, 500, 0, arrow_length_ratio=0.3, length=0.001, color='red', pivot='middle')
+            
+
+
+
+        self.restraints
+        
+        plt.show()
