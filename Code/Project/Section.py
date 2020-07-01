@@ -55,6 +55,7 @@ class Section:
             sectional_stiffness[1][0] += sectional_stiffness_10
             sectional_stiffness[1][1] += sectional_stiffness_11
 
+
         for reinforcement in self.cross_section.reinforcements:
             y = reinforcement.distance_from_centroid
             area = reinforcement.area
