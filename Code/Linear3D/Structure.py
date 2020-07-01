@@ -5,11 +5,19 @@ from CrossSection import *
 from numpy.linalg import inv
 from log_ import *
 from plotTheStruct import *
+from mpl_toolkits.mplot3d import Axes3D
 
 
 class Structure:
 
     def __init__(self, js):
+
+        self.fig = plt.figure()
+        self.ax = Axes3D(self.fig, proj_type='persp')
+        plt.ion()
+        plt.show()
+
+        
         # Load the jason file and construct the virtual structure
         # Create Node objects and put them in nparray "nodes"
         # self.n_totalFreeDof = 0 #added by pubudu to extractDOF from deformation increment vector
@@ -199,6 +207,7 @@ class Structure:
             node.dm_z = deformation_vector[from_i + 5]
 
         self.showResults(force_vector_2, deformation_vector, node_order)
+        self.saveResults(force_vector_2, deformation_vector, node_order)
         return structure_k
 
     def showResults(self, force_vector, deformation_vector, node_order):
@@ -216,3 +225,81 @@ class Structure:
             print("\tdmx:", deformation_vector[node_id * 6 + 3])
             print("\tdmy:", deformation_vector[node_id * 6 + 4])
             print("\tdmz:", deformation_vector[node_id * 6 + 5], "\n")
+
+    def saveResults(self, force_vector, deformation_vector, node_order):
+        for node in self.nodes:
+            # node.f_x = force_vector[node_id * 6]
+            # node.f_y = force_vector[node_id * 6 + 1]
+            # node.f_z = force_vector[node_id * 6 + 2]
+            # node.m_x = force_vector[node_id * 6 + 3]
+            # node.m_y = force_vector[node_id * 6 + 4]
+            # node.m_z = force_vector[node_id * 6 + 5]
+            node.p_x += node.d_x
+            node.p_y += node.d_y
+            node.p_z += node.d_z
+
+
+    def visualize(self, deformed):
+        
+        self.ax.set_xlim3d(-2,4)
+        self.ax.set_ylim3d(-2,4)
+        self.ax.set_zlim3d(0,8)
+        self.ax.set_xlabel('X axis')
+        self.ax.set_ylabel('Y axis')
+        self.ax.set_zlabel('Z axis')
+
+        
+        # Draw beams and columns
+        for element in self.elements:
+            start_node = element.start_node
+            end_node = element.end_node
+
+            xs = [start_node.p_x, end_node.p_x]
+            ys = [start_node.p_y, end_node.p_y]
+            zs = [start_node.p_z, end_node.p_z]
+
+            color = 'red' if deformed else 'blue'
+            self.ax.plot(xs, ys, zs, c=color)
+            
+            # naming elements
+            p1 = np.array([start_node.p_x, start_node.p_y, start_node.p_z])
+            p2 = np.array([end_node.p_x, end_node.p_y, end_node.p_z])
+            mid = (p1 + p2)/2
+
+            if not deformed:
+                self.ax.text3D(mid[0], mid[1], mid[2], str(element.id), fontsize=10, color='black')
+
+        if deformed:
+            plt.draw()
+            plt.pause(1)
+            return
+
+        for node in self.nodes:
+            # Draw node names
+            point= np.array([node.p_x, node.p_y, node.p_z])
+            self.ax.text3D(point[0], point[1], point[2], str(node.id), fontsize=10, color='blue')
+            
+            # Draw forces
+            force = np.array([node.f_x, node.f_y, node.f_z])
+            force2 = force/np.linalg.norm(force)
+            self.ax.quiver3D(point[0], point[1], point[2], force2[0], force2[1], force2[2], arrow_length_ratio=0.3, length=1, color='green', pivot='tip')
+            
+            # Add force magnitudes
+            mag = np.linalg.norm(force)
+            if mag != 0:
+                t_point = point - force2
+                self.ax.text3D(t_point[0], t_point[1], t_point[2], str(mag), fontsize=10, color='green')
+
+            print([node.t_x, node.t_y, node.t_z])
+
+            # Draw restrains
+            if node.t_x == True:
+                self.ax.quiver3D(point[0], point[1], point[2], 500, 0, 0, arrow_length_ratio=0.3, length=0.001, color='red', pivot='middle')
+            if node.t_y == True:
+                self.ax.quiver3D(point[0], point[1], point[2], 0, 500, 0, arrow_length_ratio=0.3, length=0.001, color='red', pivot='middle')
+            if node.t_z == True:
+                self.ax.quiver3D(point[0], point[1], point[2], 0, 0, 500, arrow_length_ratio=0.3, length=0.001, color='red', pivot='middle')
+        
+        plt.draw()
+        plt.pause(1)
+    

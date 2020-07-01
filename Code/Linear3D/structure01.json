@@ -107,17 +107,17 @@
         },
 		{
             "id": 8,
-            "start_node_id":6,
-            "end_node_id":2,
+            "start_node_id":1,
+            "end_node_id":8,
             "element_type": 0,
             "material_id":0,
             "local_x_dir":
-                {"x":0,"y":-2.5,"z":0}
+                {"x":0,"y":0,"z":2.5}
         },
 		{
             "id": 9,
             "start_node_id":8,
-            "end_node_id":11,
+            "end_node_id":9,
             "element_type": 0,
             "material_id":0,
             "local_x_dir":
@@ -231,7 +231,7 @@
             "id": 0, 
             "point_id":8,
             "force":
-            {   "x":10, "y":0, "z":0},
+            {   "x":10000, "y":0, "z":0},
             "torque":
             {   "x":0, "y":0, "z":0 }
         },
@@ -239,7 +239,7 @@
             "id": 1,
             "point_id":10,
             "force":
-            {   "x":10, "y":0, "z":0},
+            {   "x":100000, "y":0, "z":0},
             "torque":
             {   "x":0, "y":0, "z":0 }
         },
@@ -247,7 +247,7 @@
             "id": 2,
             "point_id":13,
             "force":
-            {   "x":10, "y":0, "z":0},
+            {   "x":100000, "y":0, "z":0},
             "torque":
             {   "x":0, "y":0, "z":0 }
         },
@@ -255,7 +255,7 @@
             "id": 3,
             "point_id":12,
             "force":
-            {   "x":10, "y":0, "z":0},
+            {   "x":100000, "y":0, "z":0},
             "torque":
             {   "x":0, "y":0, "z":0 }
         }

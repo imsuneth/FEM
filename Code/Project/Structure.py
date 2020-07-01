@@ -427,15 +427,23 @@ class Structure:
 
             ax.plot(xs, ys, zs, c='blue')
         
+            # naming elements
+            p1 = np.array([start_node.p_x, start_node.p_y, start_node.p_z])
+            p2 = np.array([end_node.p_x, end_node.p_y, end_node.p_z])
+            mid = (p1 + p2)/2
+            ax.text3D(mid[0], mid[2], mid[1], str(element.id), fontsize=10, color='black')
         
         
         for node in self.nodes:
+            # Draw node names
             point= np.array([node.p_x, node.p_y, node.p_z])
+            ax.text3D(point[0], point[2], point[1], str(node.id), fontsize=10, color='blue')
             
             # Draw forces
             force = np.array([node.f_x.value, node.f_y.value, node.f_z.value])
             ax.quiver3D(point[0], point[2], point[1], force[0], force[2], force[1], arrow_length_ratio=0.3, length=0.001, color='green', pivot='tip')
             
+            # Add force magnitudes
             mag = np.linalg.norm(force)
             if mag != 0:
                 t_point = point - force/1000
