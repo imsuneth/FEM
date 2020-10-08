@@ -13,11 +13,10 @@ class Structure:
     def __init__(self, js):
 
         self.fig = plt.figure()
-        self.ax = Axes3D(self.fig, proj_type='persp')
+        self.ax = Axes3D(self.fig, proj_type='ortho')
         plt.ion()
         plt.show()
 
-        
         # Load the jason file and construct the virtual structure
         # Create Node objects and put them in nparray "nodes"
         # self.n_totalFreeDof = 0 #added by pubudu to extractDOF from deformation increment vector
@@ -36,7 +35,8 @@ class Structure:
 
         # Create CrossSection objects and put them in nparray "cross_sections"
         self.no_of_crosssection_types = js["no_of_crosssection_types"]
-        self.cross_sections = np.empty(self.no_of_crosssection_types, dtype=CrossSection)
+        self.cross_sections = np.empty(
+            self.no_of_crosssection_types, dtype=CrossSection)
         js_cross_sections = js["cross_sections"]
         for cross_section in js_cross_sections:
             id = cross_section["id"]
@@ -70,7 +70,8 @@ class Structure:
 
             local_dirs = [local_x_dir, 0, 0]
 
-            new_element = Element(id, start_node, end_node, cross_section, material_id, local_dirs)
+            new_element = Element(id, start_node, end_node,
+                                  cross_section, material_id, local_dirs)
             self.elements.put(id, new_element)
 
         # Take loads applied and assign them to Nodes
@@ -89,7 +90,8 @@ class Structure:
             m_z = torque["z"]
 
             node = self.nodes[node_id]
-            [node.f_x, node.f_y, node.f_z, node.m_x, node.m_y, node.m_z] = [f_x, f_y, f_z, m_x, m_y, m_z]
+            [node.f_x, node.f_y, node.f_z, node.m_x, node.m_y,
+                node.m_z] = [f_x, f_y, f_z, m_x, m_y, m_z]
 
         # Take fixed points and assign nodes as fixed
         self.no_of_fixed_points = js["no_of_fixed_points"]
@@ -109,7 +111,8 @@ class Structure:
             r_z = rotation["z"]
 
             node = self.nodes[node_id]
-            [node.t_x, node.t_y, node.t_z, node.r_x, node.r_y, node.r_z] = [t_x, t_y, t_z, r_x, r_y, r_z]
+            [node.t_x, node.t_y, node.t_z, node.r_x, node.r_y,
+                node.r_z] = [t_x, t_y, t_z, r_x, r_y, r_z]
 
     def analyzeStructure(self):
 
@@ -238,17 +241,15 @@ class Structure:
             node.p_y += node.d_y
             node.p_z += node.d_z
 
-
     def visualize(self, deformed):
-        
-        self.ax.set_xlim3d(-2,4)
-        self.ax.set_ylim3d(-2,4)
-        self.ax.set_zlim3d(0,8)
+
+        self.ax.set_xlim3d(-2, 4)
+        self.ax.set_ylim3d(-2, 4)
+        self.ax.set_zlim3d(0, 8)
         self.ax.set_xlabel('X axis')
         self.ax.set_ylabel('Y axis')
         self.ax.set_zlabel('Z axis')
 
-        
         # Draw beams and columns
         for element in self.elements:
             start_node = element.start_node
@@ -260,14 +261,15 @@ class Structure:
 
             color = 'red' if deformed else 'blue'
             self.ax.plot(xs, ys, zs, c=color)
-            
+
             # naming elements
             p1 = np.array([start_node.p_x, start_node.p_y, start_node.p_z])
             p2 = np.array([end_node.p_x, end_node.p_y, end_node.p_z])
             mid = (p1 + p2)/2
 
             if not deformed:
-                self.ax.text3D(mid[0], mid[1], mid[2], str(element.id), fontsize=10, color='black')
+                self.ax.text3D(mid[0], mid[1], mid[2], str(
+                    element.id), fontsize=10, color='black')
 
         if deformed:
             plt.draw()
@@ -276,30 +278,35 @@ class Structure:
 
         for node in self.nodes:
             # Draw node names
-            point= np.array([node.p_x, node.p_y, node.p_z])
-            self.ax.text3D(point[0], point[1], point[2], str(node.id), fontsize=10, color='blue')
-            
+            point = np.array([node.p_x, node.p_y, node.p_z])
+            self.ax.text3D(point[0], point[1], point[2], str(
+                node.id), fontsize=10, color='blue')
+
             # Draw forces
             force = np.array([node.f_x, node.f_y, node.f_z])
             force2 = force/np.linalg.norm(force)
-            self.ax.quiver3D(point[0], point[1], point[2], force2[0], force2[1], force2[2], arrow_length_ratio=0.3, length=1, color='green', pivot='tip')
-            
+            self.ax.quiver3D(point[0], point[1], point[2], force2[0], force2[1],
+                             force2[2], arrow_length_ratio=0.3, length=1, color='green', pivot='tip')
+
             # Add force magnitudes
             mag = np.linalg.norm(force)
             if mag != 0:
                 t_point = point - force2
-                self.ax.text3D(t_point[0], t_point[1], t_point[2], str(mag), fontsize=10, color='green')
+                self.ax.text3D(t_point[0], t_point[1], t_point[2], str(
+                    mag), fontsize=10, color='green')
 
             print([node.t_x, node.t_y, node.t_z])
 
             # Draw restrains
             if node.t_x == True:
-                self.ax.quiver3D(point[0], point[1], point[2], 500, 0, 0, arrow_length_ratio=0.3, length=0.001, color='red', pivot='middle')
+                self.ax.quiver3D(point[0], point[1], point[2], 500, 0, 0,
+                                 arrow_length_ratio=0.3, length=0.001, color='red', pivot='middle')
             if node.t_y == True:
-                self.ax.quiver3D(point[0], point[1], point[2], 0, 500, 0, arrow_length_ratio=0.3, length=0.001, color='red', pivot='middle')
+                self.ax.quiver3D(point[0], point[1], point[2], 0, 500, 0,
+                                 arrow_length_ratio=0.3, length=0.001, color='red', pivot='middle')
             if node.t_z == True:
-                self.ax.quiver3D(point[0], point[1], point[2], 0, 0, 500, arrow_length_ratio=0.3, length=0.001, color='red', pivot='middle')
-        
+                self.ax.quiver3D(point[0], point[1], point[2], 0, 0, 500,
+                                 arrow_length_ratio=0.3, length=0.001, color='red', pivot='middle')
+
         plt.draw()
         plt.pause(1)
-    

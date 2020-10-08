@@ -15,12 +15,14 @@ class Section:
         fiber_height = cross_section.height / cross_section.no_of_fibers
 
         for fiber_id in range(cross_section.no_of_fibers):
-            y = fiber_height * (cross_section.no_of_fibers - 1 - 2 * fiber_id) / 2
+            y = fiber_height * \
+                (cross_section.no_of_fibers - 1 - 2 * fiber_id) / 2
             # y = (fiber_height/2) * (1 - (1 / cross_section.no_of_fibers) - 2 * (fiber_id)/ cross_section.no_of_fibers)
             # y = np.round(y, decimals=4)
 
             # print('fiber_id:', fiber_id, ' y:', y)
-            fiber = Fiber(fiber_id, y, cross_section.width, fiber_height, cross_section.material_id)
+            fiber = Fiber(fiber_id, y, cross_section.width,
+                          fiber_height, cross_section.material_id)
             self.fibers.put(fiber_id, fiber)
 
     def analyze(self, section_deformation):
@@ -36,6 +38,8 @@ class Section:
             eps = eps_0 - fiber.y * k
             sigma = Material.material_models[fiber.material_id].get_stress(eps)
             # print('concrete_sigma:',sigma)
+            print("eps:", eps)
+            print("sigma", sigma)
             fiber.eps = eps
             fiber.sigma = sigma
             area = fiber.area
@@ -54,7 +58,6 @@ class Section:
             sectional_stiffness[0][1] += sectional_stiffness_01
             sectional_stiffness[1][0] += sectional_stiffness_10
             sectional_stiffness[1][1] += sectional_stiffness_11
-
 
         for reinforcement in self.cross_section.reinforcements:
             y = reinforcement.distance_from_centroid

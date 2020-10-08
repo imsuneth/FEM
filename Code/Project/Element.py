@@ -24,7 +24,7 @@ class Element:
             section = Section(section_id, cross_section)
             # section.f_section_resist = section.analyze([0, 0])[0]
             section.analyze([0, 0])
-            
+
             # initk = section.k_section
             # print(initk)
             # break
@@ -40,7 +40,8 @@ class Element:
             self.wh = [1 / 10, 49 / 90, 32 / 45, 49 / 90, 1 / 10]
             self.x = [-1, - 0.654654, 0, 0.654654, 1]
         elif self.n_sections == 6:
-            self.wh = [0.066667, 0.378475, 0.554858, 0.554858, 0.378475, 0.066667]
+            self.wh = [0.066667, 0.378475, 0.554858,
+                       0.554858, 0.378475, 0.066667]
             self.x = [-1, - 0.765055, - 0.285232, 0.285232, 0.765055, 1]
 
     def rotMatrix(self):
@@ -80,11 +81,13 @@ class Element:
 
         k_element_initial = inv(initialElementFlexibMat)
         self.k_element_initial = k_element_initial
-        mat1 = np.matmul(np.transpose(self.rigidBodyTransMatrix()), k_element_initial)
+        mat1 = np.matmul(np.transpose(
+            self.rigidBodyTransMatrix()), k_element_initial)
 
         k_element_initial_local = np.matmul(mat1, self.rigidBodyTransMatrix())
 
-        mat2 = np.matmul(np.transpose(self.rotMatrix()), k_element_initial_local)
+        mat2 = np.matmul(np.transpose(self.rotMatrix()),
+                         k_element_initial_local)
 
         k_element_initial_global = np.matmul(mat2, self.rotMatrix())
 
@@ -100,10 +103,12 @@ class Element:
                                    [self.end_node.dm_z]])
 
         Rot = self.rotMatrix()
-        rotate = np.matmul(Rot, elementDefINCR)  # convert defINCR to local co-ordinate systme
+        # convert defINCR to local co-ordinate systme
+        rotate = np.matmul(Rot, elementDefINCR)
         RB = self.rigidBodyTransMatrix()
 
-        basicSystem = np.matmul(RB, rotate)  # remove rigid body modes (basicSystem 3x1 matrix)
+        # remove rigid body modes (basicSystem 3x1 matrix)
+        basicSystem = np.matmul(RB, rotate)
         k_ = self.k_element_initial
         # mat_cal = np.matmul(k_, basicSystem)
 
@@ -111,7 +116,8 @@ class Element:
             elementForceINCR = np.matmul(self.k_element_initial, basicSystem)
             self.element_initial_status = False
         else:
-            elementForceINCR = np.matmul(self.k_element_initial, basicSystem) - self.k_element_unbalance_force
+            elementForceINCR = np.matmul(
+                self.k_element_initial, basicSystem) - self.k_element_unbalance_force
 
         for section_ in range(self.n_sections):  # newton raphson iteration
 
@@ -120,7 +126,8 @@ class Element:
             total_section_force = section.total_force
 
             k_section = section.k_section
-            NP = np.array([[0, 0, 1], [((self.x[section_] + 1) / 2) - 1, (self.x[section_] + 1) / 2, 0]])
+            NP = np.array(
+                [[0, 0, 1], [((self.x[section_] + 1) / 2) - 1, (self.x[section_] + 1) / 2, 0]])
 
             # ////////////starting newton-raphson iteration////////////////////
 
@@ -139,11 +146,14 @@ class Element:
             loop_count = 0
             while self.conditionCheck(unbalance_force, tolerance):
                 # print("section.k_section_initial",section.k_section_initial)
-                # print("unbalance_force",unbalance_force)
-                corrective_deformation = np.matmul(inv(section.k_section), unbalance_force)
+                print("k_section", section.k_section)
+                print("unbalance_force", unbalance_force)
+                corrective_deformation = np.matmul(
+                    inv(section.k_section), unbalance_force)
 
                 total_section_deformation += corrective_deformation
                 section.analyze(total_section_deformation)
+
                 unbalance_force = total_section_force - section.f_section_resist
                 loop_count += 1
                 # print("total_sectionDefINCR_In loop:", total_section_deformation)
@@ -157,7 +167,8 @@ class Element:
         for section_ in range(self.n_sections):
             section = self.sections[section_]
             k_section = section.k_section
-            NP = np.array([[0, 0, 1], [((self.x[section_] + 1) / 2) - 1, (self.x[section_] + 1) / 2, 0]])
+            NP = np.array(
+                [[0, 0, 1], [((self.x[section_] + 1) / 2) - 1, (self.x[section_] + 1) / 2, 0]])
             fh = inv(k_section)
             mat1 = np.matmul(np.transpose(NP), fh)
             mat2 = np.matmul(mat1, NP)

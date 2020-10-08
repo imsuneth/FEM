@@ -2,6 +2,7 @@ from Structure import *
 from JsonRead import readFile
 from Material import load_material_models
 
+
 def main():
     material_models_js = readFile('.\\materials\\material_models.json')
     load_material_models(material_models_js)

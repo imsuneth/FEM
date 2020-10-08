@@ -311,6 +311,8 @@ class Structure:
             else:
                 k = element.analyze(0.1)
 
+            print("element k:", k)
+
             y1 = self.DOF_PER_NODE * start_node_id
             y2 = y1 + self.DOF_PER_NODE
             x1 = self.DOF_PER_NODE * start_node_id
